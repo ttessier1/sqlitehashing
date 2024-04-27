@@ -25,9 +25,13 @@ Project Folder\
 When built, load in sqlite with - files should be copied to the sqlite directory by the batch file
 
 .load hashing
+
 select hash_ping(); -- confirm hashing loaded by function call
+
 ping
+
 select * FROM hash_info; -- list hashes
+
 hashing|hash_info|table|select * FROM hash_info();
 hashing|hash_size|table|select * FROM hash_sizes();
 hashing|hash_ping|util|select hash_ping();
@@ -61,7 +65,9 @@ hashing|lsh384|hash|select lsh384('');
 hashing|lsh512|hash|select lsh512('');
 hashing|sm3|hash|select sm3('');
 hashing|whirlpool|hash|select whirlpool('');
+
 select * FROM hash_sizes; -- list hash sizes
+
 hashing|md2|16|
 hashing|md4|16|
 hashing|md5|16|
@@ -93,7 +99,11 @@ hashing|sm3|32|
 hashing|whirlpool|64|
 
 select md5(''); -- do md5 hash on empty string ['']
+
 D41D8CD98F00B204E9800998ECF8427E
+
 select sha256(''); -- do sha256 on empty string ['']
+
 E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855
+
 -- Note, this code attempts to operate on text and blob but assumes ability to load entire text or blob into memory at present ( no buffering )
