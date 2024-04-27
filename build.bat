@@ -17,7 +17,9 @@ set SQLITE_LIB_FILE=sqlite3.lib
 set CRYPTOPP_LIB_FILE=cryptlib.lib
 
 set HASHING_C=hashing.c
-set CRYPTO_CPP=crypto.cpp
+set CRYPTO_CPP=crypto_hashing.cpp
+set CRYPTO_MACCPP=crypto_mac.cpp
+set UTIL_CPP=util.cpp
 
 IF NOT EXIST %SQLITE% goto sqlite_ne
 IF NOT EXIST %SQLITE_DIR% goto sqlite_dir_ne
@@ -30,10 +32,12 @@ IF NOT EXIST %TEST_FUNCTIONS% goto test_funcs_ne
 
 IF NOT EXIST %HASHING_C% goto hashing_file_ne
 IF NOT EXIST %CRYPTO_CPP% goto crypto_file_ne
+IF NOT EXIST %CRYPTO_MACCPP% goto crypto_macfile_ne
+IF NOT EXIST %UTIL_CPP% goto util_cpp_ne
 IF NOT EXIST %SQLITE_LIB%\%SQLITE_LIB_FILE% goto sqlite_lib_file_ne
 IF NOT EXIST %CRYPTOPP_LIB%\%CRYPTOPP_LIB_FILE% goto crypto_lib_file_ne
 
-cl hashing.c crypto.cpp  /EHsc -I %SQLITE_INC% -I %CRYPTOPP_INC% -link /MACHINE:X64 -LIBPATH:%SQLITE_LIB% -LIBPATH:%CRYPTOPP_LIB% sqlite3.lib cryptlib.lib kernel32.lib -dll -out:hashing.dll
+cl %HASHING_C% %CRYPTO_CPP% %CRYPTO_MACCPP% %UTIL_CPP% /EHsc -I %SQLITE_INC% -I %CRYPTOPP_INC% /D__ALL__ -link /MACHINE:X64 -LIBPATH:%SQLITE_LIB% -LIBPATH:%CRYPTOPP_LIB% sqlite3.lib cryptlib.lib kernel32.lib -dll -out:hashing.dll
 
 REM "c:\Users\fliei\sources\repository\sqlite"
 REM "c:\fliei\sources\repository\cryptopp"
@@ -68,7 +72,7 @@ echo .quit>>test.sql
 ..\sqlite\sqlite3.exe < test.sql>result.log
 type result.log
 
-for /f %%A IN (test_functions.txt) do echo .load hashing>test%%A.sql && echo select %%A('')>>test%%A.sql && ..\sqlite\sqlite3.exe < test%%A.sql>result%%A.log && echo Testing %%A && type result%%A.log && del result%%A.log
+REM for /f %%A IN (test_functions.txt) do echo .load hashing>test%%A.sql && echo select %%A('')>>test%%A.sql && ..\sqlite\sqlite3.exe < test%%A.sql>result%%A.log && echo Testing %%A && type result%%A.log && del result%%A.log
 
 goto Done
 
@@ -115,9 +119,18 @@ exit /b 1
 echo source file: [%HASHING%] does not exist
 exit /b 1
 
-:goto crypto_file_ne
+:crypto_file_ne
 echo source file: [%CRYPTO_CPP%] does not exist
 exit /b 1
+
+:crypto_macfile_ne
+echo source file: [%CRYPTO_MACCPP%] does not exist
+exit /b 1
+
+:util_cpp_ne
+echo source file: [%UTIL_CPP%] does not exist
+exit /b 1
+
 
 :sqlite_lib_file_ne
 echo lib file: [%SQLITE_LIB%\%SQLITE_LIB_FILE%] does not exist

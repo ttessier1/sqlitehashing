@@ -53,12 +53,7 @@ struct hash_sizes_cursor {
 #define HASH_SIZE_FUNCTION_NAME_28 "sm3"
 #define HASH_SIZE_FUNCTION_NAME_29 "whirlpool"
 
-#define HASH_SIZE_FUNCTION_NAME_30 "panama"
-#define HASH_SIZE_FUNCTION_NAME_31 "des"
-#define HASH_SIZE_FUNCTION_NAME_32 "arc4"
-#define HASH_SIZE_FUNCTION_NAME_33 "seal"
-
-#define HASH_SIZE_MAX 34
+#define HASH_SIZE_MAX 30
 
 #ifndef LARGEST_UINT64
 #define LARGEST_UINT64 (0xffffffff|(((sqlite3_uint64)0xffffffff)<<32))
@@ -526,62 +521,6 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_whirlpool));
-            break;
-        }
-    }
-    else if ( pCur->iRowid == 30 ) 
-    {
-        switch( i ){
-            case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
-            break;
-            case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_30), strlen(HASH_SIZE_FUNCTION_NAME_30), free);
-            break;
-            case HASH_SIZE_COLUMN_HASH_SIZE:
-                sqlite3_result_int(ctx,0);
-            break;
-        }
-    }
-    else if ( pCur->iRowid == 31 ) 
-    {
-        switch( i ){
-            case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
-            break;
-            case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_31), strlen(HASH_SIZE_FUNCTION_NAME_31), free);
-            break;
-            case HASH_SIZE_COLUMN_HASH_SIZE:
-                sqlite3_result_int(ctx,0);
-            break;
-        }
-    }
-    else if ( pCur->iRowid == 32 ) 
-    {
-        switch( i ){
-            case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
-            break;
-            case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_32), strlen(HASH_SIZE_FUNCTION_NAME_32), free);
-            break;
-            case HASH_SIZE_COLUMN_HASH_SIZE:
-                sqlite3_result_int(ctx,0);
-            break;
-        }
-    }
-    else if ( pCur->iRowid == 33 ) 
-    {
-        switch( i ){
-            case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
-            break;
-            case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_33), strlen(HASH_SIZE_FUNCTION_NAME_33), free);
-            break;
-            case HASH_SIZE_COLUMN_HASH_SIZE:
-                sqlite3_result_int(ctx,0);
             break;
         }
     }

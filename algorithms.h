@@ -30,24 +30,51 @@
 #define algo_sm3 28
 #define algo_whirlpool 29
 // Hmacs
-#define algo_hmac_blake2b 30
-#define algo_hmac_blake2s 31
-#define algo_hmac_cmac 32
-#define algo_hmac_cbc_mac 33
-#define algo_hmac_dmac 34
-#define algo_hmac_gmac 35
-#define algo_hmac_hmac 36
-#define algo_hmac_poly_1305 37
-#define algo_hmac_sip_hash64 38
-#define algo_hmac_sip_hash128 39
-#define algo_hmac_two_track 40
-#define algo_hmac_vmac 41
+#define algo_hmac_md2 30
+#define algo_hmac_md4 31
+#define algo_hmac_md5 32
+#define algo_hmac_sha1 33
+#define algo_hmac_sha224 34
+#define algo_hmac_sha256 35
+
+#define algo_hmac_sha384 36
+#define algo_hmac_sha512 37
+#define algo_hmac_sha3_224 38
+#define algo_hmac_sha3_256 39
+#define algo_hmac_sha3_384 40
+#define algo_hmac_sha3_512 41
+
+#define algo_hmac_ripemd_128 42
+#define algo_hmac_ripemd_160 43
+#define algo_hmac_ripemd_256 44
+#define algo_hmac_ripemd_320 45
+
+
+#define algo_hmac_blake2b 46
+#define algo_hmac_blake2s 47
+
+#define algo_hmac_tiger 48
+#define algo_hmac_shake_128 49
+#define algo_hmac_shake_256 50
+#define algo_hmac_sip_hash64 51
+#define algo_hmac_sip_hash128 52
+#define algo_hmac_lsh_224 53
+#define algo_hmac_lsh_256 54
+#define algo_hmac_lsh_384 55
+#define algo_hmac_lsh_512 56
+#define algo_hmac_sm3 57
+#define algo_hmac_whirlpool 58
+
+#define algo_hmac_cmac 59
+#define algo_hmac_cbc_mac 60
+#define algo_hmac_dmac 61
+#define algo_hmac_gmac 62
+#define algo_hmac_hmac 63
+#define algo_hmac_poly_1305 64
+#define algo_hmac_two_track 65
+#define algo_hmac_vmac 66
 
 
 
 // non hash
-#define algo_panama 42
-#define algo_des 43
-#define algo_arc4 44 
-#define algo_seal 45
-#define algo_max 46
+#define algo_max 67
