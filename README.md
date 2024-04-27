@@ -21,8 +21,15 @@ Project Folder\
   sqlitehashingext\ - these sources 
   
 
-When built, load in sqlite with
+When built, load in sqlite with - files should be copied to the sqlite directory by the batch file
 
 .load hashing
+select * FROM hash_info; -- list hashes
 
+select * FROM hash_sizes; -- list hash sizes
 
+select md5(''); -- do md5 hash on empty string ['']
+
+select sha256(''); -- do sha256 on empty string ['']
+
+-- Note, this code attempts to operate on text and blob but assumes ability to load entire text or blob into memory at present ( no buffering )
