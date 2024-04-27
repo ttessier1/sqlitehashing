@@ -1,5 +1,8 @@
 Sqlite Hashing version 2024.04.27.1
 
+TODO: Complete mac functions
+
+
 This project depends on 
 
 sqlite3.exe and  sqlite3.lib https://sqlite.org/ (Version 3.45.3)
@@ -101,6 +104,14 @@ hashing|whirlpool|64|
 select md5(''); -- do md5 hash on empty string ['']
 
 D41D8CD98F00B204E9800998ECF8427E
+
+select tohex('test');
+
+74657374
+
+select fromhex('74657374');
+
+test
 
 select sha256(''); -- do sha256 on empty string ['']
 
