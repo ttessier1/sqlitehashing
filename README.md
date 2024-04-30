@@ -1,7 +1,7 @@
 Sqlite Hashing version 2024.04.27.1
 
 TODO: Complete mac functions
-
+TODO: Complete encryption functions
 
 This project depends on 
 
