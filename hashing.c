@@ -53,7 +53,7 @@ static int hash_ping(
     unsigned char * zOut;
     unsigned char * zToFree;
     int nIn = 0;
-    nIn = strlen(PING_MESSAGE);
+    nIn = strlength(PING_MESSAGE);
     if(argc!=0)
     {
         return-1;
@@ -120,7 +120,7 @@ static int md2(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -143,12 +143,12 @@ static int md2(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -168,7 +168,7 @@ static int md2(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -191,7 +191,7 @@ static int md4(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -214,12 +214,12 @@ static int md4(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -239,7 +239,7 @@ static int md4(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -262,7 +262,7 @@ static int md5(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -285,12 +285,12 @@ static int md5(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -310,7 +310,7 @@ static int md5(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -333,7 +333,7 @@ static int sha1(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -356,12 +356,12 @@ static int sha1(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -381,7 +381,7 @@ static int sha1(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -404,7 +404,7 @@ static int sha224(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -427,12 +427,12 @@ static int sha224(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -452,7 +452,7 @@ static int sha224(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -475,7 +475,7 @@ static int sha256(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -498,12 +498,12 @@ static int sha256(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -523,7 +523,7 @@ static int sha256(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -546,7 +546,7 @@ static int sha384(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -569,12 +569,12 @@ static int sha384(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -594,7 +594,7 @@ static int sha384(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -617,7 +617,7 @@ static int sha512(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -640,12 +640,12 @@ static int sha512(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -665,7 +665,7 @@ static int sha512(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -688,7 +688,7 @@ static int sha3_224(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -711,12 +711,12 @@ static int sha3_224(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -736,7 +736,7 @@ static int sha3_224(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -758,7 +758,7 @@ static int sha3_256(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -781,12 +781,12 @@ static int sha3_256(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -806,7 +806,7 @@ static int sha3_256(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -828,7 +828,7 @@ static int sha3_384(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -851,12 +851,12 @@ static int sha3_384(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -876,7 +876,7 @@ static int sha3_384(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -898,7 +898,7 @@ static int sha3_512(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -921,12 +921,12 @@ static int sha3_512(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -946,7 +946,7 @@ static int sha3_512(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -968,7 +968,7 @@ static int ripemd128(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -991,12 +991,12 @@ static int ripemd128(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -1016,7 +1016,7 @@ static int ripemd128(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -1038,7 +1038,7 @@ static int ripemd160(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -1061,12 +1061,12 @@ static int ripemd160(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -1086,7 +1086,7 @@ static int ripemd160(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -1108,7 +1108,7 @@ static int ripemd256(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -1131,12 +1131,12 @@ static int ripemd256(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -1156,7 +1156,7 @@ static int ripemd256(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -1178,7 +1178,7 @@ static int ripemd320(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -1201,12 +1201,12 @@ static int ripemd320(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -1226,7 +1226,7 @@ static int ripemd320(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -1248,7 +1248,7 @@ static int blake2b(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -1271,12 +1271,12 @@ static int blake2b(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -1296,7 +1296,7 @@ static int blake2b(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -1319,7 +1319,7 @@ static int blake2s(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -1342,12 +1342,12 @@ static int blake2s(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -1367,7 +1367,7 @@ static int blake2s(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -1389,7 +1389,7 @@ static int tiger(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -1412,12 +1412,12 @@ static int tiger(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -1437,7 +1437,7 @@ static int tiger(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -1459,7 +1459,7 @@ static int shake128(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -1482,12 +1482,12 @@ static int shake128(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -1507,7 +1507,7 @@ static int shake128(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -1529,7 +1529,7 @@ static int shake256(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -1552,12 +1552,12 @@ static int shake256(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -1577,7 +1577,7 @@ static int shake256(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -1599,7 +1599,7 @@ static int siphash64(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -1622,12 +1622,12 @@ static int siphash64(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -1647,7 +1647,7 @@ static int siphash64(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -1669,7 +1669,7 @@ static int siphash128(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -1692,12 +1692,12 @@ static int siphash128(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -1717,7 +1717,7 @@ static int siphash128(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -1739,7 +1739,7 @@ static int lsh224(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -1762,12 +1762,12 @@ static int lsh224(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -1787,7 +1787,7 @@ static int lsh224(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -1809,7 +1809,7 @@ static int lsh256(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -1832,12 +1832,12 @@ static int lsh256(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -1857,7 +1857,7 @@ static int lsh256(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -1879,7 +1879,7 @@ static int lsh384(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -1902,12 +1902,12 @@ static int lsh384(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -1927,7 +1927,7 @@ static int lsh384(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -1949,7 +1949,7 @@ static int lsh512(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -1972,12 +1972,12 @@ static int lsh512(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -1997,7 +1997,7 @@ static int lsh512(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -2019,7 +2019,7 @@ static int sm3(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -2042,12 +2042,12 @@ static int sm3(
           {
               OutputDebugStringA("Result Not NULL\r\n");
               OutputDebugStringA(result);
-              nIn = strlen(result);
+              nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
                   OutputDebugStringA("ZOut Not NULL\r\n");
-                  strncpy_s(zOut,nIn+1,result,strlen(result));
+                  strncpy_s(zOut,nIn+1,result,strlength(result));
                   OutputDebugStringA("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
@@ -2067,7 +2067,7 @@ static int sm3(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -2089,7 +2089,7 @@ static int whirlpool(
     int nIn = 0;
     int index=0;
     const char * result;
-    const char * buffer;
+    
     if(argc!=1)
     {
         OutputDebugStringA("Test\r\n");
@@ -2110,12 +2110,12 @@ static int whirlpool(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            nIn = strlen(result);
+            nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -2135,7 +2135,7 @@ static int whirlpool(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -2161,7 +2161,7 @@ static int macmd2(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -2216,12 +2216,12 @@ static int macmd2(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            nIn = strlen(result);
+            nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -2239,7 +2239,7 @@ static int macmd2(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -2263,7 +2263,7 @@ static int macmd4(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -2318,12 +2318,12 @@ static int macmd4(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            nIn = strlen(result);
+            nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -2341,7 +2341,7 @@ static int macmd4(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -2365,7 +2365,7 @@ static int macmd5(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -2420,12 +2420,12 @@ static int macmd5(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            nIn = strlen(result);
+            nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -2443,7 +2443,7 @@ static int macmd5(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -2467,7 +2467,7 @@ static int macsha1(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -2522,12 +2522,12 @@ static int macsha1(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            nIn = strlen(result);
+            nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -2545,7 +2545,7 @@ static int macsha1(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -2569,7 +2569,7 @@ static int macsha224(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -2624,12 +2624,12 @@ static int macsha224(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            nIn = strlen(result);
+            nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -2647,7 +2647,7 @@ static int macsha224(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -2671,7 +2671,7 @@ static int macsha256(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -2726,12 +2726,12 @@ static int macsha256(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            nIn = strlen(result);
+            nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -2749,7 +2749,7 @@ static int macsha256(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -2773,7 +2773,7 @@ static int macsha384(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -2828,12 +2828,12 @@ static int macsha384(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            nIn = strlen(result);
+            nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -2851,7 +2851,7 @@ static int macsha384(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -2875,7 +2875,7 @@ static int macsha512(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -2930,12 +2930,12 @@ static int macsha512(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            nIn = strlen(result);
+            nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -2953,7 +2953,7 @@ static int macsha512(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -2977,7 +2977,7 @@ static int macsha3224(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -3032,12 +3032,12 @@ static int macsha3224(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            nIn = strlen(result);
+            nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -3055,7 +3055,7 @@ static int macsha3224(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -3079,7 +3079,7 @@ static int macsha3256(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -3134,12 +3134,12 @@ static int macsha3256(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            nIn = strlen(result);
+            nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -3157,7 +3157,7 @@ static int macsha3256(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -3181,7 +3181,7 @@ static int macsha3384(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -3236,12 +3236,12 @@ static int macsha3384(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            nIn = strlen(result);
+            nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -3259,7 +3259,7 @@ static int macsha3384(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -3283,7 +3283,7 @@ static int macsha3512(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -3338,12 +3338,12 @@ static int macsha3512(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            nIn = strlen(result);
+            nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -3361,7 +3361,7 @@ static int macsha3512(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -3385,7 +3385,7 @@ static int macripemd128(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -3440,12 +3440,12 @@ static int macripemd128(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            nIn = strlen(result);
+            nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -3463,7 +3463,7 @@ static int macripemd128(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -3487,7 +3487,7 @@ static int macripemd160(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -3542,12 +3542,12 @@ static int macripemd160(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            nIn = strlen(result);
+            nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -3565,7 +3565,7 @@ static int macripemd160(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -3589,7 +3589,7 @@ static int macripemd256(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -3644,12 +3644,12 @@ static int macripemd256(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            nIn = strlen(result);
+            nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -3667,7 +3667,7 @@ static int macripemd256(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -3691,7 +3691,7 @@ static int macripemd320(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -3746,12 +3746,12 @@ static int macripemd320(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            nIn = strlen(result);
+            nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -3769,7 +3769,7 @@ static int macripemd320(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -3793,7 +3793,7 @@ static int macblake2b(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -3849,7 +3849,7 @@ static int macblake2b(
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -3867,7 +3867,7 @@ static int macblake2b(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -3891,7 +3891,7 @@ static int macblake2s(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -3947,7 +3947,7 @@ static int macblake2s(
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -3965,7 +3965,7 @@ static int macblake2s(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -3989,7 +3989,7 @@ static int mactiger(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -4045,7 +4045,7 @@ static int mactiger(
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -4063,7 +4063,7 @@ static int mactiger(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -4087,7 +4087,7 @@ static int macshake128(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -4143,7 +4143,7 @@ static int macshake128(
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -4161,7 +4161,7 @@ static int macshake128(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -4185,7 +4185,6 @@ static int macshake256(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -4241,7 +4240,7 @@ static int macshake256(
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -4259,7 +4258,7 @@ static int macshake256(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -4283,7 +4282,6 @@ static int macsiphash64(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -4339,7 +4337,7 @@ static int macsiphash64(
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -4357,7 +4355,7 @@ static int macsiphash64(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -4381,7 +4379,6 @@ static int macsiphash128(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -4437,7 +4434,7 @@ static int macsiphash128(
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -4455,7 +4452,7 @@ static int macsiphash128(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -4479,7 +4476,7 @@ static int maclsh224(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -4535,7 +4532,7 @@ static int maclsh224(
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -4553,7 +4550,7 @@ static int maclsh224(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -4577,7 +4574,7 @@ static int maclsh256(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -4633,7 +4630,7 @@ static int maclsh256(
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -4651,7 +4648,7 @@ static int maclsh256(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -4675,7 +4672,7 @@ static int maclsh384(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -4731,7 +4728,7 @@ static int maclsh384(
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -4749,7 +4746,7 @@ static int maclsh384(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -4773,7 +4770,7 @@ static int maclsh512(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -4829,7 +4826,7 @@ static int maclsh512(
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -4847,7 +4844,7 @@ static int maclsh512(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -4871,7 +4868,7 @@ static int macsm3(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -4927,7 +4924,7 @@ static int macsm3(
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -4945,7 +4942,7 @@ static int macsm3(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -4969,7 +4966,7 @@ static int macwhirlpool(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -5025,7 +5022,7 @@ static int macwhirlpool(
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut,nIn+1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
@@ -5043,7 +5040,7 @@ static int macwhirlpool(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -5067,7 +5064,7 @@ static int maccmac(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -5119,13 +5116,13 @@ static int maccmac(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
+            zOut = zToFree = ( unsigned char *) sqlite3_malloc64(strlength(result) + 1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut, strlength(result) +1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
-                sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -5141,7 +5138,7 @@ static int maccmac(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -5165,7 +5162,7 @@ static int maccbccmac(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -5217,13 +5214,13 @@ static int maccbccmac(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
+            zOut = zToFree = ( unsigned char *) sqlite3_malloc64(strlen(result) + 1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut, strlen(result) +1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
-                sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -5239,7 +5236,7 @@ static int maccbccmac(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -5263,7 +5260,7 @@ static int macdmac(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -5315,13 +5312,13 @@ static int macdmac(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
+            zOut = zToFree = ( unsigned char *) sqlite3_malloc64(strlength(result) + 1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut, strlength(result) +1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
-                sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -5337,7 +5334,7 @@ static int macdmac(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -5361,7 +5358,7 @@ static int macgmac(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -5413,13 +5410,13 @@ static int macgmac(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
+            zOut = zToFree = ( unsigned char *) sqlite3_malloc64(strlength(result) + 1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut, strlength(result) +1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
-                sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -5435,12 +5432,13 @@ static int macgmac(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 
+// TODO: Verify HMAC
 static int machmac(
     sqlite3_context *context,
     int argc,
@@ -5459,7 +5457,7 @@ static int machmac(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -5511,13 +5509,13 @@ static int machmac(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
+            zOut = zToFree = ( unsigned char *) sqlite3_malloc64(strlen(result) + 1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut, strlength(result) +1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
-                sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -5533,7 +5531,7 @@ static int machmac(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -5557,7 +5555,7 @@ static int macpoly1305(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -5609,13 +5607,13 @@ static int macpoly1305(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
+            zOut = zToFree = ( unsigned char *) sqlite3_malloc64(strlength(result) + 1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut, strlength(result) +1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
-                sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -5631,7 +5629,7 @@ static int macpoly1305(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -5655,7 +5653,7 @@ static int mactwotrack(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -5707,13 +5705,13 @@ static int mactwotrack(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
+            zOut = zToFree = ( unsigned char *) sqlite3_malloc64(strlength(result) + 1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut, strlength(result) +1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
-                sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -5729,7 +5727,7 @@ static int mactwotrack(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -5753,7 +5751,7 @@ static int macvmac(
     int resultLength=0;
     const char * fromHex;
     const char * result;
-    const char * buffer;
+    
     if(argc!=3)
     {
         OutputDebugStringA("Test\r\n");
@@ -5805,13 +5803,13 @@ static int macvmac(
         {
             OutputDebugStringA("Result Not NULL\r\n");
             OutputDebugStringA(result);
-            zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
+            zOut = zToFree = ( unsigned char *) sqlite3_malloc64(strlength(result) +1);
             if(zOut!=0)
             {
                 OutputDebugStringA("ZOut Not NULL\r\n");
-                strncpy_s(zOut,nIn+1,result,strlen(result));
+                strncpy_s(zOut, strlength(result) +1,result,strlength(result));
                 OutputDebugStringA("After StrCpy\r\n");
-                sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -5827,7 +5825,7 @@ static int macvmac(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlen("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -5863,12 +5861,12 @@ static int tohex(
             result = ToHexSZ(zIn);
             if(result)
             {
-                nIn = strlen(result);
+                nIn = strlength(result);
                 zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
                 if(zOut!=0)
                 {
                     OutputDebugStringA("ZOut Not NULL\r\n");
-                    strncpy_s(zOut,nIn+1,result,strlen(result));
+                    strncpy_s(zOut,nIn+1,result,strlength(result));
                     OutputDebugStringA("After StrCpy\r\n");
                     sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                     sqlite3_free(zToFree);
@@ -5934,7 +5932,7 @@ static int fromhex(
                 if(zOut!=0)
                 {
                     OutputDebugStringA("ZOut Not NULL\r\n");
-                    strncpy_s(zOut,nIn+1,result,strlen(result));
+                    strncpy_s(zOut,nIn+1,result,strlength(result));
                     OutputDebugStringA("After StrCpy\r\n");
                     sqlite3_result_blob(context,(char *)zOut,resultLength,SQLITE_TRANSIENT);
                     sqlite3_free(zToFree);

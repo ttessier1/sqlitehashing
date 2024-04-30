@@ -17,6 +17,7 @@
 #include <lsh.h>
 #include <sm3.h>
 #include <whrlpool.h>
+#include <ttmac.h>
 #include <aes.h>
 #include <hex.h>
 #include "algorithms.h"
@@ -261,6 +262,27 @@ unsigned int GetDigestSize(unsigned int algorithms)
             case algo_hmac_cmac:
                 return AES::BLOCKSIZE;
             break;
+            case algo_hmac_cbc_mac:
+                return AES::BLOCKSIZE;
+                break;
+            case algo_hmac_dmac:
+                return AES::BLOCKSIZE;
+                break;
+            case algo_hmac_gmac:
+                return AES::BLOCKSIZE;
+                break;
+            case algo_hmac_hmac:
+                return SHA256::DIGESTSIZE;
+                break;
+            case algo_hmac_poly_1305:
+                return AES::BLOCKSIZE;
+                break;
+            case algo_hmac_two_track:
+                return TTMAC::DIGESTSIZE;
+                    break;
+            case algo_hmac_vmac:
+                return AES::BLOCKSIZE;
+                break;
             default :
                 return 0;
         }
@@ -276,29 +298,31 @@ const char * ToHexSZ(const char * value)
     unsigned int length = 0 ;
     if ( value )
     {
-        length = strlen(value);
+        length = strlength(value);
         maxLength = length*2;
         hexValue = ( char * ) malloc((maxLength)+1);
         if(hexValue)
         {
             for(index = 0 ; index< length ;index++)
             {
+                if (valueIndex > (maxLength))
+                {
+
+                    break;
+                }
                 theChar = (((value[index]&0xF0)>>4)&0x0F);
                 hexValue[valueIndex] = hexChars[theChar];
-                if(valueIndex>(maxLength))
-                {
-                       
-                    break;
-                }
+                
                 DebugFormat("ToHexSZ: Index:%i ValueIndex:%i Initial: %x Char: %i Value: %i\r\n",index,valueIndex,value[index],theChar, hexValue[valueIndex]);
                 valueIndex++;
-                theChar = ((value[index])&0x0F);
-                hexValue[valueIndex] = hexChars[theChar];
-                if(valueIndex>(maxLength))
+                if (valueIndex > (maxLength))
                 {
-                    
+
                     break;
                 }
+                theChar = ((value[index])&0x0F);
+                hexValue[valueIndex] = hexChars[theChar];
+               
                 DebugFormat("ToHexSZ: Index:%i ValueIndex:%i Initial: %x Char: %i Value: %i\r\n",index,valueIndex,value[index],theChar, hexValue[valueIndex]);
                 valueIndex++;
             }
@@ -661,6 +685,62 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 }
                 maxLength = AES::BLOCKSIZE*2 ;
             break;
+            case algo_hmac_cbc_mac:
+                if (length != AES::BLOCKSIZE)
+                {
+                    DebugFormat("AES Algorithm Length does not match actual length: [%i] [%i]\r\n,", length, AES::BLOCKSIZE);
+                    return NULL;
+                }
+                maxLength = AES::BLOCKSIZE * 2;
+                break;
+            case algo_hmac_dmac:
+                if (length != AES::BLOCKSIZE)
+                {
+                    DebugFormat("AES Algorithm Length does not match actual length: [%i] [%i]\r\n,", length, AES::BLOCKSIZE);
+                    return NULL;
+                }
+                maxLength = AES::BLOCKSIZE * 2;
+                break;
+            case algo_hmac_gmac:
+                if (length != AES::BLOCKSIZE)
+                {
+                    DebugFormat("AES Algorithm Length does not match actual length: [%i] [%i]\r\n,", length, AES::BLOCKSIZE);
+                    return NULL;
+                }
+                maxLength = AES::BLOCKSIZE * 2;
+                break;
+            case algo_hmac_hmac:
+                if (length != SHA256::DIGESTSIZE)
+                {
+                    DebugFormat("AES Algorithm Length does not match actual length: [%i] [%i]\r\n,", length, SHA256::DIGESTSIZE);
+                    return NULL;
+                }
+                maxLength = SHA256::DIGESTSIZE * 2;
+                break;
+            case algo_hmac_poly_1305:
+                if (length != AES::BLOCKSIZE)
+                {
+                    DebugFormat("SHA256 Algorithm Length does not match actual length: [%i] [%i]\r\n,", length, AES::BLOCKSIZE);
+                    return NULL;
+                }
+                maxLength = AES::BLOCKSIZE * 2;
+                break;
+            case algo_hmac_two_track:
+                if (length != TTMAC::DIGESTSIZE)
+                {
+                    DebugFormat("TwoTrack Algorithm Length does not match actual length: [%i] [%i]\r\n,", length, TTMAC::DIGESTSIZE);
+                    return NULL;
+                }
+                maxLength = TTMAC::DIGESTSIZE * 2;
+                break;
+            case algo_hmac_vmac:
+                if (length != AES::BLOCKSIZE)
+                {
+                    DebugFormat("Vmac Algorithm Length does not match actual length: [%i] [%i]\r\n,", length, AES::BLOCKSIZE);
+                    return NULL;
+                }
+                maxLength = AES::BLOCKSIZE * 2;
+                break;
             default :
                 return NULL;
         }
@@ -1077,11 +1157,67 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
             case algo_hmac_cmac:
                 if(length!=AES::BLOCKSIZE*2)
                 {
-                    DebugFormat("SelfCheck Whirlpool Algorithm Length does not match actual length: [%i] [%i]\r\n",length,AES::BLOCKSIZE*2);
+                    DebugFormat("SelfCheck CMAC Algorithm Length does not match actual length: [%i] [%i]\r\n",length,AES::BLOCKSIZE*2);
                     return NULL;
                 }
                 maxLength = AES::BLOCKSIZE*2 ;
             break;
+            case algo_hmac_cbc_mac:
+                if (length != AES::BLOCKSIZE * 2)
+                {
+                    DebugFormat("SelfCheck CMAC_CBC Algorithm Length does not match actual length: [%i] [%i]\r\n", length, AES::BLOCKSIZE * 2);
+                    return NULL;
+                }
+                maxLength = AES::BLOCKSIZE * 2;
+                break;
+            case algo_hmac_dmac:
+                if (length != AES::BLOCKSIZE * 2)
+                {
+                    DebugFormat("SelfCheck DMAC Algorithm Length does not match actual length: [%i] [%i]\r\n", length, AES::BLOCKSIZE * 2);
+                    return NULL;
+                }
+                maxLength = AES::BLOCKSIZE * 2;
+                break;
+            case algo_hmac_gmac:
+                if (length != AES::BLOCKSIZE * 2)
+                {
+                    DebugFormat("SelfCheck GMAC Algorithm Length does not match actual length: [%i] [%i]\r\n", length, AES::BLOCKSIZE * 2);
+                    return NULL;
+                }
+                maxLength = AES::BLOCKSIZE * 2;
+                break;
+            case algo_hmac_hmac:
+                if (length != SHA256::DIGESTSIZE * 2)
+                {
+                    DebugFormat("SelfCheck HMAC Algorithm Length does not match actual length: [%i] [%i]\r\n", length, SHA256::DIGESTSIZE * 2);
+                    return NULL;
+                }
+                maxLength = SHA256::DIGESTSIZE * 2;
+                break;
+            case algo_hmac_poly_1305:
+                if (length != AES::BLOCKSIZE * 2)
+                {
+                    DebugFormat("SelfCheck Poly1305 Algorithm Length does not match actual length: [%i] [%i]\r\n", length, AES::BLOCKSIZE * 2);
+                    return NULL;
+                }
+                maxLength = AES::BLOCKSIZE * 2;
+                break;
+            case algo_hmac_two_track:
+                if (length != TTMAC::DIGESTSIZE* 2)
+                {
+                    DebugFormat("SelfCheck TTMac Algorithm Length does not match actual length: [%i] [%i]\r\n", length, TTMAC::DIGESTSIZE * 2);
+                    return NULL;
+                }
+                maxLength = TTMAC::DIGESTSIZE * 2;
+                break;
+            case algo_hmac_vmac:
+                if (length != AES::BLOCKSIZE * 2)
+                {
+                    DebugFormat("SelfCheck VMAC Algorithm Length does not match actual length: [%i] [%i]\r\n", length, AES::BLOCKSIZE * 2);
+                    return NULL;
+                }
+                maxLength = AES::BLOCKSIZE * 2;
+                break;
             default :
                 DebugFormat("Invalid Algorithm: [%i] [%i]\r\n",algorithm);
                 return 0;
@@ -1115,16 +1251,18 @@ const char * FromHex(const char * value, unsigned int length, unsigned int * res
 {
     char * result=NULL;
     char theChar=0;
-    int index=0;
-    int valueIndex=0;
+    unsigned int index=0;
+    unsigned int valueIndex=0;
+    unsigned int actualLength = 0;
     if(value)
     {
         if(((length%2)==0)&&(length>0))
         {
-            result = (char * ) malloc(length/2);
-            if(result)
+            actualLength = length / 2;
+            result = (char * ) malloc(actualLength+1);
+            if(result!=NULL)
             {
-                for(index=0;index<length;index+=2)
+                for(index=0;index< length;index+=2)
                 {
                     theChar=0;
                     if(
@@ -1158,6 +1296,13 @@ const char * FromHex(const char * value, unsigned int length, unsigned int * res
                             result[valueIndex] += (theChar-0x30);
                         }
                         valueIndex++;
+                        if (valueIndex >= actualLength)
+                        {
+                            
+                            // array past bounds
+                            DebugFormat("Index Past Bounds: [%i] [%i]\r\n",valueIndex,actualLength);
+                            break;
+                        }
                     }
                     else
                     {
@@ -1167,7 +1312,7 @@ const char * FromHex(const char * value, unsigned int length, unsigned int * res
                         return NULL;
                     }
                 }
-                result[valueIndex] ='\0';
+                result[actualLength] ='\0';
                 if(resultLength)
                 {
                     *resultLength = (length/2);
@@ -1194,12 +1339,12 @@ const char * FromHexSZ(const char * value, unsigned int * resultLength)
 {
     char * result=NULL;
     char theChar=0;
-    int index=0;
-    int length = 0 ;
-    int valueIndex=0;
+    unsigned int index=0;
+    unsigned int length = 0 ;
+    unsigned int valueIndex=0;
     if(value)
     {
-        length = strlen(value);
+        length = strlength(value);
         if(((length%2)==0)&&(length>0))
         {
             
@@ -1249,7 +1394,7 @@ const char * FromHexSZ(const char * value, unsigned int * resultLength)
                         return NULL;
                     }
                 }
-                result[valueIndex] ='\0';
+                result[(length / 2)] ='\0';
                 if(resultLength)
                 {
                     *resultLength = (length/2);
@@ -1332,6 +1477,42 @@ void FreeCryptoResult(const void * object)
     {
         free((void*)object);
     }
+}
+
+// non optimized strlength
+unsigned int strlength(const char* message)
+{
+    int length = 0;
+    if (message != NULL)
+    {
+        while (*message != '\0')
+        {
+            message++;
+            if (length > INT_MAX - 1)
+            {
+                return OVERFLOW_LENGTH_VALUE;
+            }
+            length++;
+        }
+    }
+    else
+    { 
+        return INVALID_LENGTH_VALUE;
+    }
+    return length;
+}
+
+char* strduplicate(const char* message)
+{
+    char* duplicate = NULL;
+    unsigned int length = 0;
+    if (message != NULL)
+    {
+        length = strlength(message);
+        duplicate = (char * )malloc(length + 1);
+        return duplicate;
+    }
+    return duplicate;
 }
 
 #ifdef __cplusplus

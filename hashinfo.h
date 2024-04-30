@@ -314,22 +314,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_1), strlen(HASH_INFO_FUNCTION_NAME_1), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_1), strlength(HASH_INFO_FUNCTION_NAME_1), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_1), strlen(HASH_INFO_COLUMN_TYPE_1), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_1), strlength(HASH_INFO_COLUMN_TYPE_1), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_1), strlen(HASH_INFO_COLUMN_SIGNATURE_1), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_1), strlength(HASH_INFO_COLUMN_SIGNATURE_1), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_1), strlen(HASH_INFO_FUNCTION_VERSION_1), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_1), strlength(HASH_INFO_FUNCTION_VERSION_1), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_1), strlen(HASH_INFO_FUNCTION_DATE_1), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_1), strlength(HASH_INFO_FUNCTION_DATE_1), free);
         break;
     }
   }
@@ -337,23 +337,23 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_2), strlen(HASH_INFO_FUNCTION_NAME_2), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_2), strlength(HASH_INFO_FUNCTION_NAME_2), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_2), strlen(HASH_INFO_COLUMN_TYPE_2), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_2), strlength(HASH_INFO_COLUMN_TYPE_2), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_2), strlen(HASH_INFO_COLUMN_SIGNATURE_2), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_2), strlength(HASH_INFO_COLUMN_SIGNATURE_2), free);
         break;
 
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_2), strlen(HASH_INFO_FUNCTION_VERSION_2), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_2), strlength(HASH_INFO_FUNCTION_VERSION_2), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_2), strlen(HASH_INFO_FUNCTION_DATE_2), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_2), strlength(HASH_INFO_FUNCTION_DATE_2), free);
         break;
     }
   }
@@ -361,22 +361,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_3), strlen(HASH_INFO_FUNCTION_NAME_3), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_3), strlength(HASH_INFO_FUNCTION_NAME_3), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_3), strlen(HASH_INFO_COLUMN_TYPE_3), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_3), strlength(HASH_INFO_COLUMN_TYPE_3), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_3), strlen(HASH_INFO_COLUMN_SIGNATURE_3), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_3), strlength(HASH_INFO_COLUMN_SIGNATURE_3), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_3), strlen(HASH_INFO_FUNCTION_VERSION_3), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_3), strlength(HASH_INFO_FUNCTION_VERSION_3), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_3), strlen(HASH_INFO_FUNCTION_DATE_3), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_3), strlength(HASH_INFO_FUNCTION_DATE_3), free);
         break;
     }
   }
@@ -384,22 +384,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_4), strlen(HASH_INFO_FUNCTION_NAME_4), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_4), strlength(HASH_INFO_FUNCTION_NAME_4), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_4), strlen(HASH_INFO_COLUMN_TYPE_4), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_4), strlength(HASH_INFO_COLUMN_TYPE_4), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_4), strlen(HASH_INFO_COLUMN_SIGNATURE_4), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_4), strlength(HASH_INFO_COLUMN_SIGNATURE_4), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_4), strlen(HASH_INFO_FUNCTION_VERSION_4), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_4), strlength(HASH_INFO_FUNCTION_VERSION_4), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_4), strlen(HASH_INFO_FUNCTION_DATE_4), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_4), strlength(HASH_INFO_FUNCTION_DATE_4), free);
         break;
     }
   }
@@ -407,22 +407,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_5), strlen(HASH_INFO_FUNCTION_NAME_5), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_5), strlength(HASH_INFO_FUNCTION_NAME_5), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_5), strlen(HASH_INFO_COLUMN_TYPE_5), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_5), strlength(HASH_INFO_COLUMN_TYPE_5), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_5), strlen(HASH_INFO_COLUMN_SIGNATURE_5), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_5), strlength(HASH_INFO_COLUMN_SIGNATURE_5), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_5), strlen(HASH_INFO_FUNCTION_VERSION_5), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_5), strlength(HASH_INFO_FUNCTION_VERSION_5), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_5), strlen(HASH_INFO_FUNCTION_DATE_5), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_5), strlength(HASH_INFO_FUNCTION_DATE_5), free);
         break;
     }
   }
@@ -430,22 +430,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_6), strlen(HASH_INFO_FUNCTION_NAME_6), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_6), strlength(HASH_INFO_FUNCTION_NAME_6), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_6), strlen(HASH_INFO_COLUMN_TYPE_6), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_6), strlength(HASH_INFO_COLUMN_TYPE_6), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_6), strlen(HASH_INFO_COLUMN_SIGNATURE_6), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_6), strlength(HASH_INFO_COLUMN_SIGNATURE_6), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_6), strlen(HASH_INFO_FUNCTION_VERSION_6), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_6), strlength(HASH_INFO_FUNCTION_VERSION_6), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_6), strlen(HASH_INFO_FUNCTION_DATE_6), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_6), strlength(HASH_INFO_FUNCTION_DATE_6), free);
         break;
     }
   }
@@ -453,22 +453,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_7), strlen(HASH_INFO_FUNCTION_NAME_7), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_7), strlength(HASH_INFO_FUNCTION_NAME_7), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_7), strlen(HASH_INFO_COLUMN_TYPE_7), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_7), strlength(HASH_INFO_COLUMN_TYPE_7), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_7), strlen(HASH_INFO_COLUMN_SIGNATURE_7), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_7), strlength(HASH_INFO_COLUMN_SIGNATURE_7), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_7), strlen(HASH_INFO_FUNCTION_VERSION_7), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_7), strlength(HASH_INFO_FUNCTION_VERSION_7), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_7), strlen(HASH_INFO_FUNCTION_DATE_7), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_7), strlength(HASH_INFO_FUNCTION_DATE_7), free);
         break;
     }
   }
@@ -476,22 +476,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_8), strlen(HASH_INFO_FUNCTION_NAME_8), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_8), strlength(HASH_INFO_FUNCTION_NAME_8), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_8), strlen(HASH_INFO_COLUMN_TYPE_8), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_8), strlength(HASH_INFO_COLUMN_TYPE_8), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_9), strlen(HASH_INFO_COLUMN_SIGNATURE_8), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_9), strlength(HASH_INFO_COLUMN_SIGNATURE_8), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_8), strlen(HASH_INFO_FUNCTION_VERSION_8), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_8), strlength(HASH_INFO_FUNCTION_VERSION_8), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_8), strlen(HASH_INFO_FUNCTION_DATE_8), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_8), strlength(HASH_INFO_FUNCTION_DATE_8), free);
         break;
     }
   }
@@ -499,22 +499,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_9), strlen(HASH_INFO_FUNCTION_NAME_9), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_9), strlength(HASH_INFO_FUNCTION_NAME_9), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_9), strlen(HASH_INFO_COLUMN_TYPE_9), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_9), strlength(HASH_INFO_COLUMN_TYPE_9), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_9), strlen(HASH_INFO_COLUMN_SIGNATURE_9), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_9), strlength(HASH_INFO_COLUMN_SIGNATURE_9), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_9), strlen(HASH_INFO_FUNCTION_VERSION_9), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_9), strlength(HASH_INFO_FUNCTION_VERSION_9), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_9), strlen(HASH_INFO_FUNCTION_DATE_9), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_9), strlength(HASH_INFO_FUNCTION_DATE_9), free);
         break;
     }
   }
@@ -522,22 +522,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_10), strlen(HASH_INFO_FUNCTION_NAME_10), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_10), strlength(HASH_INFO_FUNCTION_NAME_10), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_10), strlen(HASH_INFO_COLUMN_TYPE_10), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_10), strlength(HASH_INFO_COLUMN_TYPE_10), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_10), strlen(HASH_INFO_COLUMN_SIGNATURE_10), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_10), strlength(HASH_INFO_COLUMN_SIGNATURE_10), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_10), strlen(HASH_INFO_FUNCTION_VERSION_10), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_10), strlength(HASH_INFO_FUNCTION_VERSION_10), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_10), strlen(HASH_INFO_FUNCTION_DATE_10), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_10), strlength(HASH_INFO_FUNCTION_DATE_10), free);
         break;
     }
   }
@@ -545,22 +545,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_11), strlen(HASH_INFO_FUNCTION_NAME_11), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_11), strlength(HASH_INFO_FUNCTION_NAME_11), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_11), strlen(HASH_INFO_COLUMN_TYPE_11), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_11), strlength(HASH_INFO_COLUMN_TYPE_11), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_11), strlen(HASH_INFO_COLUMN_SIGNATURE_11), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_11), strlength(HASH_INFO_COLUMN_SIGNATURE_11), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_11), strlen(HASH_INFO_FUNCTION_VERSION_11), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_11), strlength(HASH_INFO_FUNCTION_VERSION_11), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_11), strlen(HASH_INFO_FUNCTION_DATE_11), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_11), strlength(HASH_INFO_FUNCTION_DATE_11), free);
         break;
     }
   }
@@ -568,22 +568,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_12), strlen(HASH_INFO_FUNCTION_NAME_12), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_12), strlength(HASH_INFO_FUNCTION_NAME_12), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_12), strlen(HASH_INFO_COLUMN_TYPE_12), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_12), strlength(HASH_INFO_COLUMN_TYPE_12), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_12), strlen(HASH_INFO_COLUMN_SIGNATURE_12), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_12), strlength(HASH_INFO_COLUMN_SIGNATURE_12), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_12), strlen(HASH_INFO_FUNCTION_VERSION_12), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_12), strlength(HASH_INFO_FUNCTION_VERSION_12), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_12), strlen(HASH_INFO_FUNCTION_DATE_12), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_12), strlength(HASH_INFO_FUNCTION_DATE_12), free);
         break;
     }
   }
@@ -591,22 +591,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_13), strlen(HASH_INFO_FUNCTION_NAME_13), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_13), strlength(HASH_INFO_FUNCTION_NAME_13), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_13), strlen(HASH_INFO_COLUMN_TYPE_13), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_13), strlength(HASH_INFO_COLUMN_TYPE_13), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_13), strlen(HASH_INFO_COLUMN_SIGNATURE_13), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_13), strlength(HASH_INFO_COLUMN_SIGNATURE_13), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_13), strlen(HASH_INFO_FUNCTION_VERSION_13), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_13), strlength(HASH_INFO_FUNCTION_VERSION_13), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_13), strlen(HASH_INFO_FUNCTION_DATE_13), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_13), strlength(HASH_INFO_FUNCTION_DATE_13), free);
         break;
     }
   }
@@ -614,22 +614,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_14), strlen(HASH_INFO_FUNCTION_NAME_14), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_14), strlength(HASH_INFO_FUNCTION_NAME_14), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_14), strlen(HASH_INFO_COLUMN_TYPE_14), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_14), strlength(HASH_INFO_COLUMN_TYPE_14), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_14), strlen(HASH_INFO_COLUMN_SIGNATURE_14), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_14), strlength(HASH_INFO_COLUMN_SIGNATURE_14), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_14), strlen(HASH_INFO_FUNCTION_VERSION_14), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_14), strlength(HASH_INFO_FUNCTION_VERSION_14), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_14), strlen(HASH_INFO_FUNCTION_DATE_14), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_14), strlength(HASH_INFO_FUNCTION_DATE_14), free);
         break;
     }
   }
@@ -637,22 +637,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_15), strlen(HASH_INFO_FUNCTION_NAME_15), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_15), strlength(HASH_INFO_FUNCTION_NAME_15), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_15), strlen(HASH_INFO_COLUMN_TYPE_15), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_15), strlength(HASH_INFO_COLUMN_TYPE_15), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_15), strlen(HASH_INFO_COLUMN_SIGNATURE_15), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_15), strlength(HASH_INFO_COLUMN_SIGNATURE_15), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_15), strlen(HASH_INFO_FUNCTION_VERSION_15), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_15), strlength(HASH_INFO_FUNCTION_VERSION_15), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_15), strlen(HASH_INFO_FUNCTION_DATE_15), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_15), strlength(HASH_INFO_FUNCTION_DATE_15), free);
         break;
     }
   }
@@ -660,22 +660,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_16), strlen(HASH_INFO_FUNCTION_NAME_16), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_16), strlength(HASH_INFO_FUNCTION_NAME_16), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_16), strlen(HASH_INFO_COLUMN_TYPE_16), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_16), strlength(HASH_INFO_COLUMN_TYPE_16), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_16), strlen(HASH_INFO_COLUMN_SIGNATURE_16), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_16), strlength(HASH_INFO_COLUMN_SIGNATURE_16), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_16), strlen(HASH_INFO_FUNCTION_VERSION_16), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_16), strlength(HASH_INFO_FUNCTION_VERSION_16), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_16), strlen(HASH_INFO_FUNCTION_DATE_16), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_16), strlength(HASH_INFO_FUNCTION_DATE_16), free);
         break;
     }
   }
@@ -683,22 +683,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_17), strlen(HASH_INFO_FUNCTION_NAME_17), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_17), strlength(HASH_INFO_FUNCTION_NAME_17), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_17), strlen(HASH_INFO_COLUMN_TYPE_17), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_17), strlength(HASH_INFO_COLUMN_TYPE_17), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_17), strlen(HASH_INFO_COLUMN_SIGNATURE_17), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_17), strlength(HASH_INFO_COLUMN_SIGNATURE_17), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_17), strlen(HASH_INFO_FUNCTION_VERSION_17), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_17), strlength(HASH_INFO_FUNCTION_VERSION_17), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_17), strlen(HASH_INFO_FUNCTION_DATE_17), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_17), strlength(HASH_INFO_FUNCTION_DATE_17), free);
         break;
     }
   }
@@ -706,22 +706,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_18), strlen(HASH_INFO_FUNCTION_NAME_18), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_18), strlength(HASH_INFO_FUNCTION_NAME_18), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_18), strlen(HASH_INFO_COLUMN_TYPE_18), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_18), strlength(HASH_INFO_COLUMN_TYPE_18), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_18), strlen(HASH_INFO_COLUMN_SIGNATURE_18), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_18), strlength(HASH_INFO_COLUMN_SIGNATURE_18), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_18), strlen(HASH_INFO_FUNCTION_VERSION_18), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_18), strlength(HASH_INFO_FUNCTION_VERSION_18), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_18), strlen(HASH_INFO_FUNCTION_DATE_18), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_18), strlength(HASH_INFO_FUNCTION_DATE_18), free);
         break;
     }
   }
@@ -729,22 +729,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_19), strlen(HASH_INFO_FUNCTION_NAME_19), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_19), strlength(HASH_INFO_FUNCTION_NAME_19), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_19), strlen(HASH_INFO_COLUMN_TYPE_19), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_19), strlength(HASH_INFO_COLUMN_TYPE_19), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_19), strlen(HASH_INFO_COLUMN_SIGNATURE_19), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_19), strlength(HASH_INFO_COLUMN_SIGNATURE_19), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_19), strlen(HASH_INFO_FUNCTION_VERSION_19), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_19), strlength(HASH_INFO_FUNCTION_VERSION_19), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_19), strlen(HASH_INFO_FUNCTION_DATE_19), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_19), strlength(HASH_INFO_FUNCTION_DATE_19), free);
         break;
     }
   }
@@ -752,22 +752,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_20), strlen(HASH_INFO_FUNCTION_NAME_20), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_20), strlength(HASH_INFO_FUNCTION_NAME_20), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_20), strlen(HASH_INFO_COLUMN_TYPE_20), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_20), strlength(HASH_INFO_COLUMN_TYPE_20), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_20), strlen(HASH_INFO_COLUMN_SIGNATURE_20), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_20), strlength(HASH_INFO_COLUMN_SIGNATURE_20), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_20), strlen(HASH_INFO_FUNCTION_VERSION_20), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_20), strlength(HASH_INFO_FUNCTION_VERSION_20), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_20), strlen(HASH_INFO_FUNCTION_DATE_20), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_20), strlength(HASH_INFO_FUNCTION_DATE_20), free);
         break;
     }
   }
@@ -775,22 +775,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_21), strlen(HASH_INFO_FUNCTION_NAME_21), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_21), strlength(HASH_INFO_FUNCTION_NAME_21), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_21), strlen(HASH_INFO_COLUMN_TYPE_21), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_21), strlength(HASH_INFO_COLUMN_TYPE_21), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_21), strlen(HASH_INFO_COLUMN_SIGNATURE_21), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_21), strlength(HASH_INFO_COLUMN_SIGNATURE_21), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_21), strlen(HASH_INFO_FUNCTION_VERSION_21), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_21), strlength(HASH_INFO_FUNCTION_VERSION_21), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_21), strlen(HASH_INFO_FUNCTION_DATE_21), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_21), strlength(HASH_INFO_FUNCTION_DATE_21), free);
         break;
     }
   }
@@ -798,22 +798,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_22), strlen(HASH_INFO_FUNCTION_NAME_22), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_22), strlength(HASH_INFO_FUNCTION_NAME_22), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_22), strlen(HASH_INFO_COLUMN_TYPE_22), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_22), strlength(HASH_INFO_COLUMN_TYPE_22), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_22), strlen(HASH_INFO_COLUMN_SIGNATURE_22), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_22), strlength(HASH_INFO_COLUMN_SIGNATURE_22), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_22), strlen(HASH_INFO_FUNCTION_VERSION_22), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_22), strlength(HASH_INFO_FUNCTION_VERSION_22), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_22), strlen(HASH_INFO_FUNCTION_DATE_22), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_22), strlength(HASH_INFO_FUNCTION_DATE_22), free);
         break;
     }
   }
@@ -821,22 +821,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_23), strlen(HASH_INFO_FUNCTION_NAME_23), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_23), strlength(HASH_INFO_FUNCTION_NAME_23), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_23), strlen(HASH_INFO_COLUMN_TYPE_23), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_23), strlength(HASH_INFO_COLUMN_TYPE_23), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_24), strlen(HASH_INFO_COLUMN_SIGNATURE_24), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_24), strlength(HASH_INFO_COLUMN_SIGNATURE_24), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_23), strlen(HASH_INFO_FUNCTION_VERSION_23), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_23), strlength(HASH_INFO_FUNCTION_VERSION_23), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_23), strlen(HASH_INFO_FUNCTION_DATE_23), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_23), strlength(HASH_INFO_FUNCTION_DATE_23), free);
         break;
     }
   }
@@ -844,19 +844,19 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_24), strlen(HASH_INFO_FUNCTION_NAME_24), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_24), strlength(HASH_INFO_FUNCTION_NAME_24), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_24), strlen(HASH_INFO_COLUMN_TYPE_24), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_24), strlength(HASH_INFO_COLUMN_TYPE_24), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_24), strlen(HASH_INFO_FUNCTION_VERSION_24), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_24), strlength(HASH_INFO_FUNCTION_VERSION_24), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_24), strlen(HASH_INFO_FUNCTION_DATE_24), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_24), strlength(HASH_INFO_FUNCTION_DATE_24), free);
         break;
     }
   }
@@ -864,22 +864,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_25), strlen(HASH_INFO_FUNCTION_NAME_25), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_25), strlength(HASH_INFO_FUNCTION_NAME_25), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_25), strlen(HASH_INFO_COLUMN_TYPE_25), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_25), strlength(HASH_INFO_COLUMN_TYPE_25), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_25), strlen(HASH_INFO_COLUMN_SIGNATURE_25), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_25), strlength(HASH_INFO_COLUMN_SIGNATURE_25), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_25), strlen(HASH_INFO_FUNCTION_VERSION_25), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_25), strlength(HASH_INFO_FUNCTION_VERSION_25), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_25), strlen(HASH_INFO_FUNCTION_DATE_25), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_25), strlength(HASH_INFO_FUNCTION_DATE_25), free);
         break;
     }
   }
@@ -887,22 +887,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_26), strlen(HASH_INFO_FUNCTION_NAME_26), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_26), strlength(HASH_INFO_FUNCTION_NAME_26), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_26), strlen(HASH_INFO_COLUMN_TYPE_26), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_26), strlength(HASH_INFO_COLUMN_TYPE_26), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_26), strlen(HASH_INFO_COLUMN_SIGNATURE_26), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_26), strlength(HASH_INFO_COLUMN_SIGNATURE_26), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_26), strlen(HASH_INFO_FUNCTION_VERSION_26), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_26), strlength(HASH_INFO_FUNCTION_VERSION_26), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_26), strlen(HASH_INFO_FUNCTION_DATE_26), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_26), strlength(HASH_INFO_FUNCTION_DATE_26), free);
         break;
     }
   }
@@ -910,22 +910,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_27), strlen(HASH_INFO_FUNCTION_NAME_27), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_27), strlength(HASH_INFO_FUNCTION_NAME_27), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_27), strlen(HASH_INFO_COLUMN_TYPE_27), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_27), strlength(HASH_INFO_COLUMN_TYPE_27), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_27), strlen(HASH_INFO_COLUMN_SIGNATURE_27), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_27), strlength(HASH_INFO_COLUMN_SIGNATURE_27), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_27), strlen(HASH_INFO_FUNCTION_VERSION_27), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_27), strlength(HASH_INFO_FUNCTION_VERSION_27), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_27), strlen(HASH_INFO_FUNCTION_DATE_27), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_27), strlength(HASH_INFO_FUNCTION_DATE_27), free);
         break;
     }
   }
@@ -933,22 +933,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_28), strlen(HASH_INFO_FUNCTION_NAME_28), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_28), strlength(HASH_INFO_FUNCTION_NAME_28), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_28), strlen(HASH_INFO_COLUMN_TYPE_28), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_28), strlength(HASH_INFO_COLUMN_TYPE_28), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_28), strlen(HASH_INFO_COLUMN_SIGNATURE_28), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_28), strlength(HASH_INFO_COLUMN_SIGNATURE_28), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_28), strlen(HASH_INFO_FUNCTION_VERSION_28), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_28), strlength(HASH_INFO_FUNCTION_VERSION_28), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_28), strlen(HASH_INFO_FUNCTION_DATE_28), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_28), strlength(HASH_INFO_FUNCTION_DATE_28), free);
         break;
     }
   }
@@ -956,22 +956,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_29), strlen(HASH_INFO_FUNCTION_NAME_29), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_29), strlength(HASH_INFO_FUNCTION_NAME_29), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_29), strlen(HASH_INFO_COLUMN_TYPE_29), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_29), strlength(HASH_INFO_COLUMN_TYPE_29), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_29), strlen(HASH_INFO_COLUMN_SIGNATURE_29), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_29), strlength(HASH_INFO_COLUMN_SIGNATURE_29), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_29), strlen(HASH_INFO_FUNCTION_VERSION_29), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_29), strlength(HASH_INFO_FUNCTION_VERSION_29), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_29), strlen(HASH_INFO_FUNCTION_DATE_29), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_29), strlength(HASH_INFO_FUNCTION_DATE_29), free);
         break;
     }
   }
@@ -979,22 +979,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_30), strlen(HASH_INFO_FUNCTION_NAME_30), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_30), strlength(HASH_INFO_FUNCTION_NAME_30), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_30), strlen(HASH_INFO_COLUMN_TYPE_30), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_30), strlength(HASH_INFO_COLUMN_TYPE_30), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_30), strlen(HASH_INFO_COLUMN_SIGNATURE_30), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_30), strlength(HASH_INFO_COLUMN_SIGNATURE_30), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_30), strlen(HASH_INFO_FUNCTION_VERSION_30), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_30), strlength(HASH_INFO_FUNCTION_VERSION_30), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_30), strlen(HASH_INFO_FUNCTION_DATE_30), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_30), strlength(HASH_INFO_FUNCTION_DATE_30), free);
         break;
     }
   }
@@ -1002,22 +1002,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_31), strlen(HASH_INFO_FUNCTION_NAME_31), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_31), strlength(HASH_INFO_FUNCTION_NAME_31), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_31), strlen(HASH_INFO_COLUMN_TYPE_31), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_31), strlength(HASH_INFO_COLUMN_TYPE_31), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_31), strlen(HASH_INFO_COLUMN_SIGNATURE_31), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_31), strlength(HASH_INFO_COLUMN_SIGNATURE_31), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_31), strlen(HASH_INFO_FUNCTION_VERSION_31), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_31), strlength(HASH_INFO_FUNCTION_VERSION_31), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_31), strlen(HASH_INFO_FUNCTION_DATE_31), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_31), strlength(HASH_INFO_FUNCTION_DATE_31), free);
         break;
     }
   }
@@ -1025,22 +1025,22 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_32), strlen(HASH_INFO_FUNCTION_NAME_32), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_32), strlength(HASH_INFO_FUNCTION_NAME_32), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_32), strlen(HASH_INFO_COLUMN_TYPE_32), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_32), strlength(HASH_INFO_COLUMN_TYPE_32), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_32), strlen(HASH_INFO_COLUMN_SIGNATURE_32), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_32), strlength(HASH_INFO_COLUMN_SIGNATURE_32), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_32), strlen(HASH_INFO_FUNCTION_VERSION_32), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_32), strlength(HASH_INFO_FUNCTION_VERSION_32), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_32), strlen(HASH_INFO_FUNCTION_DATE_32), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_32), strlength(HASH_INFO_FUNCTION_DATE_32), free);
         break;
     }
   }
@@ -1048,28 +1048,28 @@ static int hash_info_Column(
   {
     switch( i ){
         case HASH_INFO_COLUMN_MODULE_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_MODULE_NAME), strlen(HASH_INFO_MODULE_NAME), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
         break;
         case HASH_INFO_COLUMN_FUNCTION_NAME:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_NAME_33), strlen(HASH_INFO_FUNCTION_NAME_33), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_33), strlength(HASH_INFO_FUNCTION_NAME_33), free);
         break;
         case HASH_INFO_COLUMN_TYPE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_TYPE_33), strlen(HASH_INFO_COLUMN_TYPE_33), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_33), strlength(HASH_INFO_COLUMN_TYPE_33), free);
         break;
         case HASH_INFO_COLUMN_SIGNATURE:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_COLUMN_SIGNATURE_33), strlen(HASH_INFO_COLUMN_SIGNATURE_33), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_33), strlength(HASH_INFO_COLUMN_SIGNATURE_33), free);
         break;
         case HASH_INFO_COLUMN_VERSION:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_VERSION_33), strlen(HASH_INFO_FUNCTION_VERSION_33), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_33), strlength(HASH_INFO_FUNCTION_VERSION_33), free);
         break;
         case HASH_INFO_COLUMN_DATE_CREATED:
-            sqlite3_result_text(ctx, strdup(HASH_INFO_FUNCTION_DATE_33), strlen(HASH_INFO_FUNCTION_DATE_33), free);
+            sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_33), strlength(HASH_INFO_FUNCTION_DATE_33), free);
         break;
     }
   }
   else
   {
-    sqlite3_result_error(ctx,"Invalid Cursor Position", strlen("Invalid Cursor Position"));
+    sqlite3_result_error(ctx,"Invalid Cursor Position", strlength("Invalid Cursor Position"));
     return -1;
   }
   return SQLITE_OK;

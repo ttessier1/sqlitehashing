@@ -122,10 +122,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_1), strlen(HASH_SIZE_FUNCTION_NAME_1), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_1), strlength(HASH_SIZE_FUNCTION_NAME_1), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_md2));
@@ -136,10 +136,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_2), strlen(HASH_SIZE_FUNCTION_NAME_2), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_2), strlength(HASH_SIZE_FUNCTION_NAME_2), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_md4));
@@ -150,10 +150,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_3), strlen(HASH_SIZE_FUNCTION_NAME_3), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_3), strlength(HASH_SIZE_FUNCTION_NAME_3), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_md5));
@@ -164,10 +164,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_4), strlen(HASH_SIZE_FUNCTION_NAME_4), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_4), strlength(HASH_SIZE_FUNCTION_NAME_4), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_sha1));
@@ -178,10 +178,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_5), strlen(HASH_SIZE_FUNCTION_NAME_5), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_5), strlength(HASH_SIZE_FUNCTION_NAME_5), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_sha224));
@@ -192,10 +192,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_6), strlen(HASH_SIZE_FUNCTION_NAME_6), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_6), strlength(HASH_SIZE_FUNCTION_NAME_6), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_sha256));
@@ -206,10 +206,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_7), strlen(HASH_SIZE_FUNCTION_NAME_7), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_7), strlength(HASH_SIZE_FUNCTION_NAME_7), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_sha384));
@@ -220,10 +220,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_8), strlen(HASH_SIZE_FUNCTION_NAME_8), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_8), strlength(HASH_SIZE_FUNCTION_NAME_8), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_sha512));
@@ -234,10 +234,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_9), strlen(HASH_SIZE_FUNCTION_NAME_9), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_9), strlength(HASH_SIZE_FUNCTION_NAME_9), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_sha3_224));
@@ -248,10 +248,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_10), strlen(HASH_SIZE_FUNCTION_NAME_10), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_10), strlength(HASH_SIZE_FUNCTION_NAME_10), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_sha3_256));
@@ -262,10 +262,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_11), strlen(HASH_SIZE_FUNCTION_NAME_11), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_11), strlength(HASH_SIZE_FUNCTION_NAME_11), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_sha3_384));
@@ -276,10 +276,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_12), strlen(HASH_SIZE_FUNCTION_NAME_12), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_12), strlength(HASH_SIZE_FUNCTION_NAME_12), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_sha3_512));
@@ -290,10 +290,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_13), strlen(HASH_SIZE_FUNCTION_NAME_13), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_13), strlength(HASH_SIZE_FUNCTION_NAME_13), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_ripemd_128));
@@ -304,10 +304,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_14), strlen(HASH_SIZE_FUNCTION_NAME_14), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_14), strlength(HASH_SIZE_FUNCTION_NAME_14), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_ripemd_160));
@@ -318,10 +318,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_15), strlen(HASH_SIZE_FUNCTION_NAME_15), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_15), strlength(HASH_SIZE_FUNCTION_NAME_15), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_ripemd_256));
@@ -332,10 +332,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_16), strlen(HASH_SIZE_FUNCTION_NAME_16), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_16), strlength(HASH_SIZE_FUNCTION_NAME_16), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_ripemd_320));
@@ -346,10 +346,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_17), strlen(HASH_SIZE_FUNCTION_NAME_17), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_17), strlength(HASH_SIZE_FUNCTION_NAME_17), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_blake2b));
@@ -360,10 +360,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_18), strlen(HASH_SIZE_FUNCTION_NAME_18), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_18), strlength(HASH_SIZE_FUNCTION_NAME_18), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_blake2s));
@@ -374,10 +374,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_19), strlen(HASH_SIZE_FUNCTION_NAME_19), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_19), strlength(HASH_SIZE_FUNCTION_NAME_19), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_tiger));
@@ -388,10 +388,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_20), strlen(HASH_SIZE_FUNCTION_NAME_20), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_20), strlength(HASH_SIZE_FUNCTION_NAME_20), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_shake_128));
@@ -402,10 +402,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_21), strlen(HASH_SIZE_FUNCTION_NAME_21), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_21), strlength(HASH_SIZE_FUNCTION_NAME_21), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_shake_256));
@@ -416,10 +416,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_22), strlen(HASH_SIZE_FUNCTION_NAME_22), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_22), strlength(HASH_SIZE_FUNCTION_NAME_22), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_sip_hash64));
@@ -430,10 +430,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_23), strlen(HASH_SIZE_FUNCTION_NAME_23), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_23), strlength(HASH_SIZE_FUNCTION_NAME_23), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_sip_hash128));
@@ -444,10 +444,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_24), strlen(HASH_SIZE_FUNCTION_NAME_24), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_24), strlength(HASH_SIZE_FUNCTION_NAME_24), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_lsh_224));
@@ -458,10 +458,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_25), strlen(HASH_SIZE_FUNCTION_NAME_25), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_25), strlength(HASH_SIZE_FUNCTION_NAME_25), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_lsh_256));
@@ -472,10 +472,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_26), strlen(HASH_SIZE_FUNCTION_NAME_26), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_26), strlength(HASH_SIZE_FUNCTION_NAME_26), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_lsh_384));
@@ -486,10 +486,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_27), strlen(HASH_SIZE_FUNCTION_NAME_27), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_27), strlength(HASH_SIZE_FUNCTION_NAME_27), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_lsh_512));
@@ -500,10 +500,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_28), strlen(HASH_SIZE_FUNCTION_NAME_28), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_28), strlength(HASH_SIZE_FUNCTION_NAME_28), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_sm3));
@@ -514,10 +514,10 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     {
         switch( i ){
             case HASH_SIZE_COLUMN_MODULE_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_MODULE_NAME), strlen(HASH_SIZE_MODULE_NAME), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
             break;
             case HASH_SIZE_COLUMN_FUNCTION_NAME:
-                sqlite3_result_text(ctx, strdup(HASH_SIZE_FUNCTION_NAME_29), strlen(HASH_SIZE_FUNCTION_NAME_29), free);
+                sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_29), strlength(HASH_SIZE_FUNCTION_NAME_29), free);
             break;
             case HASH_SIZE_COLUMN_HASH_SIZE:
                 sqlite3_result_int(ctx,GetDigestSize(algo_whirlpool));
@@ -526,7 +526,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
     }
     else
     {
-        sqlite3_result_error(ctx,"Invalid Cursor Position", strlen("Invalid Cursor Position"));
+        sqlite3_result_error(ctx,"Invalid Cursor Position", strlength("Invalid Cursor Position"));
         return -1;
     }
     return SQLITE_OK;
