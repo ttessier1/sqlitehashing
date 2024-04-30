@@ -259,30 +259,47 @@ unsigned int GetDigestSize(unsigned int algorithms)
                 return Whirlpool::DIGESTSIZE;
             break;
 #endif
+#if defined(__CMAC__)|| defined(__ALL__)
             case algo_hmac_cmac:
                 return AES::BLOCKSIZE;
             break;
+#endif
+#if defined(__CBCMAC__)|| defined(__ALL__)
             case algo_hmac_cbc_mac:
                 return AES::BLOCKSIZE;
                 break;
+#endif
+#if defined(__DMAC__)|| defined(__ALL__)
             case algo_hmac_dmac:
                 return AES::BLOCKSIZE;
                 break;
+#endif
+#if defined(__GMAC__)|| defined(__ALL__)
             case algo_hmac_gmac:
                 return AES::BLOCKSIZE;
                 break;
+#endif
+#if defined(__HMAC__)|| defined(__ALL__)
             case algo_hmac_hmac:
                 return SHA256::DIGESTSIZE;
                 break;
+
+#endif
+#if defined(__POLY1305__)|| defined(__ALL__)
             case algo_hmac_poly_1305:
                 return AES::BLOCKSIZE;
                 break;
+#endif
+#if defined(__TWOTRACK__)|| defined(__ALL__)
             case algo_hmac_two_track:
                 return TTMAC::DIGESTSIZE;
                     break;
+#endif
+#if defined(__VMAC__)|| defined(__ALL__)
             case algo_hmac_vmac:
                 return AES::BLOCKSIZE;
                 break;
+#endif
             default :
                 return 0;
         }
@@ -677,6 +694,7 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 maxLength = Whirlpool::DIGESTSIZE*2 ;
             break;
 #endif
+#if defined(__CMAC__)|| defined(__ALL__)
             case algo_hmac_cmac:
                 if(length!=AES::BLOCKSIZE)
                 {
@@ -685,6 +703,8 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 }
                 maxLength = AES::BLOCKSIZE*2 ;
             break;
+#endif
+#if defined(__CBCMAC__)|| defined(__ALL__)
             case algo_hmac_cbc_mac:
                 if (length != AES::BLOCKSIZE)
                 {
@@ -693,6 +713,8 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 }
                 maxLength = AES::BLOCKSIZE * 2;
                 break;
+#endif
+#if defined(__DMAC__)|| defined(__ALL__)
             case algo_hmac_dmac:
                 if (length != AES::BLOCKSIZE)
                 {
@@ -701,6 +723,8 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 }
                 maxLength = AES::BLOCKSIZE * 2;
                 break;
+#endif
+#if defined(__GMAC__)|| defined(__ALL__)
             case algo_hmac_gmac:
                 if (length != AES::BLOCKSIZE)
                 {
@@ -709,6 +733,8 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 }
                 maxLength = AES::BLOCKSIZE * 2;
                 break;
+#endif
+#if defined(__HMAC__)|| defined(__ALL__)
             case algo_hmac_hmac:
                 if (length != SHA256::DIGESTSIZE)
                 {
@@ -717,6 +743,8 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 }
                 maxLength = SHA256::DIGESTSIZE * 2;
                 break;
+#endif
+#if defined(__POLY1305__)|| defined(__ALL__)
             case algo_hmac_poly_1305:
                 if (length != AES::BLOCKSIZE)
                 {
@@ -725,6 +753,8 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 }
                 maxLength = AES::BLOCKSIZE * 2;
                 break;
+#endif
+#if defined(__TWOTRACK__)|| defined(__ALL__)
             case algo_hmac_two_track:
                 if (length != TTMAC::DIGESTSIZE)
                 {
@@ -733,6 +763,8 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 }
                 maxLength = TTMAC::DIGESTSIZE * 2;
                 break;
+#endif
+#if defined(__VMAC__)|| defined(__ALL__)
             case algo_hmac_vmac:
                 if (length != AES::BLOCKSIZE)
                 {
@@ -741,6 +773,7 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 }
                 maxLength = AES::BLOCKSIZE * 2;
                 break;
+#endif
             default :
                 return NULL;
         }
@@ -1154,6 +1187,7 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 maxLength = Whirlpool::DIGESTSIZE*2 ;
             break;
 #endif
+#if defined(__CMAC__)|| defined(__ALL__)
             case algo_hmac_cmac:
                 if(length!=AES::BLOCKSIZE*2)
                 {
@@ -1162,6 +1196,8 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 }
                 maxLength = AES::BLOCKSIZE*2 ;
             break;
+#endif
+#if defined(__CBCMAC__)|| defined(__ALL__)
             case algo_hmac_cbc_mac:
                 if (length != AES::BLOCKSIZE * 2)
                 {
@@ -1170,6 +1206,8 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 }
                 maxLength = AES::BLOCKSIZE * 2;
                 break;
+#endif
+#if defined(__DMAC__)|| defined(__ALL__)
             case algo_hmac_dmac:
                 if (length != AES::BLOCKSIZE * 2)
                 {
@@ -1178,6 +1216,8 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 }
                 maxLength = AES::BLOCKSIZE * 2;
                 break;
+#endif
+#if defined(__GMAC__)|| defined(__ALL__)
             case algo_hmac_gmac:
                 if (length != AES::BLOCKSIZE * 2)
                 {
@@ -1186,6 +1226,8 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 }
                 maxLength = AES::BLOCKSIZE * 2;
                 break;
+#endif
+#if defined(__HMAC__)|| defined(__ALL__)
             case algo_hmac_hmac:
                 if (length != SHA256::DIGESTSIZE * 2)
                 {
@@ -1194,6 +1236,8 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 }
                 maxLength = SHA256::DIGESTSIZE * 2;
                 break;
+#endif
+#if defined(__POLY1305__)|| defined(__ALL__)
             case algo_hmac_poly_1305:
                 if (length != AES::BLOCKSIZE * 2)
                 {
@@ -1202,6 +1246,8 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 }
                 maxLength = AES::BLOCKSIZE * 2;
                 break;
+#endif
+#if defined(__TWOTRACK__)|| defined(__ALL__)
             case algo_hmac_two_track:
                 if (length != TTMAC::DIGESTSIZE* 2)
                 {
@@ -1210,6 +1256,8 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 }
                 maxLength = TTMAC::DIGESTSIZE * 2;
                 break;
+#endif
+#if defined(__VMAC__)|| defined(__ALL__)
             case algo_hmac_vmac:
                 if (length != AES::BLOCKSIZE * 2)
                 {
@@ -1218,6 +1266,7 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 }
                 maxLength = AES::BLOCKSIZE * 2;
                 break;
+#endif
             default :
                 DebugFormat("Invalid Algorithm: [%i] [%i]\r\n",algorithm);
                 return 0;

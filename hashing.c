@@ -6101,122 +6101,154 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db,"whirlpool", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, whirlpool, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #endif
-
+#if defined(__MD2__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macmd2",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macmd2, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__MD4__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macmd4",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macmd4, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__MD5__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macmd5",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macmd5, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__SHA1__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macsha1",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macsha1, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__SHA224__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macsha224",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macsha224, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__SHA256__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macsha256",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macsha256, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__SHA384__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macsha384",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macsha384, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__SHA512__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macsha512",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macsha512, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__SHA3224__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macsha3224",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macsha3224, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__SHA3256__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macsha3256",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macsha3256, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__SHA3384__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macsha3384",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macsha3384, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
-  rc = sqlite3_create_function(db,"macsha3384",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macsha3384, 0, 0);
-  if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__SHA3512__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macsha3512",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macsha3512, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__MD128__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macripemd128",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macripemd128, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__MD160__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macripemd160",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macripemd160, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__MD256__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macripemd256",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macripemd256, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__MD320__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macripemd320",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macripemd320, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__BLAKE2B__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macblake2b", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macblake2b, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__BLAKE2S__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macblake2s", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macblake2s, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
-
+#endif
+#if defined(__TIGER__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"mactiger", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, mactiger, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__SHAKE128__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macshake128", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macshake128, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__SHAKE256__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macshake256", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macshake256, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__SIPHASH64__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macsiphash64", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macsiphash64, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__SIPHASH128__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macsiphash128", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macsiphash128, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__LSH224__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"maclsh224", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, maclsh224, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__LSH256__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"maclsh256", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, maclsh256, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__LSH384__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"maclsh384", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, maclsh384, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__LSH512__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"maclsh512", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, maclsh512, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__SM3__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macsm3", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macsm3, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__WHIRLPOOL__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macwhirlpool", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macwhirlpool, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__CMAC__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"maccmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, maccmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__CBCCMAC__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"maccbccmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, maccbccmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__DMAC__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macdmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macdmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__GMAC__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macgmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macgmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__HMAC__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"machmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, machmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__POLY1305__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macpoly1305", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macpoly1305, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__TWOTRACK__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"mactwotrack", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, mactwotrack, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
+#if defined(__VMAC__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macvmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macvmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
-
+#endif
   rc = sqlite3_create_function(db,"fromhex", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, fromhex, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 
