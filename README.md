@@ -1,7 +1,17 @@
 Sqlite Hashing version 2024.04.27.1
 
-TODO: Complete mac functions
+TODO: Verify mac functions
 TODO: Complete encryption functions
+TODO: Add Compression
+TODO: Add Base64Encoding
+TODO: Add Base32Encoding
+TODO: Add Base16Encoding
+TODO: Add Base8Encoding
+
+TODO: Add historical encryption algorithms
+TODO: Add CMAKE
+TODO: Make able to compile on other platforms/linux( Remove OutputDebugString in place of wrapper function )
+TODO: Make error code returns to sqlite in case of errors
 
 This project depends on 
 
