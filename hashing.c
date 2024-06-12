@@ -8,18 +8,20 @@
 #include <windows.h>
 #include "algorithms.h"
 #include "util.h"
+
+
 #include "crypto_hashing.h"
+#include "crypto_blob.h"
 #include "crypto_mac.h"
 
 SQLITE_EXTENSION_INIT1
-
+#include "blob_hashing.h"
 #include "hashsizes.h"
 #include "hashinfo.h"
 
 #include <stdio.h>
 
-#define MAX(x, y) (((x) > (y)) ? (x) : (y))
-#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+
 
 #define PING_MESSAGE "ping"
 
@@ -113,7 +115,7 @@ static int md2(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Md2 Called\r\n");
+    DebugMessage("Md2 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -123,47 +125,47 @@ static int md2(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoMd2(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -173,6 +175,131 @@ static int md2(
     }
     return SQLITE_OK;
 }
+
+static int md2blob(
+    sqlite3_context* context,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db;
+    Md2ContextPtr md2Context;
+    
+    const unsigned char* zIn;
+    unsigned char* zOut;
+    unsigned char* zToFree;
+    int nIn = 0;
+    int nBlobTextSize = 0;
+    unsigned int remainingSize = 0;
+    int position = 0;
+    int rc = 0;
+    int offset = 0;
+    int length = 0;
+    unsigned int index = 0;
+    unsigned int outputCount = 0;
+    unsigned int buffer_size = 0;
+    const char* result=NULL;
+    const char* database;
+    const char* table;
+    const char* column;
+    int64_t rowId = 0;
+    sqlite3_int64 rowid;
+    char* buffer = NULL;
+    sqlite3_blob* blob;
+
+    DebugMessage("Md2Blob Called\r\n");
+    if (argc != 1)
+    {
+        DebugMessage("Test\r\n");
+        return-1;
+    }
+    if (
+        sqlite3_value_type(argv[0]) == SQLITE_TEXT && // database
+        sqlite3_value_type(argv[1]) == SQLITE_TEXT && // table 
+        sqlite3_value_type(argv[2]) == SQLITE_TEXT && // column
+        sqlite3_value_type(argv[3]) == SQLITE_INTEGER // rowid
+        )
+    {
+        database = sqlite3_value_text(argv[0]);
+        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        table = sqlite3_value_text(argv[1]);
+        column = sqlite3_value_text(argv[2]);
+        rowid = sqlite3_value_int64(argv[3]);
+        rc = sqlite3_blob_open(db, database, table, column, rowid, 0, &blob);
+        if (rc == SQLITE_OK)
+        {
+            nBlobTextSize = sqlite3_blob_bytes(blob);
+            remainingSize = nBlobTextSize;
+            buffer = (char*)malloc(buffer_size);
+            if (buffer != NULL)
+            {
+                md2Context = Md2Initialize();
+                if (md2Context != NULL)
+                {
+                    while (rc == SQLITE_OK && remainingSize > 0)
+                    {
+                        length = MIN(buffer_size, remainingSize);
+                        rc = sqlite3_blob_read(blob, buffer, length, offset);
+                        if (rc == SQLITE_OK)
+                        {
+                            Md2Update(md2Context, buffer, length);
+                            offset += length;
+                            remainingSize -= length;
+                        }
+                    }
+                    if (rc == SQLITE_OK)
+                    {
+                        result = Md2Finalize(md2Context);
+                        if (result != NULL)
+                        {
+                            nIn = strlength(result);
+                            zOut = zToFree = (unsigned char*)sqlite3_malloc64(nIn + 1);
+                            if (zOut != 0)
+                            {
+                                DebugMessage("ZOut Not NULL\r\n");
+                                strncpy_s(zOut, nIn + 1, result, strlength(result));
+                                DebugMessage("After StrCpy\r\n");
+                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_free(zToFree);
+                                rc = SQLITE_OK;
+                            }
+                            else
+                            {
+                                DebugMessage("ZOut  NULL\r\n");
+                                rc = SQLITE_ERROR;
+                            }
+                        }
+                        else
+                        {
+                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            rc = SQLITE_ERROR;
+                        }
+                    }
+                    else
+                    {
+                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        rc = SQLITE_ERROR;
+                    }
+                }
+                else
+                {
+                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    rc = SQLITE_ERROR;
+                }
+            }
+            sqlite3_blob_close(blob);
+            sqlite3_result_int(context, nBlobTextSize);
+        }
+        return rc;
+    }
+    else
+    {
+        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        return SQLITE_ERROR;
+    }
+    return SQLITE_OK;
+}
+
 
 #endif
 
@@ -184,7 +311,7 @@ static int md4(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Md2 Called\r\n");
+    DebugMessage("Md2 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -194,47 +321,47 @@ static int md4(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoMd4(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -255,7 +382,7 @@ static int md5(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Md2 Called\r\n");
+    DebugMessage("Md2 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -265,47 +392,47 @@ static int md5(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoMd5(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -326,7 +453,7 @@ static int sha1(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Sha1 Called\r\n");
+    DebugMessage("Sha1 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -336,47 +463,47 @@ static int sha1(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoSha1(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -397,7 +524,7 @@ static int sha224(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Sha224 Called\r\n");
+    DebugMessage("Sha224 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -407,47 +534,47 @@ static int sha224(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoSha224(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -468,7 +595,7 @@ static int sha256(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Sha256 Called\r\n");
+    DebugMessage("Sha256 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -478,47 +605,47 @@ static int sha256(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoSha256(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -539,7 +666,7 @@ static int sha384(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Sha384 Called\r\n");
+    DebugMessage("Sha384 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -549,47 +676,47 @@ static int sha384(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoSha384(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -610,7 +737,7 @@ static int sha512(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Sha512 Called\r\n");
+    DebugMessage("Sha512 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -620,47 +747,47 @@ static int sha512(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoSha512(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -681,7 +808,7 @@ static int sha3_224(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Sha3_224 Called\r\n");
+    DebugMessage("Sha3_224 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -691,47 +818,47 @@ static int sha3_224(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoSha3_224(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -751,7 +878,7 @@ static int sha3_256(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Sha3_256 Called\r\n");
+    DebugMessage("Sha3_256 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -761,47 +888,47 @@ static int sha3_256(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoSha3_256(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -821,7 +948,7 @@ static int sha3_384(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Sha3_384 Called\r\n");
+    DebugMessage("Sha3_384 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -831,47 +958,47 @@ static int sha3_384(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoSha3_384(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -891,7 +1018,7 @@ static int sha3_512(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Sha3_512 Called\r\n");
+    DebugMessage("Sha3_512 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -901,47 +1028,47 @@ static int sha3_512(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoSha3_512(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -961,7 +1088,7 @@ static int ripemd128(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("RipeMD128 Called\r\n");
+    DebugMessage("RipeMD128 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -971,47 +1098,47 @@ static int ripemd128(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoRipeMD128(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -1031,7 +1158,7 @@ static int ripemd160(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("RipeMD160 Called\r\n");
+    DebugMessage("RipeMD160 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -1041,47 +1168,47 @@ static int ripemd160(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoRipeMD160(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -1101,7 +1228,7 @@ static int ripemd256(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("RipeMD256 Called\r\n");
+    DebugMessage("RipeMD256 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -1111,47 +1238,47 @@ static int ripemd256(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoRipeMD256(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -1171,7 +1298,7 @@ static int ripemd320(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("RipeMD320 Called\r\n");
+    DebugMessage("RipeMD320 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -1181,47 +1308,47 @@ static int ripemd320(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoRipeMD320(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -1241,7 +1368,7 @@ static int blake2b(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Blake2b Called\r\n");
+    DebugMessage("Blake2b Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -1251,47 +1378,47 @@ static int blake2b(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoBlake2b(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -1312,7 +1439,7 @@ static int blake2s(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Blake2s Called\r\n");
+    DebugMessage("Blake2s Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -1322,47 +1449,47 @@ static int blake2s(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoBlake2s(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -1382,7 +1509,7 @@ static int tiger(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Tiger Called\r\n");
+    DebugMessage("Tiger Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -1392,47 +1519,47 @@ static int tiger(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoTiger(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -1452,7 +1579,7 @@ static int shake128(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Shake128 Called\r\n");
+    DebugMessage("Shake128 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -1462,47 +1589,47 @@ static int shake128(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoShake128(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -1522,7 +1649,7 @@ static int shake256(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Shake128 Called\r\n");
+    DebugMessage("Shake128 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -1532,47 +1659,47 @@ static int shake256(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoShake256(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -1592,7 +1719,7 @@ static int siphash64(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("SipHash64 Called\r\n");
+    DebugMessage("SipHash64 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -1602,47 +1729,47 @@ static int siphash64(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoSipHash64(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -1662,7 +1789,7 @@ static int siphash128(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("SipHash128 Called\r\n");
+    DebugMessage("SipHash128 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -1672,47 +1799,47 @@ static int siphash128(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoSipHash128(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -1732,7 +1859,7 @@ static int lsh224(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("LSH224 Called\r\n");
+    DebugMessage("LSH224 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -1742,47 +1869,47 @@ static int lsh224(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoLSH224(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -1802,7 +1929,7 @@ static int lsh256(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("LSH2256 Called\r\n");
+    DebugMessage("LSH2256 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -1812,47 +1939,47 @@ static int lsh256(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoLSH256(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -1872,7 +1999,7 @@ static int lsh384(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("LSH384 Called\r\n");
+    DebugMessage("LSH384 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -1882,47 +2009,47 @@ static int lsh384(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoLSH384(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -1942,7 +2069,7 @@ static int lsh512(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("LSH512 Called\r\n");
+    DebugMessage("LSH512 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -1952,47 +2079,47 @@ static int lsh512(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoLSH512(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -2012,7 +2139,7 @@ static int sm3(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("SM3 Called\r\n");
+    DebugMessage("SM3 Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -2022,47 +2149,47 @@ static int sm3(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         
-          OutputDebugStringA("Non Buffered Read\r\n");
+          DebugMessage("Non Buffered Read\r\n");
           zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-          OutputDebugStringA(zIn);
+          DebugMessage(zIn);
           result = DoSM3(zIn);
           if(result!=NULL)
           {
-              OutputDebugStringA("Result Not NULL\r\n");
-              OutputDebugStringA(result);
+              DebugMessage("Result Not NULL\r\n");
+              DebugMessage(result);
               nIn = strlength(result);
               zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
               if(zOut!=0)
               {
-                  OutputDebugStringA("ZOut Not NULL\r\n");
+                  DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
-                  OutputDebugStringA("After StrCpy\r\n");
+                  DebugMessage("After StrCpy\r\n");
                   sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
               else
               {
-                  OutputDebugStringA("ZOut  NULL\r\n");
+                  DebugMessage("ZOut  NULL\r\n");
               }
               FreeCryptoResult(result);
 
           }
           else
           {
-              OutputDebugStringA("Result is NULL\r\n");
+              DebugMessage("Result is NULL\r\n");
           }
     }
     else
@@ -2082,7 +2209,7 @@ static int whirlpool(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Whirlpool Called\r\n");
+    DebugMessage("Whirlpool Called\r\n");
     const unsigned char * zIn;
     unsigned char * zOut;
     unsigned char * zToFree;
@@ -2092,45 +2219,45 @@ static int whirlpool(
     
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( sqlite3_value_type(argv[0])==SQLITE_BLOB || sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
         nIn = sqlite3_value_bytes(argv[0]);
         zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
-        OutputDebugStringA(zIn);
+        DebugMessage(zIn);
         result = DoWhirlpool(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
                 
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
 
         }
         else
         {
-            OutputDebugStringA("Result is NULL\r\n");
+            DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -2149,7 +2276,7 @@ static int macmd2(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacMd2 Called\r\n");
+    DebugMessage("MacMd2 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -2164,12 +2291,12 @@ static int macmd2(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -2193,7 +2320,7 @@ static int macmd2(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -2205,36 +2332,36 @@ static int macmd2(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         
         
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -2251,7 +2378,7 @@ static int macmd4(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacMd4 Called\r\n");
+    DebugMessage("MacMd4 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -2266,12 +2393,12 @@ static int macmd4(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -2295,7 +2422,7 @@ static int macmd4(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -2307,36 +2434,36 @@ static int macmd4(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         
         
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -2353,7 +2480,7 @@ static int macmd5(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacMd5 Called\r\n");
+    DebugMessage("MacMd5 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -2368,12 +2495,12 @@ static int macmd5(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -2397,7 +2524,7 @@ static int macmd5(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -2409,36 +2536,36 @@ static int macmd5(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         
         
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -2455,7 +2582,7 @@ static int macsha1(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacSha1 Called\r\n");
+    DebugMessage("MacSha1 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -2470,12 +2597,12 @@ static int macsha1(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -2499,7 +2626,7 @@ static int macsha1(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -2511,36 +2638,36 @@ static int macsha1(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         
         
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -2557,7 +2684,7 @@ static int macsha224(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacSha224 Called\r\n");
+    DebugMessage("MacSha224 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -2572,12 +2699,12 @@ static int macsha224(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -2601,7 +2728,7 @@ static int macsha224(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -2613,36 +2740,36 @@ static int macsha224(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         
         
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -2659,7 +2786,7 @@ static int macsha256(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacSha256 Called\r\n");
+    DebugMessage("MacSha256 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -2674,12 +2801,12 @@ static int macsha256(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -2703,7 +2830,7 @@ static int macsha256(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -2715,36 +2842,36 @@ static int macsha256(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         
         
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -2761,7 +2888,7 @@ static int macsha384(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacSha384 Called\r\n");
+    DebugMessage("MacSha384 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -2776,12 +2903,12 @@ static int macsha384(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -2805,7 +2932,7 @@ static int macsha384(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -2817,36 +2944,36 @@ static int macsha384(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         
         
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -2863,7 +2990,7 @@ static int macsha512(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacSha512 Called\r\n");
+    DebugMessage("MacSha512 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -2878,12 +3005,12 @@ static int macsha512(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -2907,7 +3034,7 @@ static int macsha512(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -2919,36 +3046,36 @@ static int macsha512(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         
         
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -2965,7 +3092,7 @@ static int macsha3224(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Macsha3224 Called\r\n");
+    DebugMessage("Macsha3224 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -2980,12 +3107,12 @@ static int macsha3224(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -3009,7 +3136,7 @@ static int macsha3224(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -3021,36 +3148,36 @@ static int macsha3224(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         
         
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -3067,7 +3194,7 @@ static int macsha3256(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Macsha3256 Called\r\n");
+    DebugMessage("Macsha3256 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -3082,12 +3209,12 @@ static int macsha3256(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -3111,7 +3238,7 @@ static int macsha3256(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -3123,36 +3250,36 @@ static int macsha3256(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         
         
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -3169,7 +3296,7 @@ static int macsha3384(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Macsha3384 Called\r\n");
+    DebugMessage("Macsha3384 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -3184,12 +3311,12 @@ static int macsha3384(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -3213,7 +3340,7 @@ static int macsha3384(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -3225,36 +3352,36 @@ static int macsha3384(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         
         
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -3271,7 +3398,7 @@ static int macsha3512(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Macsha3512 Called\r\n");
+    DebugMessage("Macsha3512 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -3286,12 +3413,12 @@ static int macsha3512(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -3315,7 +3442,7 @@ static int macsha3512(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -3327,36 +3454,36 @@ static int macsha3512(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         
         
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -3373,7 +3500,7 @@ static int macripemd128(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Macripemd128 Called\r\n");
+    DebugMessage("Macripemd128 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -3388,12 +3515,12 @@ static int macripemd128(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -3417,7 +3544,7 @@ static int macripemd128(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -3429,36 +3556,36 @@ static int macripemd128(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         
         
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -3475,7 +3602,7 @@ static int macripemd160(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Macripemd128 Called\r\n");
+    DebugMessage("Macripemd128 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -3490,12 +3617,12 @@ static int macripemd160(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -3519,7 +3646,7 @@ static int macripemd160(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -3531,36 +3658,36 @@ static int macripemd160(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         
         
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -3577,7 +3704,7 @@ static int macripemd256(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Macripemd256 Called\r\n");
+    DebugMessage("Macripemd256 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -3592,12 +3719,12 @@ static int macripemd256(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -3621,7 +3748,7 @@ static int macripemd256(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -3633,36 +3760,36 @@ static int macripemd256(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         
         
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -3679,7 +3806,7 @@ static int macripemd320(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("Macripemd320 Called\r\n");
+    DebugMessage("Macripemd320 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -3694,12 +3821,12 @@ static int macripemd320(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -3723,7 +3850,7 @@ static int macripemd320(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -3735,36 +3862,36 @@ static int macripemd320(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         
         
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             nIn = strlength(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -3781,7 +3908,7 @@ static int macblake2b(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacBlake2b Called\r\n");
+    DebugMessage("MacBlake2b Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -3796,12 +3923,12 @@ static int macblake2b(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -3824,7 +3951,7 @@ static int macblake2b(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -3836,33 +3963,33 @@ static int macblake2b(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -3879,7 +4006,7 @@ static int macblake2s(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacBlake2s Called\r\n");
+    DebugMessage("MacBlake2s Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -3894,12 +4021,12 @@ static int macblake2s(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -3922,7 +4049,7 @@ static int macblake2s(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -3934,33 +4061,33 @@ static int macblake2s(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -3977,7 +4104,7 @@ static int mactiger(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacTiger Called\r\n");
+    DebugMessage("MacTiger Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -3992,12 +4119,12 @@ static int mactiger(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -4020,7 +4147,7 @@ static int mactiger(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -4032,33 +4159,33 @@ static int mactiger(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -4075,7 +4202,7 @@ static int macshake128(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacShake128 Called\r\n");
+    DebugMessage("MacShake128 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -4090,12 +4217,12 @@ static int macshake128(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -4118,7 +4245,7 @@ static int macshake128(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -4130,33 +4257,33 @@ static int macshake128(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -4173,7 +4300,7 @@ static int macshake256(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacShake256 Called\r\n");
+    DebugMessage("MacShake256 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -4187,12 +4314,12 @@ static int macshake256(
     const char * result;
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -4215,7 +4342,7 @@ static int macshake256(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -4227,33 +4354,33 @@ static int macshake256(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -4270,7 +4397,7 @@ static int macsiphash64(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacSipHash64 Called\r\n");
+    DebugMessage("MacSipHash64 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -4284,12 +4411,12 @@ static int macsiphash64(
     const char * result;
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -4312,7 +4439,7 @@ static int macsiphash64(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -4324,33 +4451,33 @@ static int macsiphash64(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -4367,7 +4494,7 @@ static int macsiphash128(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacSipHash128 Called\r\n");
+    DebugMessage("MacSipHash128 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -4381,12 +4508,12 @@ static int macsiphash128(
     const char * result;
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -4409,7 +4536,7 @@ static int macsiphash128(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -4421,33 +4548,33 @@ static int macsiphash128(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -4464,7 +4591,7 @@ static int maclsh224(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacLsh224 Called\r\n");
+    DebugMessage("MacLsh224 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -4479,12 +4606,12 @@ static int maclsh224(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -4507,7 +4634,7 @@ static int maclsh224(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -4519,33 +4646,33 @@ static int maclsh224(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -4562,7 +4689,7 @@ static int maclsh256(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacLsh256 Called\r\n");
+    DebugMessage("MacLsh256 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -4577,12 +4704,12 @@ static int maclsh256(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -4605,7 +4732,7 @@ static int maclsh256(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -4617,33 +4744,33 @@ static int maclsh256(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -4660,7 +4787,7 @@ static int maclsh384(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacLsh384 Called\r\n");
+    DebugMessage("MacLsh384 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -4675,12 +4802,12 @@ static int maclsh384(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -4703,7 +4830,7 @@ static int maclsh384(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -4715,33 +4842,33 @@ static int maclsh384(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -4758,7 +4885,7 @@ static int maclsh512(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacLsh512 Called\r\n");
+    DebugMessage("MacLsh512 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -4773,12 +4900,12 @@ static int maclsh512(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -4801,7 +4928,7 @@ static int maclsh512(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -4813,33 +4940,33 @@ static int maclsh512(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -4856,7 +4983,7 @@ static int macsm3(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacSm3 Called\r\n");
+    DebugMessage("MacSm3 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -4871,12 +4998,12 @@ static int macsm3(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -4899,7 +5026,7 @@ static int macsm3(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -4911,33 +5038,33 @@ static int macsm3(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -4954,7 +5081,7 @@ static int macwhirlpool(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacWhirlpool Called\r\n");
+    DebugMessage("MacWhirlpool Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -4969,12 +5096,12 @@ static int macwhirlpool(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -4997,7 +5124,7 @@ static int macwhirlpool(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -5009,33 +5136,33 @@ static int macwhirlpool(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -5052,7 +5179,7 @@ static int maccmac(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacCMac Called\r\n");
+    DebugMessage("MacCMac Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -5067,12 +5194,12 @@ static int maccmac(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -5095,7 +5222,7 @@ static int maccmac(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -5107,33 +5234,33 @@ static int maccmac(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(strlength(result) + 1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, strlength(result) +1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -5150,7 +5277,7 @@ static int maccbccmac(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacCbcCMac Called\r\n");
+    DebugMessage("MacCbcCMac Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -5165,12 +5292,12 @@ static int maccbccmac(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -5193,7 +5320,7 @@ static int maccbccmac(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -5205,33 +5332,33 @@ static int maccbccmac(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(strlen(result) + 1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, strlen(result) +1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -5248,7 +5375,7 @@ static int macdmac(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacDMac Called\r\n");
+    DebugMessage("MacDMac Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -5263,12 +5390,12 @@ static int macdmac(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -5291,7 +5418,7 @@ static int macdmac(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -5303,33 +5430,33 @@ static int macdmac(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(strlength(result) + 1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, strlength(result) +1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -5346,7 +5473,7 @@ static int macgmac(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacGMac Called\r\n");
+    DebugMessage("MacGMac Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -5361,12 +5488,12 @@ static int macgmac(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -5389,7 +5516,7 @@ static int macgmac(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -5401,33 +5528,33 @@ static int macgmac(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(strlength(result) + 1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, strlength(result) +1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -5445,7 +5572,7 @@ static int machmac(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacHMac Called\r\n");
+    DebugMessage("MacHMac Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -5460,12 +5587,12 @@ static int machmac(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -5488,7 +5615,7 @@ static int machmac(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -5500,33 +5627,33 @@ static int machmac(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(strlen(result) + 1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, strlength(result) +1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -5543,7 +5670,7 @@ static int macpoly1305(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacPoly1305 Called\r\n");
+    DebugMessage("MacPoly1305 Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -5558,12 +5685,12 @@ static int macpoly1305(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -5586,7 +5713,7 @@ static int macpoly1305(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -5598,33 +5725,33 @@ static int macpoly1305(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(strlength(result) + 1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, strlength(result) +1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -5641,7 +5768,7 @@ static int mactwotrack(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacTwoTrack Called\r\n");
+    DebugMessage("MacTwoTrack Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -5656,12 +5783,12 @@ static int mactwotrack(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -5684,7 +5811,7 @@ static int mactwotrack(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -5696,33 +5823,33 @@ static int mactwotrack(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(strlength(result) + 1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, strlength(result) +1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -5739,7 +5866,7 @@ static int macvmac(
     sqlite3_value **argv
 )
 {
-    OutputDebugStringA("MacVMac Called\r\n");
+    DebugMessage("MacVMac Called\r\n");
     const unsigned char * zIn;
     const unsigned char * zKey;
     unsigned char * zOut;
@@ -5754,12 +5881,12 @@ static int macvmac(
     
     if(argc!=3)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if ( 
@@ -5782,7 +5909,7 @@ static int macvmac(
             }
             else
             {
-                OutputDebugStringA("FromHex Failed\r\n");
+                DebugMessage("FromHex Failed\r\n");
                 return -1;
             }
         }
@@ -5794,33 +5921,33 @@ static int macvmac(
         else
         {
             // invalid
-            OutputDebugStringA("Invalid Parameter\r\n");
+            DebugMessage("Invalid Parameter\r\n");
             return -1;
         }
-        OutputDebugStringA(zKey);
-        OutputDebugStringA(zIn);
+        DebugMessage(zKey);
+        DebugMessage(zIn);
         if(result!=NULL)
         {
-            OutputDebugStringA("Result Not NULL\r\n");
-            OutputDebugStringA(result);
+            DebugMessage("Result Not NULL\r\n");
+            DebugMessage(result);
             zOut = zToFree = ( unsigned char *) sqlite3_malloc64(strlength(result) +1);
             if(zOut!=0)
             {
-                OutputDebugStringA("ZOut Not NULL\r\n");
+                DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, strlength(result) +1,result,strlength(result));
-                OutputDebugStringA("After StrCpy\r\n");
+                DebugMessage("After StrCpy\r\n");
                 sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
             {
-                OutputDebugStringA("ZOut  NULL\r\n");
+                DebugMessage("ZOut  NULL\r\n");
             }
             FreeCryptoResult(result);
         }
         else
         {
-             OutputDebugStringA("Result is NULL\r\n");
+             DebugMessage("Result is NULL\r\n");
         }
     }
     else
@@ -5844,12 +5971,12 @@ static int tohex(
     int nIn = 0;
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if(sqlite3_value_type(argv[0])==SQLITE_BLOB||sqlite3_value_type(argv[0])==SQLITE_TEXT)
@@ -5865,16 +5992,16 @@ static int tohex(
                 zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
                 if(zOut!=0)
                 {
-                    OutputDebugStringA("ZOut Not NULL\r\n");
+                    DebugMessage("ZOut Not NULL\r\n");
                     strncpy_s(zOut,nIn+1,result,strlength(result));
-                    OutputDebugStringA("After StrCpy\r\n");
+                    DebugMessage("After StrCpy\r\n");
                     sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
                     sqlite3_free(zToFree);
                     
                 }
                 else
                 {
-                    OutputDebugStringA("ZOut  NULL\r\n");
+                    DebugMessage("ZOut  NULL\r\n");
                 }
                 FreeCryptoResult(result);
                 return SQLITE_OK;
@@ -5907,64 +6034,124 @@ static int fromhex(
     int nIn = 0;
     if(argc!=1)
     {
-        OutputDebugStringA("Test\r\n");
+        DebugMessage("Test\r\n");
         return-1;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
-        OutputDebugStringA("Value Type is NULL\r\n");
+        DebugMessage("Value Type is NULL\r\n");
         return -1;
     }
     else if(sqlite3_value_type(argv[0])==SQLITE_BLOB||sqlite3_value_type(argv[0])==SQLITE_TEXT)
     {
-        OutputDebugStringA("fromhex: sqlite_text\r\n");
+        DebugMessage("fromhex: sqlite_text\r\n");
         nIn = sqlite3_value_bytes(argv[0]);
         zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
         if(nIn>0)
         {
-            OutputDebugStringA("fromhex: in>0\r\n");
+            DebugMessage("fromhex: in>0\r\n");
             result = FromHexSZ(zIn,&resultLength);
             if(result)
             {
-                OutputDebugStringA(result);
+                DebugMessage(result);
                 nIn = resultLength;
                 zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
                 if(zOut!=0)
                 {
-                    OutputDebugStringA("ZOut Not NULL\r\n");
+                    DebugMessage("ZOut Not NULL\r\n");
                     strncpy_s(zOut,nIn+1,result,strlength(result));
-                    OutputDebugStringA("After StrCpy\r\n");
+                    DebugMessage("After StrCpy\r\n");
                     sqlite3_result_blob(context,(char *)zOut,resultLength,SQLITE_TRANSIENT);
                     sqlite3_free(zToFree);
                 }
                 else
                 {
-                    OutputDebugStringA("ZOut  NULL\r\n");
+                    DebugMessage("ZOut  NULL\r\n");
                 }
                 FreeCryptoResult(result);
                 return SQLITE_OK;
             }
             else
             {
-                OutputDebugStringA("fromhex: Failed FromHex\r\n");
+                DebugMessage("fromhex: Failed FromHex\r\n");
                 return -1;
             }
             
         }
         else
         {
-            OutputDebugStringA("fromhex: nIn<=0\r\n");
+            DebugMessage("fromhex: nIn<=0\r\n");
             return -1;
         }
     }
     else
     {
-        OutputDebugStringA("fromhex: Invalid Input\r\n");
+        DebugMessage("fromhex: Invalid Input\r\n");
         return -1;
     }
     return SQLITE_OK;
 }
 
+static int tobase2(
+    sqlite3_context* context,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    const unsigned char* zIn;
+    char* zOut;
+    char* zToFree;
+    const char* result;
+    int nIn = 0;
+    if (argc != 1)
+    {
+        DebugMessage("Test\r\n");
+        return-1;
+    }
+    if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
+    {
+        DebugMessage("Value Type is NULL\r\n");
+        return -1;
+    }
+    else if (sqlite3_value_type(argv[0]) == SQLITE_BLOB || sqlite3_value_type(argv[0]) == SQLITE_TEXT)
+    {
+        nIn = sqlite3_value_bytes(argv[0]);
+        zIn = (const unsigned char*)sqlite3_value_text(argv[0]);
+        if (nIn > 0)
+        {
+            result = ToHexSZ(zIn);
+            if (result)
+            {
+                nIn = strlength(result);
+                zOut = zToFree = (unsigned char*)sqlite3_malloc64(nIn + 1);
+                if (zOut != 0)
+                {
+                    DebugMessage("ZOut Not NULL\r\n");
+                    strncpy_s(zOut, nIn + 1, result, strlength(result));
+                    DebugMessage("After StrCpy\r\n");
+                    sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                    sqlite3_free(zToFree);
+                }
+                else
+                {
+                    DebugMessage("ZOut  NULL\r\n");
+                }
+                FreeCryptoResult(result);
+                return SQLITE_OK;
+            }
+            else
+            {
+                return -1;
+            }
+
+        }
+        else
+        {
+            return -1;
+        }
+    }
+    return SQLITE_OK;
+}
 
 
 #ifdef _WIN32
@@ -5988,6 +6175,8 @@ extern int sqlite3_hashing_init(
 #if defined(__MD2__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"md2", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, md2, 0, 0);
   if ( rc != SQLITE_OK) return rc;
+  rc = sqlite3_create_function(db, "blobmd2", 1, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, blobmd2, 0, 0);
+  if (rc != SQLITE_OK) return rc;
 #endif
 #if defined(__MD4__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"md4", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, md4, 0, 0);
@@ -6255,6 +6444,8 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db,"tohex", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, tohex, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 
+  rc = sqlite3_create_function(db, "tobase2", 1, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, tobase2, 0, 0);
+  if (rc != SQLITE_OK) return rc;
 
   rc = sqlite3_create_module(db,"hash_info", &hash_info_Module, 0);
   if ( rc != SQLITE_OK) return rc;

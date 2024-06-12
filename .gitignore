@@ -1,3 +1,5 @@
+*.rule
+*.tlog
 *.obj
 *.dll
 *.lib
@@ -7,3 +9,9 @@
 *.log
 *.sql
 .vscode*
+build/*
+.vs/*
+out/*
+src/*
+*.ilk
+*.bak

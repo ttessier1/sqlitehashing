@@ -72,9 +72,9 @@
 #endif
 
 // Aggressive stack checking with VS2005 SP1 and above.
-#if (_MSC_FULL_VER >= 140050727)
-# pragma strict_gs_check (on)
-#endif
+//#if (_MSC_FULL_VER >= 140050727)
+//# pragma strict_gs_check (on)
+//#endif
 
 // If CRYPTOPP_USE_AES_GENERATOR is 1 then AES/OFB based is used.
 // Otherwise the OS random number generator is used.
@@ -90,41 +90,41 @@ extern "C" {
 #if defined(__MD2__)|| defined(__ALL__)
 const char * DoMacMd2(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacMd2\r\n");
+    DebugMessage("DoMacMd2\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     unsigned int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacMd2 Key is good\r\n");
+        DebugMessage("DoMacMd2 Key is good\r\n");
         HMAC<MD2> hmac (( CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<MD2>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacMd2 buffer is good\r\n");
+            DebugMessage("DoMacMd2 buffer is good\r\n");
             hmac.Final((CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<MD2>::DIGESTSIZE,algo_hmac_md2 );
             if(result)
             {
-                OutputDebugStringA("DoMacMd2 tohex is good\r\n");
+                DebugMessage("DoMacMd2 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacMd2 tohex failed\r\n");
+                DebugMessage("DoMacMd2 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacMd2 failed to allocated memory\r\n");
+            DebugMessage("DoMacMd2 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacMd2 key is NULL\r\n");
+        DebugMessage("DoMacMd2 key is NULL\r\n");
     }
     return NULL;
 }
@@ -133,41 +133,41 @@ const char * DoMacMd2(const char * key, unsigned int length, const char * messag
 #if defined(__MD4__)|| defined(__ALL__)
 const char * DoMacMd4(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacMd4\r\n");
+    DebugMessage("DoMacMd4\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     unsigned int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacMd4 Key is good\r\n");
+        DebugMessage("DoMacMd4 Key is good\r\n");
         HMAC<MD4> hmac (( CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<MD4>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacMd4 buffer is good\r\n");
+            DebugMessage("DoMacMd4 buffer is good\r\n");
             hmac.Final((CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<MD4>::DIGESTSIZE,algo_hmac_md4 );
             if(result)
             {
-                OutputDebugStringA("DoMacMd4 tohex is good\r\n");
+                DebugMessage("DoMacMd4 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacMd4 tohex failed\r\n");
+                DebugMessage("DoMacMd4 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacMd4 failed to allocated memory\r\n");
+            DebugMessage("DoMacMd4 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacMd4 key is NULL\r\n");
+        DebugMessage("DoMacMd4 key is NULL\r\n");
     }
     return NULL;
 }
@@ -176,41 +176,41 @@ const char * DoMacMd4(const char * key, unsigned int length, const char * messag
 #if defined(__MD5__)|| defined(__ALL__)
 const char * DoMacMd5(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacMd5\r\n");
+    DebugMessage("DoMacMd5\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     unsigned int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacMd5 Key is good\r\n");
+        DebugMessage("DoMacMd5 Key is good\r\n");
         HMAC<MD5> hmac (( CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<MD5>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacMd5 buffer is good\r\n");
+            DebugMessage("DoMacMd5 buffer is good\r\n");
             hmac.Final((CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<MD5>::DIGESTSIZE,algo_hmac_md5 );
             if(result)
             {
-                OutputDebugStringA("DoMacMd5 tohex is good\r\n");
+                DebugMessage("DoMacMd5 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacMd5 tohex failed\r\n");
+                DebugMessage("DoMacMd5 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacMd5 failed to allocated memory\r\n");
+            DebugMessage("DoMacMd5 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacMd5 key is NULL\r\n");
+        DebugMessage("DoMacMd5 key is NULL\r\n");
     }
     return NULL;
 }
@@ -221,41 +221,41 @@ const char * DoMacMd5(const char * key, unsigned int length, const char * messag
 
 const char * DoMacSha1(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacSha1\r\n");
+    DebugMessage("DoMacSha1\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     unsigned int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacSha1 Key is good\r\n");
+        DebugMessage("DoMacSha1 Key is good\r\n");
         HMAC<SHA1> hmac (( CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<SHA1>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacSha1 buffer is good\r\n");
+            DebugMessage("DoMacSha1 buffer is good\r\n");
             hmac.Final((CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<SHA1>::DIGESTSIZE,algo_hmac_sha1 );
             if(result)
             {
-                OutputDebugStringA("DoMacSha1 tohex is good\r\n");
+                DebugMessage("DoMacSha1 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacSha1 tohex failed\r\n");
+                DebugMessage("DoMacSha1 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacSha1 failed to allocated memory\r\n");
+            DebugMessage("DoMacSha1 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacSha1 key is NULL\r\n");
+        DebugMessage("DoMacSha1 key is NULL\r\n");
     }
     return NULL;
 }
@@ -266,41 +266,41 @@ const char * DoMacSha1(const char * key, unsigned int length, const char * messa
 
 const char * DoMacSha224(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacSha224\r\n");
+    DebugMessage("DoMacSha224\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     unsigned int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacSha224 Key is good\r\n");
+        DebugMessage("DoMacSha224 Key is good\r\n");
         HMAC<SHA224> hmac (( CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<SHA224>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacSha224 buffer is good\r\n");
+            DebugMessage("DoMacSha224 buffer is good\r\n");
             hmac.Final((CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<SHA224>::DIGESTSIZE,algo_hmac_sha224 );
             if(result)
             {
-                OutputDebugStringA("DoMacSha224 tohex is good\r\n");
+                DebugMessage("DoMacSha224 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacSha224 tohex failed\r\n");
+                DebugMessage("DoMacSha224 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacSha224 failed to allocated memory\r\n");
+            DebugMessage("DoMacSha224 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacSha224 key is NULL\r\n");
+        DebugMessage("DoMacSha224 key is NULL\r\n");
     }
     return NULL;
 }
@@ -311,41 +311,41 @@ const char * DoMacSha224(const char * key, unsigned int length, const char * mes
 
 const char * DoMacSha256(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacSha256\r\n");
+    DebugMessage("DoMacSha256\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     unsigned int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacSha256 Key is good\r\n");
+        DebugMessage("DoMacSha256 Key is good\r\n");
         HMAC<SHA256> hmac (( CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<SHA256>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacSha256 buffer is good\r\n");
+            DebugMessage("DoMacSha256 buffer is good\r\n");
             hmac.Final((CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<SHA256>::DIGESTSIZE,algo_hmac_sha256 );
             if(result)
             {
-                OutputDebugStringA("DoMacSha256 tohex is good\r\n");
+                DebugMessage("DoMacSha256 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacSha256 tohex failed\r\n");
+                DebugMessage("DoMacSha256 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacSha256 failed to allocated memory\r\n");
+            DebugMessage("DoMacSha256 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacSha256 key is NULL\r\n");
+        DebugMessage("DoMacSha256 key is NULL\r\n");
     }
     return NULL;
 }
@@ -356,41 +356,41 @@ const char * DoMacSha256(const char * key, unsigned int length, const char * mes
 
 const char * DoMacSha384(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacSha384\r\n");
+    DebugMessage("DoMacSha384\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     unsigned int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacSha384 Key is good\r\n");
+        DebugMessage("DoMacSha384 Key is good\r\n");
         HMAC<SHA384> hmac (( CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<SHA384>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacSha384 buffer is good\r\n");
+            DebugMessage("DoMacSha384 buffer is good\r\n");
             hmac.Final((CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<SHA384>::DIGESTSIZE,algo_hmac_sha384 );
             if(result)
             {
-                OutputDebugStringA("DoMacSha384 tohex is good\r\n");
+                DebugMessage("DoMacSha384 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacSha384 tohex failed\r\n");
+                DebugMessage("DoMacSha384 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacSha384 failed to allocated memory\r\n");
+            DebugMessage("DoMacSha384 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacSha384 key is NULL\r\n");
+        DebugMessage("DoMacSha384 key is NULL\r\n");
     }
     return NULL;
 }
@@ -401,41 +401,41 @@ const char * DoMacSha384(const char * key, unsigned int length, const char * mes
 
 const char * DoMacSha512(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacSha512\r\n");
+    DebugMessage("DoMacSha512\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     unsigned int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacSha512 Key is good\r\n");
+        DebugMessage("DoMacSha512 Key is good\r\n");
         HMAC<SHA512> hmac (( CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<SHA512>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacSha512 buffer is good\r\n");
+            DebugMessage("DoMacSha512 buffer is good\r\n");
             hmac.Final((CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<SHA512>::DIGESTSIZE,algo_hmac_sha512 );
             if(result)
             {
-                OutputDebugStringA("DoMacSha512 tohex is good\r\n");
+                DebugMessage("DoMacSha512 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacSha512 tohex failed\r\n");
+                DebugMessage("DoMacSha512 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacSha512 failed to allocated memory\r\n");
+            DebugMessage("DoMacSha512 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacSha512 key is NULL\r\n");
+        DebugMessage("DoMacSha512 key is NULL\r\n");
     }
     return NULL;
 }
@@ -446,41 +446,41 @@ const char * DoMacSha512(const char * key, unsigned int length, const char * mes
 
 const char * DoMacSha3224(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacSha3224\r\n");
+    DebugMessage("DoMacSha3224\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     unsigned int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacSha3224 Key is good\r\n");
+        DebugMessage("DoMacSha3224 Key is good\r\n");
         HMAC<SHA3_224> hmac (( CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<SHA3_224>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacSha3224 buffer is good\r\n");
+            DebugMessage("DoMacSha3224 buffer is good\r\n");
             hmac.Final((CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<SHA3_224>::DIGESTSIZE,algo_hmac_sha3_224 );
             if(result)
             {
-                OutputDebugStringA("DoMacSha3224 tohex is good\r\n");
+                DebugMessage("DoMacSha3224 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacSha3224 tohex failed\r\n");
+                DebugMessage("DoMacSha3224 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacSha3224 failed to allocated memory\r\n");
+            DebugMessage("DoMacSha3224 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacSha3224 key is NULL\r\n");
+        DebugMessage("DoMacSha3224 key is NULL\r\n");
     }
     return NULL;
 }
@@ -491,41 +491,41 @@ const char * DoMacSha3224(const char * key, unsigned int length, const char * me
 
 const char * DoMacSha3256(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacSha3256\r\n");
+    DebugMessage("DoMacSha3256\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     unsigned int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacSha3256 Key is good\r\n");
+        DebugMessage("DoMacSha3256 Key is good\r\n");
         HMAC<SHA3_256> hmac (( CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<SHA3_256>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacSha3256 buffer is good\r\n");
+            DebugMessage("DoMacSha3256 buffer is good\r\n");
             hmac.Final((CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<SHA3_256>::DIGESTSIZE,algo_hmac_sha3_256 );
             if(result)
             {
-                OutputDebugStringA("DoMacSha3256 tohex is good\r\n");
+                DebugMessage("DoMacSha3256 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacSha3256 tohex failed\r\n");
+                DebugMessage("DoMacSha3256 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacSha3256 failed to allocated memory\r\n");
+            DebugMessage("DoMacSha3256 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacSha3256 key is NULL\r\n");
+        DebugMessage("DoMacSha3256 key is NULL\r\n");
     }
     return NULL;
 }
@@ -536,41 +536,41 @@ const char * DoMacSha3256(const char * key, unsigned int length, const char * me
 
 const char * DoMacSha3384(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacSha3384\r\n");
+    DebugMessage("DoMacSha3384\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     unsigned int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacSha3384 Key is good\r\n");
+        DebugMessage("DoMacSha3384 Key is good\r\n");
         HMAC<SHA3_384> hmac (( CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<SHA3_384>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacSha3384 buffer is good\r\n");
+            DebugMessage("DoMacSha3384 buffer is good\r\n");
             hmac.Final((CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<SHA3_384>::DIGESTSIZE,algo_hmac_sha3_384 );
             if(result)
             {
-                OutputDebugStringA("DoMacSha3384 tohex is good\r\n");
+                DebugMessage("DoMacSha3384 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacSha3384 tohex failed\r\n");
+                DebugMessage("DoMacSha3384 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacSha3384 failed to allocated memory\r\n");
+            DebugMessage("DoMacSha3384 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacSha3384 key is NULL\r\n");
+        DebugMessage("DoMacSha3384 key is NULL\r\n");
     }
     return NULL;
 }
@@ -581,41 +581,41 @@ const char * DoMacSha3384(const char * key, unsigned int length, const char * me
 
 const char * DoMacSha3512(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacSha3512\r\n");
+    DebugMessage("DoMacSha3512\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     unsigned int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacSha3512 Key is good\r\n");
+        DebugMessage("DoMacSha3512 Key is good\r\n");
         HMAC<SHA3_512> hmac (( CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<SHA3_512>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacSha3512 buffer is good\r\n");
+            DebugMessage("DoMacSha3512 buffer is good\r\n");
             hmac.Final((CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<SHA3_512>::DIGESTSIZE,algo_hmac_sha3_512 );
             if(result)
             {
-                OutputDebugStringA("DoMacSha3512 tohex is good\r\n");
+                DebugMessage("DoMacSha3512 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacSha3512 tohex failed\r\n");
+                DebugMessage("DoMacSha3512 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacSha3512 failed to allocated memory\r\n");
+            DebugMessage("DoMacSha3512 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacSha3512 key is NULL\r\n");
+        DebugMessage("DoMacSha3512 key is NULL\r\n");
     }
     return NULL;
 }
@@ -626,41 +626,41 @@ const char * DoMacSha3512(const char * key, unsigned int length, const char * me
 
 const char * DoMacRipeMd128(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacRipeMd128\r\n");
+    DebugMessage("DoMacRipeMd128\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     unsigned int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacRipeMd128 Key is good\r\n");
+        DebugMessage("DoMacRipeMd128 Key is good\r\n");
         HMAC<RIPEMD128> hmac (( CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<RIPEMD128>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacRipeMd128 buffer is good\r\n");
+            DebugMessage("DoMacRipeMd128 buffer is good\r\n");
             hmac.Final((CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<RIPEMD128>::DIGESTSIZE,algo_hmac_ripemd_128 );
             if(result)
             {
-                OutputDebugStringA("DoMacRipeMd128 tohex is good\r\n");
+                DebugMessage("DoMacRipeMd128 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacRipeMd128 tohex failed\r\n");
+                DebugMessage("DoMacRipeMd128 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacRipeMd128 failed to allocated memory\r\n");
+            DebugMessage("DoMacRipeMd128 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacRipeMd128 key is NULL\r\n");
+        DebugMessage("DoMacRipeMd128 key is NULL\r\n");
     }
     return NULL;
 }
@@ -671,41 +671,41 @@ const char * DoMacRipeMd128(const char * key, unsigned int length, const char * 
 
 const char * DoMacRipeMd160(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacRipeMd160\r\n");
+    DebugMessage("DoMacRipeMd160\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     unsigned int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacRipeMd160 Key is good\r\n");
+        DebugMessage("DoMacRipeMd160 Key is good\r\n");
         HMAC<RIPEMD160> hmac (( CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<RIPEMD160>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacRipeMd160 buffer is good\r\n");
+            DebugMessage("DoMacRipeMd160 buffer is good\r\n");
             hmac.Final((CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<RIPEMD160>::DIGESTSIZE,algo_hmac_ripemd_160 );
             if(result)
             {
-                OutputDebugStringA("DoMacRipeMd160 tohex is good\r\n");
+                DebugMessage("DoMacRipeMd160 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacRipeMd160 tohex failed\r\n");
+                DebugMessage("DoMacRipeMd160 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacRipeMd160 failed to allocated memory\r\n");
+            DebugMessage("DoMacRipeMd160 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacRipeMd160 key is NULL\r\n");
+        DebugMessage("DoMacRipeMd160 key is NULL\r\n");
     }
     return NULL;
 }
@@ -716,41 +716,41 @@ const char * DoMacRipeMd160(const char * key, unsigned int length, const char * 
 
 const char * DoMacRipeMd256(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacRipeMd256\r\n");
+    DebugMessage("DoMacRipeMd256\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     unsigned int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacRipeMd256 Key is good\r\n");
+        DebugMessage("DoMacRipeMd256 Key is good\r\n");
         HMAC<RIPEMD256> hmac (( CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<RIPEMD256>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacRipeMd256 buffer is good\r\n");
+            DebugMessage("DoMacRipeMd256 buffer is good\r\n");
             hmac.Final((CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<RIPEMD256>::DIGESTSIZE,algo_hmac_ripemd_256 );
             if(result)
             {
-                OutputDebugStringA("DoMacRipeMd256 tohex is good\r\n");
+                DebugMessage("DoMacRipeMd256 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacRipeMd256 tohex failed\r\n");
+                DebugMessage("DoMacRipeMd256 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacRipeMd256 failed to allocated memory\r\n");
+            DebugMessage("DoMacRipeMd256 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacRipeMd256 key is NULL\r\n");
+        DebugMessage("DoMacRipeMd256 key is NULL\r\n");
     }
     return NULL;
 }
@@ -761,41 +761,41 @@ const char * DoMacRipeMd256(const char * key, unsigned int length, const char * 
 
 const char * DoMacRipeMd320(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacRipeMd320\r\n");
+    DebugMessage("DoMacRipeMd320\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     unsigned int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacRipeMd320 Key is good\r\n");
+        DebugMessage("DoMacRipeMd320 Key is good\r\n");
         HMAC<RIPEMD320> hmac (( CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<RIPEMD320>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacRipeMd320 buffer is good\r\n");
+            DebugMessage("DoMacRipeMd320 buffer is good\r\n");
             hmac.Final((CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<RIPEMD320>::DIGESTSIZE,algo_hmac_ripemd_320 );
             if(result)
             {
-                OutputDebugStringA("DoMacRipeMd320 tohex is good\r\n");
+                DebugMessage("DoMacRipeMd320 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacRipeMd320 tohex failed\r\n");
+                DebugMessage("DoMacRipeMd320 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacRipeMd320 failed to allocated memory\r\n");
+            DebugMessage("DoMacRipeMd320 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacRipeMd320 key is NULL\r\n");
+        DebugMessage("DoMacRipeMd320 key is NULL\r\n");
     }
     return NULL;
 }
@@ -806,41 +806,41 @@ const char * DoMacRipeMd320(const char * key, unsigned int length, const char * 
 
 const char * DoMacBlake2b(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacBlake2b\r\n");
+    DebugMessage("DoMacBlake2b\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     unsigned int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacBlake2b Key is good\r\n");
+        DebugMessage("DoMacBlake2b Key is good\r\n");
         HMAC<BLAKE2b> hmac (( CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<BLAKE2b>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacBlake2b buffer is good\r\n");
+            DebugMessage("DoMacBlake2b buffer is good\r\n");
             hmac.Final((CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<BLAKE2b>::DIGESTSIZE,algo_blake2b );
             if(result)
             {
-                OutputDebugStringA("DoMacBlake2b tohex is good\r\n");
+                DebugMessage("DoMacBlake2b tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacBlake2b tohex failed\r\n");
+                DebugMessage("DoMacBlake2b tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacBlake2b failed to allocated memory\r\n");
+            DebugMessage("DoMacBlake2b failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacBlake2b key is NULL\r\n");
+        DebugMessage("DoMacBlake2b key is NULL\r\n");
     }
     return NULL;
 }
@@ -851,41 +851,41 @@ const char * DoMacBlake2b(const char * key, unsigned int length, const char * me
 
 extern "C" const char * DoMacBlake2s(const char * key, unsigned int length,  const char * message)
 {
-    OutputDebugStringA("DoMacBlake2s\r\n");
+    DebugMessage("DoMacBlake2s\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacBlake2s Key is good\r\n");
+        DebugMessage("DoMacBlake2s Key is good\r\n");
         HMAC<BLAKE2s> hmac ((CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<BLAKE2s>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacBlake2s buffer is good\r\n");
+            DebugMessage("DoMacBlake2s buffer is good\r\n");
             hmac.Final(( CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<BLAKE2s>::DIGESTSIZE,algo_blake2b );
             if(result)
             {
-                OutputDebugStringA("DoMacBlake2s tohex is good\r\n");
+                DebugMessage("DoMacBlake2s tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacBlake2s tohex failed\r\n");
+                DebugMessage("DoMacBlake2s tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacBlake2s failed to allocated memory\r\n");
+            DebugMessage("DoMacBlake2s failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacBlake2s key is NULL\r\n");
+        DebugMessage("DoMacBlake2s key is NULL\r\n");
     }
     return NULL;
 }
@@ -896,41 +896,41 @@ extern "C" const char * DoMacBlake2s(const char * key, unsigned int length,  con
 
 const char * DoMacTiger(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacTiger\r\n");
+    DebugMessage("DoMacTiger\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacTiger Key is good\r\n");
+        DebugMessage("DoMacTiger Key is good\r\n");
         HMAC<Tiger> hmac ((CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<Tiger>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacTiger buffer is good\r\n");
+            DebugMessage("DoMacTiger buffer is good\r\n");
             hmac.Final(( CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<Tiger>::DIGESTSIZE,algo_hmac_tiger );
             if(result)
             {
-                OutputDebugStringA("DoMacTiger tohex is good\r\n");
+                DebugMessage("DoMacTiger tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacTiger tohex failed\r\n");
+                DebugMessage("DoMacTiger tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacTiger failed to allocated memory\r\n");
+            DebugMessage("DoMacTiger failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacTiger key is NULL\r\n");
+        DebugMessage("DoMacTiger key is NULL\r\n");
     }
     return NULL;
 }
@@ -941,41 +941,41 @@ const char * DoMacTiger(const char * key, unsigned int length, const char * mess
 
 const char * DoMacShake128(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacShake128\r\n");
+    DebugMessage("DoMacShake128\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacShake128 Key is good\r\n");
+        DebugMessage("DoMacShake128 Key is good\r\n");
         HMAC<SHAKE128> hmac ((CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<SHAKE128>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacShake128 buffer is good\r\n");
+            DebugMessage("DoMacShake128 buffer is good\r\n");
             hmac.Final(( CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<SHAKE128>::DIGESTSIZE,algo_hmac_shake_128 );
             if(result)
             {
-                OutputDebugStringA("DoMacShake128 tohex is good\r\n");
+                DebugMessage("DoMacShake128 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacShake128 tohex failed\r\n");
+                DebugMessage("DoMacShake128 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacShake128 failed to allocated memory\r\n");
+            DebugMessage("DoMacShake128 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacShake128 key is NULL\r\n");
+        DebugMessage("DoMacShake128 key is NULL\r\n");
     }
     return NULL;
 }
@@ -986,41 +986,41 @@ const char * DoMacShake128(const char * key, unsigned int length, const char * m
 
 const char * DoMacShake256(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacShake256\r\n");
+    DebugMessage("DoMacShake256\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacShake256 Key is good\r\n");
+        DebugMessage("DoMacShake256 Key is good\r\n");
         HMAC<SHAKE256> hmac ((CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<SHAKE256>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacShake256 buffer is good\r\n");
+            DebugMessage("DoMacShake256 buffer is good\r\n");
             hmac.Final(( CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<SHAKE256>::DIGESTSIZE,algo_hmac_shake_256 );
             if(result)
             {
-                OutputDebugStringA("DoMacShake256 tohex is good\r\n");
+                DebugMessage("DoMacShake256 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacShake256 tohex failed\r\n");
+                DebugMessage("DoMacShake256 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacShake256 failed to allocated memory\r\n");
+            DebugMessage("DoMacShake256 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacShake256 key is NULL\r\n");
+        DebugMessage("DoMacShake256 key is NULL\r\n");
     }
     return NULL;
 }
@@ -1031,41 +1031,41 @@ const char * DoMacShake256(const char * key, unsigned int length, const char * m
 
 const char * DoMacSipHash64(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacSipHash64\r\n");
+    DebugMessage("DoMacSipHash64\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacSipHash64 Key is good\r\n");
+        DebugMessage("DoMacSipHash64 Key is good\r\n");
         SipHash<2,4,false> hmac ((CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(SipHash<2,4,false>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacSipHash64 buffer is good\r\n");
+            DebugMessage("DoMacSipHash64 buffer is good\r\n");
             hmac.Final(( CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,SipHash<2,4,false>::DIGESTSIZE,algo_hmac_sip_hash64 );
             if(result)
             {
-                OutputDebugStringA("DoMacSipHash64 tohex is good\r\n");
+                DebugMessage("DoMacSipHash64 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacSipHash64 tohex failed\r\n");
+                DebugMessage("DoMacSipHash64 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacSipHash64 failed to allocated memory\r\n");
+            DebugMessage("DoMacSipHash64 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacSipHash64 key is NULL\r\n");
+        DebugMessage("DoMacSipHash64 key is NULL\r\n");
     }
     return NULL;
 }
@@ -1076,41 +1076,41 @@ const char * DoMacSipHash64(const char * key, unsigned int length, const char * 
 
 const char * DoMacSipHash128(const char * key, unsigned int length, const char * message)
 {
-     OutputDebugStringA("DoMacSipHash128\r\n");
+     DebugMessage("DoMacSipHash128\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacSipHash128 Key is good\r\n");
+        DebugMessage("DoMacSipHash128 Key is good\r\n");
         SipHash<4,8,true> hmac ((CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(SipHash<4,8,true>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacSipHash128 buffer is good\r\n");
+            DebugMessage("DoMacSipHash128 buffer is good\r\n");
             hmac.Final(( CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,SipHash<4,8,true>::DIGESTSIZE,algo_hmac_sip_hash128 );
             if(result)
             {
-                OutputDebugStringA("DoMacSipHash128 tohex is good\r\n");
+                DebugMessage("DoMacSipHash128 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacSipHash128 tohex failed\r\n");
+                DebugMessage("DoMacSipHash128 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacSipHash128 failed to allocated memory\r\n");
+            DebugMessage("DoMacSipHash128 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacSipHash128 key is NULL\r\n");
+        DebugMessage("DoMacSipHash128 key is NULL\r\n");
     }
     return NULL;
 }
@@ -1121,41 +1121,41 @@ const char * DoMacSipHash128(const char * key, unsigned int length, const char *
 
 const char * DoMacLsh224(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacLsh224\r\n");
+    DebugMessage("DoMacLsh224\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacLsh224 Key is good\r\n");
+        DebugMessage("DoMacLsh224 Key is good\r\n");
         HMAC<LSH224> hmac ((CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<LSH224>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacLsh224 buffer is good\r\n");
+            DebugMessage("DoMacLsh224 buffer is good\r\n");
             hmac.Final(( CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<LSH224>::DIGESTSIZE,algo_hmac_lsh_224 );
             if(result)
             {
-                OutputDebugStringA("DoMacLsh224 tohex is good\r\n");
+                DebugMessage("DoMacLsh224 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacLsh224 tohex failed\r\n");
+                DebugMessage("DoMacLsh224 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacLsh224 failed to allocated memory\r\n");
+            DebugMessage("DoMacLsh224 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacLsh224 key is NULL\r\n");
+        DebugMessage("DoMacLsh224 key is NULL\r\n");
     }
     return NULL;
 }
@@ -1166,41 +1166,41 @@ const char * DoMacLsh224(const char * key, unsigned int length, const char * mes
 
 const char * DoMacLsh256(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacLsh256\r\n");
+    DebugMessage("DoMacLsh256\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacLsh256 Key is good\r\n");
+        DebugMessage("DoMacLsh256 Key is good\r\n");
         HMAC<LSH256> hmac ((CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<LSH256>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacLsh256 buffer is good\r\n");
+            DebugMessage("DoMacLsh256 buffer is good\r\n");
             hmac.Final(( CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<LSH256>::DIGESTSIZE,algo_hmac_lsh_256 );
             if(result)
             {
-                OutputDebugStringA("DoMacLsh256 tohex is good\r\n");
+                DebugMessage("DoMacLsh256 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacLsh256 tohex failed\r\n");
+                DebugMessage("DoMacLsh256 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacLsh256 failed to allocated memory\r\n");
+            DebugMessage("DoMacLsh256 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacLsh256 key is NULL\r\n");
+        DebugMessage("DoMacLsh256 key is NULL\r\n");
     }
     return NULL;
 }
@@ -1211,41 +1211,41 @@ const char * DoMacLsh256(const char * key, unsigned int length, const char * mes
 
 const char * DoMacLsh384(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacLsh384\r\n");
+    DebugMessage("DoMacLsh384\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacLsh384 Key is good\r\n");
+        DebugMessage("DoMacLsh384 Key is good\r\n");
         HMAC<LSH384> hmac ((CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<LSH384>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacLsh384 buffer is good\r\n");
+            DebugMessage("DoMacLsh384 buffer is good\r\n");
             hmac.Final(( CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<LSH384>::DIGESTSIZE,algo_hmac_lsh_384 );
             if(result)
             {
-                OutputDebugStringA("DoMacLsh384 tohex is good\r\n");
+                DebugMessage("DoMacLsh384 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacLsh384 tohex failed\r\n");
+                DebugMessage("DoMacLsh384 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacLsh384 failed to allocated memory\r\n");
+            DebugMessage("DoMacLsh384 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacLsh384 key is NULL\r\n");
+        DebugMessage("DoMacLsh384 key is NULL\r\n");
     }
     return NULL;
 }
@@ -1256,41 +1256,41 @@ const char * DoMacLsh384(const char * key, unsigned int length, const char * mes
 
 const char * DoMacLsh512(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacLsh512\r\n");
+    DebugMessage("DoMacLsh512\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacLsh512 Key is good\r\n");
+        DebugMessage("DoMacLsh512 Key is good\r\n");
         HMAC<LSH512> hmac ((CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<LSH512>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacLsh512 buffer is good\r\n");
+            DebugMessage("DoMacLsh512 buffer is good\r\n");
             hmac.Final(( CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<LSH512>::DIGESTSIZE,algo_hmac_lsh_512 );
             if(result)
             {
-                OutputDebugStringA("DoMacLsh512 tohex is good\r\n");
+                DebugMessage("DoMacLsh512 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacLsh512 tohex failed\r\n");
+                DebugMessage("DoMacLsh512 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacLsh512 failed to allocated memory\r\n");
+            DebugMessage("DoMacLsh512 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacLsh512 key is NULL\r\n");
+        DebugMessage("DoMacLsh512 key is NULL\r\n");
     }
     return NULL;
 }
@@ -1301,41 +1301,41 @@ const char * DoMacLsh512(const char * key, unsigned int length, const char * mes
 
 const char * DoMacSm3(const char * key, unsigned int length, const char * message)
 {
-    OutputDebugStringA("DoMacSm3\r\n");
+    DebugMessage("DoMacSm3\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacSm3 Key is good\r\n");
+        DebugMessage("DoMacSm3 Key is good\r\n");
         HMAC<SM3> hmac ((CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<SM3>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacSm3 buffer is good\r\n");
+            DebugMessage("DoMacSm3 buffer is good\r\n");
             hmac.Final(( CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<SM3>::DIGESTSIZE,algo_hmac_sm3 );
             if(result)
             {
-                OutputDebugStringA("DoMacSm3 tohex is good\r\n");
+                DebugMessage("DoMacSm3 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacSm3 tohex failed\r\n");
+                DebugMessage("DoMacSm3 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacSm3 failed to allocated memory\r\n");
+            DebugMessage("DoMacSm3 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacSm3 key is NULL\r\n");
+        DebugMessage("DoMacSm3 key is NULL\r\n");
     }
     return NULL;
 }
@@ -1346,41 +1346,41 @@ const char * DoMacSm3(const char * key, unsigned int length, const char * messag
 
 const char * DoMacWhirlpool(const char * key, unsigned int length, const char * message)
 {
-     OutputDebugStringA("DoMacWhirlpool\r\n");
+     DebugMessage("DoMacWhirlpool\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacWhirlpool Key is good\r\n");
+        DebugMessage("DoMacWhirlpool Key is good\r\n");
         HMAC<Whirlpool> hmac ((CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(HMAC<Whirlpool>::DIGESTSIZE);
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacWhirlpool buffer is good\r\n");
+            DebugMessage("DoMacWhirlpool buffer is good\r\n");
             hmac.Final(( CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,HMAC<Whirlpool>::DIGESTSIZE,algo_hmac_whirlpool );
             if(result)
             {
-                OutputDebugStringA("DoMacWhirlpool tohex is good\r\n");
+                DebugMessage("DoMacWhirlpool tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacWhirlpool tohex failed\r\n");
+                DebugMessage("DoMacWhirlpool tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacWhirlpool failed to allocated memory\r\n");
+            DebugMessage("DoMacWhirlpool failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacWhirlpool key is NULL\r\n");
+        DebugMessage("DoMacWhirlpool key is NULL\r\n");
     }
     return NULL;
 }
@@ -1392,42 +1392,42 @@ const char * DoMacWhirlpool(const char * key, unsigned int length, const char * 
 const char * DoMacCMac(const char * key, unsigned int length, const char * message)
 {
     AutoSeededRandomPool prng;
-    OutputDebugStringA("DoMacCMac\r\n");
+    DebugMessage("DoMacCMac\r\n");
     char * lpBuffer = NULL;
     const char * result ; 
     int keyLength=0;
     if(key)
     {
         keyLength=length;
-        OutputDebugStringA("DoMacCMac Key is good\r\n");
+        DebugMessage("DoMacCMac Key is good\r\n");
         CMAC<AES> hmac ((CryptoPP::byte *) key, keyLength);
         hmac.Update((CryptoPP::byte *)message,strlen(message));
         
         lpBuffer = (char * ) malloc(hmac.DigestSize());
         if(lpBuffer)
         {
-            OutputDebugStringA("DoMacCMac buffer is good\r\n");
+            DebugMessage("DoMacCMac buffer is good\r\n");
             
             hmac.Final(( CryptoPP::byte *)lpBuffer);
             result = ToHex(lpBuffer,hmac.DigestSize(),algo_hmac_cmac );
             if(result)
             {
-                OutputDebugStringA("DoMacCMac tohex is good\r\n");
+                DebugMessage("DoMacCMac tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacCMac tohex failed\r\n");
+                DebugMessage("DoMacCMac tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacCMac failed to allocated memory\r\n");
+            DebugMessage("DoMacCMac failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacCMac key is NULL\r\n");
+        DebugMessage("DoMacCMac key is NULL\r\n");
     }
     return NULL;
 }
@@ -1439,42 +1439,42 @@ const char * DoMacCMac(const char * key, unsigned int length, const char * messa
 const char * DoMacCbcCMac(const char * key, unsigned int length, const char * message)
 {
     AutoSeededRandomPool prng;
-    OutputDebugStringA("DoMacCbcCMac\r\n");
+    DebugMessage("DoMacCbcCMac\r\n");
     char* lpBuffer = NULL;
     const char* result;
     int keyLength = 0;
     if (key)
     {
         keyLength = length;
-        OutputDebugStringA("DoMacCbcCMac Key is good\r\n");
+        DebugMessage("DoMacCbcCMac Key is good\r\n");
         CBC_MAC<AES> hmac((CryptoPP::byte*)key, keyLength);
         hmac.Update((CryptoPP::byte*)message, strlen(message));
 
         lpBuffer = (char*)malloc(hmac.DigestSize());
         if (lpBuffer)
         {
-            OutputDebugStringA("DoMacCbcCMac buffer is good\r\n");
+            DebugMessage("DoMacCbcCMac buffer is good\r\n");
 
             hmac.Final((CryptoPP::byte*)lpBuffer);
             result = ToHex(lpBuffer, hmac.DigestSize(), algo_hmac_cbc_mac);
             if (result)
             {
-                OutputDebugStringA("DoMacCbcCMac tohex is good\r\n");
+                DebugMessage("DoMacCbcCMac tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacCbcCMac tohex failed\r\n");
+                DebugMessage("DoMacCbcCMac tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacCbcCMac failed to allocated memory\r\n");
+            DebugMessage("DoMacCbcCMac failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacCbcCMac key is NULL\r\n");
+        DebugMessage("DoMacCbcCMac key is NULL\r\n");
     }
     return NULL;
 }
@@ -1486,42 +1486,42 @@ const char * DoMacCbcCMac(const char * key, unsigned int length, const char * me
 const char * DoMacDMac(const char * key, unsigned int length, const char * message)
 {
     AutoSeededRandomPool prng;
-    OutputDebugStringA("DoMacDMac\r\n");
+    DebugMessage("DoMacDMac\r\n");
     char* lpBuffer = NULL;
     const char* result;
     int keyLength = 0;
     if (key)
     {
         keyLength = length;
-        OutputDebugStringA("DoMacDMac Key is good\r\n");
+        DebugMessage("DoMacDMac Key is good\r\n");
         DMAC<AES> hmac((CryptoPP::byte*)key, keyLength);
         hmac.Update((CryptoPP::byte*)message, strlen(message));
 
         lpBuffer = (char*)malloc(hmac.DigestSize());
         if (lpBuffer)
         {
-            OutputDebugStringA("DoMacDMac buffer is good\r\n");
+            DebugMessage("DoMacDMac buffer is good\r\n");
 
             hmac.Final((CryptoPP::byte*)lpBuffer);
             result = ToHex(lpBuffer, hmac.DigestSize(), algo_hmac_dmac);
             if (result)
             {
-                OutputDebugStringA("DoMacDMac tohex is good\r\n");
+                DebugMessage("DoMacDMac tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacDMac tohex failed\r\n");
+                DebugMessage("DoMacDMac tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacDMac failed to allocated memory\r\n");
+            DebugMessage("DoMacDMac failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacDMac key is NULL\r\n");
+        DebugMessage("DoMacDMac key is NULL\r\n");
     }
     return NULL;
 }
@@ -1533,14 +1533,14 @@ const char * DoMacDMac(const char * key, unsigned int length, const char * messa
 const char * DoMacGMac(const char * key, unsigned int length, const char * message)
 {
     AutoSeededRandomPool prng;
-    OutputDebugStringA("DoMacGMac\r\n");
+    DebugMessage("DoMacGMac\r\n");
     char* lpBuffer = NULL;
     const char* result;
     int keyLength = 0;
     if (key)
     {
         keyLength = length;
-        OutputDebugStringA("DoMacGMac Key is good\r\n");
+        DebugMessage("DoMacGMac Key is good\r\n");
         GCM<AES>::Encryption hmac;
 
         SecByteBlock iv(AES::BLOCKSIZE);
@@ -1553,28 +1553,28 @@ const char * DoMacGMac(const char * key, unsigned int length, const char * messa
         lpBuffer = (char*)malloc(hmac.DigestSize());
         if (lpBuffer)
         {
-            OutputDebugStringA("DoMacGMac buffer is good\r\n");
+            DebugMessage("DoMacGMac buffer is good\r\n");
 
             hmac.Final((CryptoPP::byte*)lpBuffer);
             result = ToHex(lpBuffer, hmac.DigestSize(), algo_hmac_gmac);
             if (result)
             {
-                OutputDebugStringA("DoMacGMac tohex is good\r\n");
+                DebugMessage("DoMacGMac tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacGMac tohex failed\r\n");
+                DebugMessage("DoMacGMac tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacGMac failed to allocated memory\r\n");
+            DebugMessage("DoMacGMac failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacGMac key is NULL\r\n");
+        DebugMessage("DoMacGMac key is NULL\r\n");
     }
     return NULL;
 }
@@ -1586,42 +1586,42 @@ const char * DoMacGMac(const char * key, unsigned int length, const char * messa
 const char * DoMacHMac(const char * key, unsigned int length, const char * message)
 {
     AutoSeededRandomPool prng;
-    OutputDebugStringA("DoMacHMac\r\n");
+    DebugMessage("DoMacHMac\r\n");
     char* lpBuffer = NULL;
     const char* result;
     int keyLength = 0;
     if (key)
     {
         keyLength = length;
-        OutputDebugStringA("DoMacHMac Key is good\r\n");
+        DebugMessage("DoMacHMac Key is good\r\n");
         HMAC<SHA256> hmac((CryptoPP::byte*)key, keyLength);
         hmac.Update((CryptoPP::byte*)message, strlen(message));
 
         lpBuffer = (char*)malloc(hmac.DigestSize());
         if (lpBuffer)
         {
-            OutputDebugStringA("DoMacHMac buffer is good\r\n");
+            DebugMessage("DoMacHMac buffer is good\r\n");
 
             hmac.Final((CryptoPP::byte*)lpBuffer);
             result = ToHex(lpBuffer, hmac.DigestSize(), algo_hmac_hmac);
             if (result)
             {
-                OutputDebugStringA("DoMacHMac tohex is good\r\n");
+                DebugMessage("DoMacHMac tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacHMac tohex failed\r\n");
+                DebugMessage("DoMacHMac tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacHMac failed to allocated memory\r\n");
+            DebugMessage("DoMacHMac failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacHMac key is NULL\r\n");
+        DebugMessage("DoMacHMac key is NULL\r\n");
     }
     return NULL;
 }
@@ -1633,42 +1633,42 @@ const char * DoMacHMac(const char * key, unsigned int length, const char * messa
 const char * DoMacPoly1305(const char * key, unsigned int length, const char * message)
 {
     AutoSeededRandomPool prng;
-    OutputDebugStringA("DoMacPoly1305\r\n");
+    DebugMessage("DoMacPoly1305\r\n");
     char* lpBuffer = NULL;
     const char* result;
     int keyLength = 0;
     if (key)
     {
         keyLength = length;
-        OutputDebugStringA("DoMacPoly1305 Key is good\r\n");
+        DebugMessage("DoMacPoly1305 Key is good\r\n");
         Poly1305<AES> hmac((CryptoPP::byte*)key, keyLength);
         hmac.Update((CryptoPP::byte*)message, strlen(message));
 
         lpBuffer = (char*)malloc(hmac.DigestSize());
         if (lpBuffer)
         {
-            OutputDebugStringA("DoMacPoly1305 buffer is good\r\n");
+            DebugMessage("DoMacPoly1305 buffer is good\r\n");
 
             hmac.Final((CryptoPP::byte*)lpBuffer);
             result = ToHex(lpBuffer, hmac.DigestSize(), algo_hmac_poly_1305);
             if (result)
             {
-                OutputDebugStringA("DoMacPoly1305 tohex is good\r\n");
+                DebugMessage("DoMacPoly1305 tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacPoly1305 tohex failed\r\n");
+                DebugMessage("DoMacPoly1305 tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacPoly1305 failed to allocated memory\r\n");
+            DebugMessage("DoMacPoly1305 failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacPoly1305 key is NULL\r\n");
+        DebugMessage("DoMacPoly1305 key is NULL\r\n");
     }
     return NULL;
 }
@@ -1680,42 +1680,42 @@ const char * DoMacPoly1305(const char * key, unsigned int length, const char * m
 const char * DoMacTwoTrack(const char * key, unsigned int length, const char * message)
 {
     AutoSeededRandomPool prng;
-    OutputDebugStringA("DoMacTwoTrack\r\n");
+    DebugMessage("DoMacTwoTrack\r\n");
     char* lpBuffer = NULL;
     const char* result;
     int keyLength = 0;
     if (key)
     {
         keyLength = length;
-        OutputDebugStringA("DoMacTwoTrack Key is good\r\n");
+        DebugMessage("DoMacTwoTrack Key is good\r\n");
         TTMAC hmac((CryptoPP::byte*)key, keyLength);
         hmac.Update((CryptoPP::byte*)message, strlen(message));
 
         lpBuffer = (char*)malloc(hmac.DigestSize());
         if (lpBuffer)
         {
-            OutputDebugStringA("DoMacTwoTrack buffer is good\r\n");
+            DebugMessage("DoMacTwoTrack buffer is good\r\n");
 
             hmac.Final((CryptoPP::byte*)lpBuffer);
             result = ToHex(lpBuffer, hmac.DigestSize(), algo_hmac_two_track);
             if (result)
             {
-                OutputDebugStringA("DoMacTwoTrack tohex is good\r\n");
+                DebugMessage("DoMacTwoTrack tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacTwoTrack tohex failed\r\n");
+                DebugMessage("DoMacTwoTrack tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacTwoTrack failed to allocated memory\r\n");
+            DebugMessage("DoMacTwoTrack failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacTwoTrack key is NULL\r\n");
+        DebugMessage("DoMacTwoTrack key is NULL\r\n");
     }
     return NULL;
 }
@@ -1727,14 +1727,14 @@ const char * DoMacTwoTrack(const char * key, unsigned int length, const char * m
 const char * DoMacVMac(const char * key, unsigned int length, const char * message)
 {
     AutoSeededRandomPool prng;
-    OutputDebugStringA("DoMacVMac\r\n");
+    DebugMessage("DoMacVMac\r\n");
     char* lpBuffer = NULL;
     const char* result;
     int keyLength = 0;
     if (key)
     {
         keyLength = length;
-        OutputDebugStringA("DoMacVMac Key is good\r\n");
+        DebugMessage("DoMacVMac Key is good\r\n");
         VMAC<AES,128> vmac;
         SecByteBlock iv(AES::BLOCKSIZE);
         memset(iv, 0x00, iv.size());
@@ -1743,28 +1743,28 @@ const char * DoMacVMac(const char * key, unsigned int length, const char * messa
         lpBuffer = (char*)malloc(vmac.DigestSize());
         if (lpBuffer)
         {
-            OutputDebugStringA("DoMacVMac buffer is good\r\n");
+            DebugMessage("DoMacVMac buffer is good\r\n");
 
             vmac.Final((CryptoPP::byte*)lpBuffer);
             result = ToHex(lpBuffer, vmac.DigestSize(), algo_hmac_vmac);
             if (result)
             {
-                OutputDebugStringA("DoMacVMac tohex is good\r\n");
+                DebugMessage("DoMacVMac tohex is good\r\n");
                 return result;
             }
             else
             {
-                OutputDebugStringA("DoMacVMac tohex failed\r\n");
+                DebugMessage("DoMacVMac tohex failed\r\n");
             }
         }
         else
         {
-            OutputDebugStringA("DoMacVMac failed to allocated memory\r\n");
+            DebugMessage("DoMacVMac failed to allocated memory\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("DoMacVMac key is NULL\r\n");
+        DebugMessage("DoMacVMac key is NULL\r\n");
     }
     return NULL;
 }

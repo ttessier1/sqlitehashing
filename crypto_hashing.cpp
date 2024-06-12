@@ -1,14 +1,16 @@
 #define CRYPTOPP_DEFAULT_NO_DLL
 #define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
 
+#define __WINDOWS_BCRYPT__
+
 #include "crypto_hashing.h"
 
 #include <cryptlib.h>
 #include <filters.h>
 
-#if defined(__MD2__) || (defined __ALL__)
+//#if defined(__MD2__) || (defined __ALL__)
 #include <md2.h>
-#endif
+//#endif
 
 #if defined(__MD4__) || (defined __ALL__)
 #include <md4.h>
@@ -107,9 +109,9 @@
 #endif
 
 // Aggressive stack checking with VS2005 SP1 and above.
-#if (_MSC_FULL_VER >= 140050727)
-# pragma strict_gs_check (on)
-#endif
+//#if (_MSC_FULL_VER >= 140050727)
+//# pragma strict_gs_check (on)
+//#endif
 
 // If CRYPTOPP_USE_AES_GENERATOR is 1 then AES/OFB based is used.
 // Otherwise the OS random number generator is used.
@@ -117,11 +119,11 @@
 
 using namespace CryptoPP;
 
-#if defined(__MD2__) ||  defined(__MD4__) ||  defined(__MD5__) ||  (defined __ALL__)
+//#if defined(__MD2__) ||  defined(__MD4__) ||  defined(__MD5__) ||  (defined __ALL__)
 
 using namespace Weak1;
 
-#endif
+//#endif
 
 
 //SHA1 * g_sha = NULL ;
@@ -130,28 +132,30 @@ using namespace Weak1;
 extern "C" { 
 #endif
 
-#if defined ( __MD2__ ) || defined(__ALL__)
+
+//#if defined ( __MD2__ ) || defined(__ALL__)
 
 const char * DoMd2(const char * message)
 {
     char * lpBuffer = NULL;
-    const char * result;
+    const char * result = NULL;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(MD2::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,MD2::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
+#if defined __CRYPTOCPP__
             MD2().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n", MD2::DIGESTSIZE);
             result= ToHex(lpBuffer,MD2::DIGESTSIZE,algo_md2);
             if(result!=NULL)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(MD2::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlen(result),(MD2::DIGESTSIZE*2), result );
@@ -160,25 +164,172 @@ const char * DoMd2(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
+#elsif __WINDOWS_BCRYPT__
+    BOOL bContinue = FALSE;
+    BOOL returnCode = FALSE;
+    DWORD result = 0;
+    ULONG size_required = 0;
+    BCRYPT_ALG_HANDLE algorithmHandle;
+    BCRYPT_HASH_HANDLE hashHandle;
+    uint8_t generatedHash[326];
+    uint8_t hexGeneratedHash[65];
+    DWORD bytesRead = 0;
+    uint32_t index = 0;
+    unsigned char buffer[BUFFER_SIZE];
+    DWORD objectsize = 0;
+    HANDLE hFileHandle = INVALID_HANDLE_VALUE;
+    result = BCryptOpenAlgorithmProvider(&algorithmHandle, BCRYPT_MD2_ALGORITHM, MS_PRIMITIVE_PROVIDER, BCRYPT_HASH_REUSABLE_FLAG);
+    if (BCRYPT_SUCCESS(result))
+    {
+        result = BCryptCreateHash(algorithmHandle, &hashHandle, generatedHash, 326, NULL, 0, BCRYPT_HASH_REUSABLE_FLAG);
+        if (STATUS_BUFFER_TOO_SMALL == result)
+        {
+            result = BCryptGetProperty(algorithmHandle, BCRYPT_OBJECT_LENGTH, (PUCHAR)&objectsize, 4, &size_required, 0);
+            if ( result == 0)
+            {
+                
+                
+            }
+            else
+            {
+                fprintf(stderr, "Failed to get object property: %d\r\n", result);
+            }
+            fprintf(stderr, "Failed to open create sha256 hash: BUFFER TOO SMALL\r\n");
+        }
+        if (BCRYPT_SUCCESS(result))
+        {
+            hFileHandle = CreateFileA(pszFileName, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);
+            if (hFileHandle != INVALID_HANDLE_VALUE)
+            {
+                bContinue = TRUE;
+                while (bContinue)
+                {
+                    if (ReadFile(hFileHandle, buffer, BUFFER_SIZE, &bytesRead, NULL))
+                    {
+                        if (bytesRead == BUFFER_SIZE)
+                        {
+                            if (BCRYPT_SUCCESS(BCryptHashData(hashHandle, buffer, BUFFER_SIZE, 0)))
+                            {
+
+                            }
+                            else
+                            {
+                                fprintf(stderr, "Failed to perform hash round\r\n");
+                                bContinue = FALSE;
+                            }
+                        }
+                        else
+                        {
+                            if (BCRYPT_SUCCESS(BCryptHashData(hashHandle, buffer, bytesRead, 0)))
+                            {
+                                if (BCRYPT_SUCCESS(BCryptFinishHash(hashHandle, generatedHash, 32, 0)))
+                                {
+                                    bContinue = FALSE;
+                                    returnCode = TRUE;
+                                }
+                                else
+                                {
+                                    bContinue = FALSE;
+                                    returnCode = FALSE;
+                                    fprintf(stderr, "Failed to perform FINAL hash round\r\n");
+                                }
+                            }
+                            else
+                            {
+                                fprintf(stderr, "Failed to perform hash round\r\n");
+                                bContinue = FALSE;
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        bContinue = FALSE;
+                        fprintf(stderr, "FAiled to read the file: %d\r\n", GetLastError());
+                    }
+                }
+                CloseHandle(hFileHandle);
+                if (returnCode)
+                {
+                    for (int i = 0; i < 32; i++)
+                    {
+                        hexGeneratedHash[index] = hexChars[(generatedHash[i] & 0xF0) >> 4];
+                        index++;
+                        hexGeneratedHash[index] = hexChars[generatedHash[i] & 0xF];
+                        index++;
+                        hexGeneratedHash[index] = '\0';
+                    }
+                    if (_strcmpi((char*)hexGeneratedHash, (char*)hash) == 0)
+                    {
+                        returnCode = TRUE;
+                    }
+                    else
+                    {
+                        returnCode = FALSE;
+                    }
+                }
+
+            }
+            else
+            {
+
+                fprintf(stderr, "Failed to open file: %s for hash verification\r\n", pszFileName);
+            }
+            BCryptDestroyHash(hashHandle);
+
+        }
+        else
+        {
+            if (STATUS_BUFFER_TOO_SMALL == result)
+            {
+                result = BCryptGetProperty(algorithmHandle, BCRYPT_OBJECT_LENGTH, (PUCHAR)&objectsize, 4, &size_required, 0);
+                if (result == STATUS_BUFFER_TOO_SMALL || result == 0)
+                {
+                    fprintf(stderr, "Size: %d", objectsize);
+                }
+                else
+                {
+                    fprintf(stderr, "Failed to get object property: %d\r\n", result);
+                }
+                fprintf(stderr, "Failed to open create sha256 hash: BUFFER TOO SMALL\r\n");
+            }
+            else
+            {
+                fprintf(stderr, "Failed to open create sha256 hash: %d\r\n", result);
+            }
+
+        }
+        BCryptCloseAlgorithmProvider(algorithmHandle, 0);
+
+    }
+    else
+    {
+        fprintf(stderr, "Failed to open a suitable crypto provider for sha256: %d\r\n", result);
+    }
+    return returnCode;
+}
+#endif
+
             free(lpBuffer);
             lpBuffer = NULL;
             return result;
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
 
-#endif
+
+//#endif
 
 #if defined ( __MD4__ ) || defined(__ALL__)
 
@@ -188,20 +339,20 @@ const char * DoMd4(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(MD4::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,MD4::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             MD4().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n", MD4::DIGESTSIZE);
             result= ToHex(lpBuffer,MD4::DIGESTSIZE,algo_md4);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(MD4::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(MD4::DIGESTSIZE*2) );
@@ -210,7 +361,7 @@ const char * DoMd4(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             
             free(lpBuffer);
@@ -219,12 +370,12 @@ const char * DoMd4(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -239,20 +390,20 @@ const char * DoMd5(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(MD5::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,MD5::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             MD5().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",MD5::DIGESTSIZE);
             result= ToHex(lpBuffer,MD5::DIGESTSIZE,algo_md5);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(MD5::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(MD5::DIGESTSIZE*2) );
@@ -261,7 +412,7 @@ const char * DoMd5(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             
             free(lpBuffer);
@@ -270,12 +421,12 @@ const char * DoMd5(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -290,20 +441,20 @@ const char * DoSha1(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(SHA1::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,SHA1::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             SHA1().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA1::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA1::DIGESTSIZE,algo_sha1);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(SHA1::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA1::DIGESTSIZE*2) );
@@ -312,7 +463,7 @@ const char * DoSha1(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -320,12 +471,12 @@ const char * DoSha1(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -340,20 +491,20 @@ const char * DoSha224(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(SHA224::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,SHA224::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             SHA224().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA224::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA224::DIGESTSIZE,algo_sha224);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(SHA224::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA224::DIGESTSIZE*2) );
@@ -362,7 +513,7 @@ const char * DoSha224(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -370,12 +521,12 @@ const char * DoSha224(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -390,20 +541,20 @@ const char * DoSha256(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(SHA256::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,SHA256::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             SHA256().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA256::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA256::DIGESTSIZE,algo_sha256);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(SHA256::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA256::DIGESTSIZE*2) );
@@ -412,7 +563,7 @@ const char * DoSha256(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -420,12 +571,12 @@ const char * DoSha256(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -440,20 +591,20 @@ const char * DoSha384(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(SHA384::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,SHA384::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             SHA384().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA384::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA384::DIGESTSIZE,algo_sha384);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(SHA384::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA384::DIGESTSIZE*2) );
@@ -462,7 +613,7 @@ const char * DoSha384(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -470,12 +621,12 @@ const char * DoSha384(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -490,20 +641,20 @@ const char * DoSha512(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(SHA512::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,SHA512::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             SHA512().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA512::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA512::DIGESTSIZE,algo_sha512);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(SHA512::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA512::DIGESTSIZE*2) );
@@ -512,7 +663,7 @@ const char * DoSha512(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -520,12 +671,12 @@ const char * DoSha512(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -540,20 +691,20 @@ const char * DoSha3_224(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(SHA3_224::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,SHA3_224::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             SHA3_224().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA3_224::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA3_224::DIGESTSIZE,algo_sha3_224);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(SHA3_224::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA3_224::DIGESTSIZE*2) );
@@ -562,7 +713,7 @@ const char * DoSha3_224(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -570,12 +721,12 @@ const char * DoSha3_224(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -590,20 +741,20 @@ const char * DoSha3_256(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(SHA3_256::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,SHA3_256::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             SHA3_256().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA3_256::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA3_256::DIGESTSIZE,algo_sha3_256);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(SHA3_256::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA3_256::DIGESTSIZE*2) );
@@ -612,7 +763,7 @@ const char * DoSha3_256(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -620,12 +771,12 @@ const char * DoSha3_256(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -640,20 +791,20 @@ const char * DoSha3_384(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(SHA3_384::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,SHA3_384::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             SHA3_384().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA3_384::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA3_384::DIGESTSIZE,algo_sha3_384);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(SHA3_384::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA3_384::DIGESTSIZE*2) );
@@ -662,7 +813,7 @@ const char * DoSha3_384(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -670,12 +821,12 @@ const char * DoSha3_384(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -690,20 +841,20 @@ const char * DoSha3_512(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(SHA3_512::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,SHA3_512::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             SHA3_512().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA3_512::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA3_512::DIGESTSIZE,algo_sha3_512);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(SHA3_512::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA3_512::DIGESTSIZE*2) );
@@ -712,7 +863,7 @@ const char * DoSha3_512(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -720,12 +871,12 @@ const char * DoSha3_512(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -740,20 +891,20 @@ const char * DoRipeMD128(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(RIPEMD128::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,RIPEMD128::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             RIPEMD128().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",RIPEMD128::DIGESTSIZE);
             result= ToHex(lpBuffer,RIPEMD128::DIGESTSIZE,algo_ripemd_128);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(RIPEMD128::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(RIPEMD128::DIGESTSIZE*2) );
@@ -762,7 +913,7 @@ const char * DoRipeMD128(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -770,12 +921,12 @@ const char * DoRipeMD128(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -790,20 +941,20 @@ const char * DoRipeMD160(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(RIPEMD160::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,RIPEMD160::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             RIPEMD160().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",RIPEMD160::DIGESTSIZE);
             result= ToHex(lpBuffer,RIPEMD160::DIGESTSIZE,algo_ripemd_160);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(RIPEMD160::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(RIPEMD160::DIGESTSIZE*2) );
@@ -812,7 +963,7 @@ const char * DoRipeMD160(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -820,12 +971,12 @@ const char * DoRipeMD160(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -840,20 +991,20 @@ const char * DoRipeMD256(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(RIPEMD256::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,RIPEMD256::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             RIPEMD256().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",RIPEMD256::DIGESTSIZE);
             result= ToHex(lpBuffer,RIPEMD256::DIGESTSIZE,algo_ripemd_256);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(RIPEMD256::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(RIPEMD256::DIGESTSIZE*2) );
@@ -862,7 +1013,7 @@ const char * DoRipeMD256(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -870,12 +1021,12 @@ const char * DoRipeMD256(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -890,20 +1041,20 @@ const char * DoRipeMD320(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(RIPEMD320::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,RIPEMD320::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             RIPEMD320().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",RIPEMD320::DIGESTSIZE);
             result= ToHex(lpBuffer,RIPEMD320::DIGESTSIZE,algo_ripemd_320);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(RIPEMD320::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(RIPEMD320::DIGESTSIZE*2) );
@@ -912,7 +1063,7 @@ const char * DoRipeMD320(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -920,12 +1071,12 @@ const char * DoRipeMD320(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -940,20 +1091,20 @@ const char * DoBlake2b(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(BLAKE2b::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,BLAKE2b::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             BLAKE2b().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",BLAKE2b::DIGESTSIZE);
             result= ToHex(lpBuffer,BLAKE2b::DIGESTSIZE,algo_blake2b);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(BLAKE2b::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(BLAKE2b::DIGESTSIZE*2) );
@@ -962,7 +1113,7 @@ const char * DoBlake2b(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -970,12 +1121,12 @@ const char * DoBlake2b(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -990,20 +1141,20 @@ const char * DoBlake2s(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(BLAKE2s::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,BLAKE2s::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             BLAKE2s().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",BLAKE2s::DIGESTSIZE);
             result= ToHex(lpBuffer,BLAKE2s::DIGESTSIZE,algo_blake2s);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(BLAKE2s::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(BLAKE2s::DIGESTSIZE*2) );
@@ -1012,7 +1163,7 @@ const char * DoBlake2s(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -1020,12 +1171,12 @@ const char * DoBlake2s(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -1040,20 +1191,20 @@ const char * DoTiger(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(Tiger::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,Tiger::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             Tiger().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",Tiger::DIGESTSIZE);
             result= ToHex(lpBuffer,Tiger::DIGESTSIZE,algo_tiger);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(Tiger::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(Tiger::DIGESTSIZE*2) );
@@ -1062,7 +1213,7 @@ const char * DoTiger(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -1070,12 +1221,12 @@ const char * DoTiger(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -1090,20 +1241,20 @@ const char * DoShake128(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(SHAKE128::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,SHAKE128::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             SHAKE128().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",SHAKE128::DIGESTSIZE);
             result= ToHex(lpBuffer,SHAKE128::DIGESTSIZE,algo_shake_128);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(SHAKE128::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHAKE128::DIGESTSIZE*2) );
@@ -1112,7 +1263,7 @@ const char * DoShake128(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -1120,12 +1271,12 @@ const char * DoShake128(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -1140,20 +1291,20 @@ const char * DoShake256(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(SHAKE256::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,SHAKE256::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             SHAKE256().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",SHAKE256::DIGESTSIZE);
             result= ToHex(lpBuffer,SHAKE256::DIGESTSIZE,algo_shake_256);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(SHAKE256::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHAKE256::DIGESTSIZE*2) );
@@ -1162,7 +1313,7 @@ const char * DoShake256(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -1170,12 +1321,12 @@ const char * DoShake256(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -1190,20 +1341,20 @@ const char * DoSipHash64(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(SipHash<2,4,false>::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,SipHash<2,4,false>::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             SipHash<2,4,false>().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",SipHash<2,4,false>::DIGESTSIZE);
             result= ToHex(lpBuffer,SipHash<2,4,false>::DIGESTSIZE,algo_sip_hash64);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(SipHash<2,4,false>::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SipHash<2,4,false>::DIGESTSIZE*2) );
@@ -1212,7 +1363,7 @@ const char * DoSipHash64(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -1220,12 +1371,12 @@ const char * DoSipHash64(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -1240,20 +1391,20 @@ const char * DoSipHash128(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(SipHash<4,8,true>::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,SipHash<4,8,true>::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             SipHash<4,8,true>().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",SipHash<4,8,true>::DIGESTSIZE);
             result= ToHex(lpBuffer,SipHash<4,8,true>::DIGESTSIZE,algo_sip_hash128);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(SipHash<4,8,true>::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SipHash<4,8,true>::DIGESTSIZE*2) );
@@ -1262,7 +1413,7 @@ const char * DoSipHash128(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -1270,12 +1421,12 @@ const char * DoSipHash128(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -1290,20 +1441,20 @@ const char * DoLSH224(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(LSH224::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,LSH224::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             LSH224().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",LSH224::DIGESTSIZE);
             result= ToHex(lpBuffer,LSH224::DIGESTSIZE,algo_lsh_224);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(LSH224::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(LSH224::DIGESTSIZE*2) );
@@ -1312,7 +1463,7 @@ const char * DoLSH224(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -1320,12 +1471,12 @@ const char * DoLSH224(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -1339,20 +1490,20 @@ const char * DoLSH256(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(LSH256::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,LSH256::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             LSH256().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",LSH256::DIGESTSIZE);
             result= ToHex(lpBuffer,LSH256::DIGESTSIZE,algo_lsh_256);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(LSH256::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(LSH256::DIGESTSIZE*2) );
@@ -1361,7 +1512,7 @@ const char * DoLSH256(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -1369,12 +1520,12 @@ const char * DoLSH256(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -1389,20 +1540,20 @@ const char * DoLSH384(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(LSH384::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,LSH384::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             LSH384().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",LSH384::DIGESTSIZE);
             result= ToHex(lpBuffer,LSH384::DIGESTSIZE,algo_lsh_384);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(LSH384::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(LSH384::DIGESTSIZE*2) );
@@ -1411,7 +1562,7 @@ const char * DoLSH384(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -1419,12 +1570,12 @@ const char * DoLSH384(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -1439,20 +1590,20 @@ const char * DoLSH512(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(LSH512::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,LSH512::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             LSH512().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",LSH512::DIGESTSIZE);
             result= ToHex(lpBuffer,LSH512::DIGESTSIZE,algo_lsh_512);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(LSH512::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(LSH512::DIGESTSIZE*2) );
@@ -1461,7 +1612,7 @@ const char * DoLSH512(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -1469,12 +1620,12 @@ const char * DoLSH512(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -1489,20 +1640,20 @@ const char * DoSM3(const char * message)
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(SM3::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,SM3::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             SM3().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",SM3::DIGESTSIZE);
             result= ToHex(lpBuffer,SM3::DIGESTSIZE,algo_sm3);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(SM3::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SM3::DIGESTSIZE*2) );
@@ -1511,7 +1662,7 @@ const char * DoSM3(const char * message)
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -1519,12 +1670,12 @@ const char * DoSM3(const char * message)
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }
@@ -1539,20 +1690,20 @@ char * lpBuffer = NULL;
     const char * result;
     if(message)
     {
-        OutputDebugStringA("Message passed in is:");
-        OutputDebugStringA(message);
-        OutputDebugStringA("\r\n");
+        DebugMessage("Message passed in is:");
+        DebugMessage(message);
+        DebugMessage("\r\n");
         lpBuffer = (char * ) malloc(Whirlpool::DIGESTSIZE);
         if(lpBuffer)
         {
             memset(lpBuffer,0,Whirlpool::DIGESTSIZE);
-            OutputDebugStringA("Buffer allocated\r\n");
+            DebugMessage("Buffer allocated\r\n");
             Whirlpool().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",Whirlpool::DIGESTSIZE);
             result= ToHex(lpBuffer,Whirlpool::DIGESTSIZE,algo_whirlpool);
             if(result)
             {
-                OutputDebugStringA("Processed ToHex\r\n");
+                DebugMessage("Processed ToHex\r\n");
                 if(strlen(result)!=(Whirlpool::DIGESTSIZE*2))
                 {
                     DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(Whirlpool::DIGESTSIZE*2) );
@@ -1561,7 +1712,7 @@ char * lpBuffer = NULL;
             }
             else
             {
-                OutputDebugStringA("Failed to convert to hex\r\n");
+                DebugMessage("Failed to convert to hex\r\n");
             }
             free(lpBuffer);
             lpBuffer = NULL;
@@ -1569,12 +1720,12 @@ char * lpBuffer = NULL;
         }
         else
         {
-            OutputDebugStringA("Buffer failed allocation NULL\r\n");
+            DebugMessage("Buffer failed allocation NULL\r\n");
         }
     }
     else
     {
-        OutputDebugStringA("Message passed in is NULL\r\n");
+        DebugMessage("Message passed in is NULL\r\n");
     }
 	return NULL;
 }

@@ -1,11 +1,22 @@
 #pragma once
 
 #define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
+
+typedef struct md2Context Md2Context, * Md2ContextPtr;
+
+
 #ifdef __cplusplus
 
-#if defined(__MD2__) || (defined __ALL__)
+//#if defined(__MD2__) || (defined __ALL__)
+
+
 extern "C" const char * DoMd2(const char * message);
-#endif
+extern "C" Md2ContextPtr Md2Initialize();
+extern "C" void Md2Update(Md2ContextPtr context, const char* message, unsigned int length);
+extern "C" const char* Md2Finalize(Md2ContextPtr context);
+
+
+//#endif
 #if defined(__MD4__) || (defined __ALL__)
 extern "C" const char * DoMd4(const char * message);
 #endif
@@ -98,9 +109,13 @@ extern "C" const char * DoShaFinal(const char * message, unsigned int length);
 extern "C" void UninitSha();
 */
 #else
-#if defined(__MD2__) || (defined __ALL__)
-const char * DoMd2(const char * message);
-#endif
+//#if defined(__MD2__) || (defined __ALL__)
+const char* DoMd2(const char* message);
+Md2ContextPtr Md2Initialize();
+void Md2Update(Md2ContextPtr context, const char* message, unsigned int length);
+const char* Md2Finalize(Md2ContextPtr context);
+
+//#endif
 #if defined(__MD4__) || (defined __ALL__)
 const char * DoMd4(const char * message);
 #endif

@@ -1,0 +1,136 @@
+﻿{
+  "configurations": [
+    {
+      "name": "x64-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "CMAKE_CXX_FLAGS_DEBUG",
+          "value": "/MTd /Zi /Ob0 /Od /RTC1  /D__MD2__ /DCRYPTOPP_ENABLE_NAMESPACE_WEAK",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_C_FLAGS_DEBUG",
+          "value": "/MTd /Zi /Ob0 /Od /RTC1  /D__MD2__ /DCRYPTOPP_ENABLE_NAMESPACE_WEAK",
+          "type": "STRING"
+        },
+        {
+          "name": "CRYPTOPP_LIB",
+          "value": "C:/Users/fliei/source/repos/ttessier1/cryptopp/x64/Output/Debug/cryptlib.lib",
+          "type": "FILEPATH"
+        },
+        {
+          "name": "CMAKE_BUILD_TYPE_INIT",
+          "value": "Debug",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "x64-Release",
+      "generator": "Ninja",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
+        {
+          "name": "CMAKE_CXX_FLAGS_RELEASE",
+          "value": "/MT /O3 /Ob2 /DNDEBUG  /RTC1 /D__MD2__ /DCRYPTOPP_ENABLE_NAMESPACE_WEAK",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_C_FLAGS_RELEASE",
+          "value": "/MT /O3 /Ob2 /DNDEBUG  /RTC1 /D__MD2__ /DCRYPTOPP_ENABLE_NAMESPACE_WEAK",
+          "type": "STRING"
+        },
+        {
+          "name": "CRYPTOPP_LIB",
+          "value": "C:/Users/fliei/source/repos/ttessier1/cryptopp/x64/Output/Release/cryptlib.lib",
+          "type": "FILEPATH"
+        },
+        {
+          "name": "CMAKE_BUILD_TYPE_INIT",
+          "value": "Release",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "x64-MinSizRelease",
+      "generator": "Ninja",
+      "configurationType": "MinSizeRelease",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
+        {
+          "name": "CMAKE_CXX_FLAGS_MINSIZEREL",
+          "value": "/MT /Os /Ob1 /DNDEBUG  /RTC1 /D__MD2__ /DCRYPTOPP_ENABLE_NAMESPACE_WEAK",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_C_FLAGS_MINSIZEREL",
+          "value": "/MT /Os /Ob1 /DNDEBUG /RTC1 /D__MD2__ /DCRYPTOPP_ENABLE_NAMESPACE_WEAK",
+          "type": "STRING"
+        },
+        {
+          "name": "CRYPTOPP_LIB",
+          "value": "C:/Users/fliei/source/repos/ttessier1/cryptopp/x64/Output/Release/cryptlib.lib",
+          "type": "FILEPATH"
+        },
+        {
+          "name": "CMAKE_BUILD_TYPE_INIT",
+          "value": "MinSizeRelease",
+          "type": "STRING"
+        }
+      ]
+    },
+    {
+      "name": "x64-RelWithDebugInfo",
+      "generator": "Ninja",
+      "configurationType": "RelWithDebInfo",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
+        {
+          "name": "CMAKE_CXX_FLAGS_RELWITHDEBINFO",
+          "value": "/MT /Zi /G /O2 /Ob1 /DNDEBUG /RTC1 /D__MD2__ /DCRYPTOPP_ENABLE_NAMESPACE_WEAK",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_C_FLAGS_RELWITHDEBINFO",
+          "value": "/MT /Zi /G /O2 /Ob1 /DNDEBUG  /RTC1 /D__MD2__ /DCRYPTOPP_ENABLE_NAMESPACE_WEAK",
+          "type": "STRING"
+        },
+        {
+          "name": "CRYPTOPP_LIB",
+          "value": "C:/Users/fliei/source/repos/ttessier1/cryptopp/x64/Output/Release/cryptlib.lib",
+          "type": "FILEPATH"
+        },
+        {
+          "name": "CMAKE_BUILD_TYPE_INIT",
+          "value": "RelWithDebInfo",
+          "type": "STRING"
+        }
+      ]
+    }
+  ]
+}

@@ -64,9 +64,9 @@
 #endif
 
 // Aggressive stack checking with VS2005 SP1 and above.
-#if (_MSC_FULL_VER >= 140050727)
-# pragma strict_gs_check (on)
-#endif
+//#if (_MSC_FULL_VER >= 140050727)
+//# pragma strict_gs_check (on)
+//#endif
 
 // If CRYPTOPP_USE_AES_GENERATOR is 1 then AES/OFB based is used.
 // Otherwise the OS random number generator is used.
@@ -85,6 +85,9 @@ unsigned int GetDigestSize(unsigned int algorithms)
 {
     switch(algorithms)
         {
+    case -1:
+
+        break;
 #if defined ( __MD2__ ) || defined(__ALL__)
             case algo_md2:
             case algo_hmac_md2:
@@ -303,6 +306,7 @@ unsigned int GetDigestSize(unsigned int algorithms)
             default :
                 return 0;
         }
+        return 0;
 }
 
 const char * ToHexSZ(const char * value)
@@ -375,6 +379,9 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
     {
         switch(algorithms)
         {
+        case -1:
+
+            break;
 #if defined ( __MD2__ ) || defined(__ALL__)
             case algo_md2:
             case algo_hmac_md2:
@@ -868,6 +875,8 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
     {
         switch(algorithm)
         {
+        case -1:
+            break;
 #if defined ( __MD2__ ) || defined(__ALL__)
             case algo_md2:
             case algo_hmac_md2:
@@ -1369,7 +1378,7 @@ const char * FromHex(const char * value, unsigned int length, unsigned int * res
             }
             else
             {
-                OutputDebugStringA("FromHex: Failed to allocate\r\n");
+                DebugMessage("FromHex: Failed to allocate\r\n");
             }
         }
         else
@@ -1379,7 +1388,7 @@ const char * FromHex(const char * value, unsigned int length, unsigned int * res
     }
     else
     {
-        OutputDebugStringA("FromHex: Value is NULL");
+        DebugMessage("FromHex: Value is NULL");
     }
     return result;
 }
@@ -1451,7 +1460,7 @@ const char * FromHexSZ(const char * value, unsigned int * resultLength)
             }
             else
             {
-                OutputDebugStringA("FromHexSZ: Failed to allocated\r\n");
+                DebugMessage("FromHexSZ: Failed to allocated\r\n");
             }
         }
         else
@@ -1461,10 +1470,22 @@ const char * FromHexSZ(const char * value, unsigned int * resultLength)
     }
     else
     {
-        OutputDebugStringA("FromHexSZ: Value is NULL");
+        DebugMessage("FromHexSZ: Value is NULL");
     }
     return result;
 }
+
+#if defined(DEBUG)
+void InitDebug()
+{
+#if defined(_WIN32)
+#else
+
+#endif
+}
+#endif
+
+#if defined(DEBUG)
 
 void DebugFormat( const char * format, ...)
 {
@@ -1517,8 +1538,31 @@ void DebugFormat( const char * format, ...)
         }
     }
     va_end(args);
-    OutputDebugStringA(outputStream.str().c_str());
+    DebugMessage(outputStream.str().c_str());
 }
+
+#else
+
+#endif
+
+#if defined(DEBUG)
+void DebugMessage(const char* message)
+{
+    if (message != NULL)
+    {
+
+#if defined _WIN32 
+        DebugMessage(message);
+#else
+
+#endif
+
+    }
+}
+#else
+
+#endif
+
 
 void FreeCryptoResult(const void * object)
 {
@@ -1531,7 +1575,7 @@ void FreeCryptoResult(const void * object)
 // non optimized strlength
 unsigned int strlength(const char* message)
 {
-    int length = 0;
+    unsigned int length = 0;
     if (message != NULL)
     {
         while (*message != '\0')
@@ -1558,7 +1602,14 @@ char* strduplicate(const char* message)
     if (message != NULL)
     {
         length = strlength(message);
-        duplicate = (char * )malloc(length + 1);
+        if (length != INVALID_LENGTH_VALUE)
+        {
+            duplicate = (char*)malloc(length + 1);
+            if (duplicate != NULL)
+            {
+                strcpy_s(duplicate,length+1,message);
+            }
+        }
         return duplicate;
     }
     return duplicate;
