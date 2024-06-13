@@ -1,7 +1,8 @@
 Sqlite Hashing version 2024.06.12.1
 
 #TODO: Bug Fix preprocessor macro inclusion -- priliminary completion
-TODO: Add blob specific functions for less memory intensive access to blobs or text objects
+#TODO: Add blob specific functions for less memory intensive access to blobs or text objects
+TODO: Add blob specific functions for mac hashing algorithms
 TODO: Verify mac functions
 TODO: Complete encryption functions
 TODO: Add Compression
