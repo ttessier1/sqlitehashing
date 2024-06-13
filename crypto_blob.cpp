@@ -320,6 +320,122 @@ typedef struct sha512Context
 } Sha512Context, * Sha512ContextPtr;
 #endif
 
+#if (defined(__SHA3224__)||defined(__ALL__)) && defined(__USE_BLOB__)
+typedef struct sha3224Context
+{
+    SHA3_224* context;
+} Sha3224Context, * Sha3224ContextPtr;
+#endif
+
+#if (defined(__SHA3256__)||defined(__ALL__)) && defined(__USE_BLOB__)
+typedef struct sha3256Context
+{
+    SHA3_256* context;
+} Sha3256Context, * Sha3256ContextPtr;
+#endif
+
+#if (defined(__SHA3384__)||defined(__ALL__)) && defined(__USE_BLOB__)
+typedef struct sha3384Context
+{
+    SHA3_384* context;
+} Sha3384Context, * Sha3384ContextPtr;
+#endif
+
+#if (defined(__SHA3512__)||defined(__ALL__)) && defined(__USE_BLOB__)
+typedef struct sha3512Context
+{
+    SHA3_512* context;
+} Sha3512Context, * Sha3512ContextPtr;
+#endif
+
+#if (defined(__RIPEMD128__) || defined (__ALL__)) && defined(__USE_BLOB__)
+typedef struct ripeMD128Context {
+    RIPEMD128* context;
+}RipeMD128Context, * RipeMD128ContextPtr;
+#endif
+#if (defined(__RIPEMD160__) || defined (__ALL__)) && defined(__USE_BLOB__)
+typedef struct ripeMD160Context {
+    RIPEMD160* context;
+}RipeMD160Context, * RipeMD160ContextPtr;
+#endif
+#if (defined(__RIPEMD256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+typedef struct ripeMD256Context {
+    RIPEMD256* context;
+}RipeMD256Context, * RipeMD256ContextPtr;
+#endif
+#if (defined(__RIPEMD320__) || defined (__ALL__)) && defined(__USE_BLOB__)
+typedef struct ripeMD320Context {
+    RIPEMD320* context;
+}RipeMD320Context, * RipeMD320ContextPtr;
+#endif
+#if (defined(__BLAKE2B__) || defined (__ALL__)) && defined(__USE_BLOB__)
+typedef struct blake2BContext
+{
+    BLAKE2b* context;
+}Blake2BContext, * Blake2BContextPtr;
+#endif
+#if (defined(__BLAKE2S__) || defined (__ALL__)) && defined(__USE_BLOB__)
+typedef struct blake2SContext {
+    BLAKE2s * context;
+}Blake2SContext, * Blake2SContextPtr;
+#endif
+#if (defined(__TIGER__) || defined (__ALL__)) && defined(__USE_BLOB__)
+typedef struct tigerContext {
+    Tiger* context;
+}TigerContext, * TigerContextPtr;
+#endif
+#if (defined(__SHAKE128__) || defined (__ALL__)) && defined(__USE_BLOB__)
+typedef struct shake128Context {
+    SHAKE128* context;
+}Shake128Context, * Shake128ContextPtr;
+#endif
+#if (defined(__SHAKE256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+typedef struct shake256Context {
+    SHAKE256* context;
+}Shake256Context, * Shake256ContextPtr;
+#endif
+#if (defined(__SIPHASH64__) || defined (__ALL__)) && defined(__USE_BLOB__)
+typedef struct siphash64Context {
+    SipHash<2, 4, false>* context;
+}Siphash64Context, * Siphash64ContextPtr;
+#endif
+#if (defined(__SIPHASH128__) || defined (__ALL__)) && defined(__USE_BLOB__)
+typedef struct siphash128Context {
+    SipHash<4, 8, false>* context;
+}Siphash128Context, * Siphash128ContextPtr;
+#endif
+#if (defined(__LSH224__) || defined (__ALL__)) && defined(__USE_BLOB__)
+typedef struct lsh224Context {
+    LSH224* context;
+}Lsh224Context, * Lsh224ContextPtr;
+#endif
+#if (defined(__LSH256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+typedef struct lsh256Context {
+    LSH256* context;
+}Lsh256Context, * Lsh256ContextPtr;
+#endif
+#if (defined(__LSH384__) || defined (__ALL__)) && defined(__USE_BLOB__)
+typedef struct lsh384Context {
+    LSH384* context;
+}Lsh384Context, * Lsh384ContextPtr;
+#endif
+#if (defined(__LSH512__) || defined (__ALL__)) && defined(__USE_BLOB__)
+typedef struct lsh512Context {
+    LSH512* context;
+} Lsh512Context, * Lsh512ContextPtr;
+#endif
+#if (defined(__SM3__) || defined (__ALL__)) && defined(__USE_BLOB__)
+typedef struct sm3Context {
+    SM3* context;
+}Sm3Context, * Sm3ContextPtr;
+#endif
+#if (defined(__WHIRLPOOL__) || defined (__ALL__)) && defined(__USE_BLOB__)
+typedef struct whirlpoolContext {
+    Whirlpool * context;
+}WhirlpoolContext, * WhirlpoolContextPtr;
+#endif
+
+
 #ifdef __cplusplus
 extern "C" {
     
@@ -896,6 +1012,907 @@ extern "C" {
         }
         return result;
     }
+#endif
+
+#if (defined(__SHA3224__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    Sha3224ContextPtr Sha3224Initialize()
+    {
+        Sha3224ContextPtr context = (Sha3224ContextPtr)malloc(sizeof(Sha3224Context));
+        if (context != NULL)
+        {
+            new(context)Sha3224ContextPtr();
+            context->context = (SHA3_224*)malloc(sizeof(SHA3_224));
+            if (context->context)
+            {
+                new(context->context) SHA3_224();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
+    }
+
+    void Sha3224Update(Sha3224ContextPtr context, const char* message, unsigned int length)
+    {
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* Sha3224Finalize(Sha3224ContextPtr context)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(SHA3_224::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SHA3_224::DIGESTSIZE, algo_sha3_224);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SHA3_224::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SHA3_224::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
+    }
+
+#endif
+
+#if (defined(__SHA3256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    Sha3256ContextPtr Sha3256Initialize()
+    {
+        Sha3256ContextPtr context = (Sha3256ContextPtr)malloc(sizeof(Sha3256Context));
+        if (context != NULL)
+        {
+            new(context)Sha3256ContextPtr();
+            context->context = (SHA3_256*)malloc(sizeof(SHA3_256));
+            if (context->context)
+            {
+                new(context->context) SHA3_256();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
+    }
+
+    void Sha3256Update(Sha3256ContextPtr context, const char* message, unsigned int length)
+    {
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* Sha3256Finalize(Sha3256ContextPtr context)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(SHA3_256::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SHA3_256::DIGESTSIZE, algo_sha3_256);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SHA3_256::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SHA3_256::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
+    }
+
+#endif
+
+#if (defined(__SHA3384__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    Sha3384ContextPtr Sha3384Initialize()
+    {
+        Sha3384ContextPtr context = (Sha3384ContextPtr)malloc(sizeof(Sha3384Context));
+        if (context != NULL)
+        {
+            new(context)Sha3384ContextPtr();
+            context->context = (SHA3_384*)malloc(sizeof(SHA3_384));
+            if (context->context)
+            {
+                new(context->context) SHA3_384();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
+    }
+
+    void Sha3384Update(Sha3384ContextPtr context, const char* message, unsigned int length)
+    {
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* Sha3384Finalize(Sha3384ContextPtr context)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(SHA3_384::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SHA3_384::DIGESTSIZE, algo_sha3_384);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SHA3_384::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SHA3_384::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
+    }
+
+#endif
+
+#if (defined(__SHA3512__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    Sha3512ContextPtr Sha3512Initialize()
+    {
+        Sha3512ContextPtr context = (Sha3512ContextPtr)malloc(sizeof(Sha3512Context));
+        if (context != NULL)
+        {
+            new(context)Sha3512ContextPtr();
+            context->context = (SHA3_512*)malloc(sizeof(SHA3_512));
+            if (context->context)
+            {
+                new(context->context) SHA3_512();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
+    }
+
+    void Sha3512Update(Sha3512ContextPtr context, const char* message, unsigned int length)
+    {
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* Sha3512Finalize(Sha3512ContextPtr context)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(SHA3_512::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SHA3_512::DIGESTSIZE, algo_sha3_512);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SHA3_512::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SHA3_512::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
+    }
+
+#endif
+
+#if (defined(__RIPEMD128__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    RipeMD128ContextPtr RipeMD128Initialize()
+    {
+        RipeMD128ContextPtr context = (RipeMD128ContextPtr)malloc(sizeof(RipeMD128Context));
+        if (context != NULL)
+        {
+            new(context)RipeMD128ContextPtr();
+            context->context = (RIPEMD128*)malloc(sizeof(RIPEMD128));
+            if (context->context)
+            {
+                new(context->context) RIPEMD128();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
+    }
+
+    void RipeMD128Update(RipeMD128ContextPtr context, const char* message, unsigned int length)
+    {
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* RipeMD128Finalize(RipeMD128ContextPtr context)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(RIPEMD128::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, RIPEMD128::DIGESTSIZE, algo_ripemd_128);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (RIPEMD128::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (RIPEMD128::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
+    }
+
+#endif
+
+#if (defined(__RIPEMD160__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    RipeMD160ContextPtr RipeMD160Initialize()
+    {
+        RipeMD160ContextPtr context = (RipeMD160ContextPtr)malloc(sizeof(RipeMD160Context));
+        if (context != NULL)
+        {
+            new(context)RipeMD160ContextPtr();
+            context->context = (RIPEMD160*)malloc(sizeof(RIPEMD160));
+            if (context->context)
+            {
+                new(context->context) RIPEMD160();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
+    }
+
+    void RipeMD160Update(RipeMD160ContextPtr context, const char* message, unsigned int length)
+    {
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* RipeMD160Finalize(RipeMD160ContextPtr context)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(RIPEMD160::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, RIPEMD160::DIGESTSIZE, algo_ripemd_160);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (RIPEMD160::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (RIPEMD160::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
+    }
+
+#endif
+
+#if (defined(__RIPEMD256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    RipeMD256ContextPtr RipeMD256Initialize()
+    {
+        RipeMD256ContextPtr context = (RipeMD256ContextPtr)malloc(sizeof(RipeMD256Context));
+        if (context != NULL)
+        {
+            new(context)RipeMD256ContextPtr();
+            context->context = (RIPEMD256*)malloc(sizeof(RIPEMD256));
+            if (context->context)
+            {
+                new(context->context) RIPEMD256();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
+    }
+
+    void RipeMD256Update(RipeMD256ContextPtr context, const char* message, unsigned int length)
+    {
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* RipeMD256Finalize(RipeMD256ContextPtr context)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(RIPEMD256::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, RIPEMD256::DIGESTSIZE, algo_ripemd_256);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (RIPEMD256::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (RIPEMD256::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
+    }
+
+#endif
+
+#if (defined(__RIPEMD320__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    RipeMD320ContextPtr RipeMD320Initialize()
+    {
+        RipeMD320ContextPtr context = (RipeMD320ContextPtr)malloc(sizeof(RipeMD320Context));
+        if (context != NULL)
+        {
+            new(context)RipeMD320ContextPtr();
+            context->context = (RIPEMD320*)malloc(sizeof(RIPEMD320));
+            if (context->context)
+            {
+                new(context->context) RIPEMD320();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
+    }
+
+    void RipeMD320Update(RipeMD320ContextPtr context, const char* message, unsigned int length)
+    {
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* RipeMD320Finalize(RipeMD320ContextPtr context)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(RIPEMD320::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, RIPEMD320::DIGESTSIZE, algo_ripemd_320);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (RIPEMD320::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (RIPEMD320::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
+    }
+
+#endif
+
+#if (defined(__BLAKE2B__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    Blake2BContextPtr Blake2BInitialize()
+    {
+        Blake2BContextPtr context = (Blake2BContextPtr)malloc(sizeof(Blake2BContext));
+        if (context != NULL)
+        {
+            new(context)Blake2BContextPtr();
+            context->context = (BLAKE2b*)malloc(sizeof(BLAKE2b));
+            if (context->context)
+            {
+                new(context->context) BLAKE2b();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
+    }
+
+    void Blake2BUpdate(Blake2BContextPtr context, const char* message, unsigned int length)
+    {
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* Blake2BFinalize(Blake2BContextPtr context)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(BLAKE2b::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, BLAKE2b::DIGESTSIZE, algo_blake2b);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (BLAKE2b::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (BLAKE2b::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
+    }
+
+#endif
+
+#if (defined(__BLAKE2S__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    Blake2SContextPtr Blake2SInitialize()
+    {
+        Blake2SContextPtr context = (Blake2SContextPtr)malloc(sizeof(Blake2SContext));
+        if (context != NULL)
+        {
+            new(context)Blake2SContextPtr();
+            context->context = (BLAKE2s*)malloc(sizeof(BLAKE2s));
+            if (context->context)
+            {
+                new(context->context) BLAKE2s();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
+    }
+
+    void Blake2SUpdate(Blake2SContextPtr context, const char* message, unsigned int length)
+    {
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* Blake2SFinalize(Blake2SContextPtr context)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(BLAKE2s::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, BLAKE2s::DIGESTSIZE, algo_blake2s);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (BLAKE2s::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (BLAKE2s::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
+    }
+
+#endif
+
+#if (defined(__TIGER__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    TigerContextPtr TigerInitialize()
+    {
+        return NULL;
+    }
+    void TigerUpdate(TigerContextPtr context, const char* message, unsigned int length)
+    {
+
+    }
+    const char* TigerFinalize(TigerContextPtr context)
+    {
+        return NULL;
+    }
+
+#endif
+
+#if (defined(__SHAKE128__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    Shake128ContextPtr Shake128Initialize()
+    {
+        return NULL;
+    }
+    void Shake128Update(Shake128ContextPtr context, const char* message, unsigned int length)
+    {
+
+    }
+    const char* Shake128Finalize(Shake128ContextPtr context)
+    {
+        return NULL;
+    }
+
+#endif
+#if (defined(__SHAKE256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    Shake256ContextPtr Shake256Initialize()
+    {
+        return NULL;
+    }
+    void Shake256Update(Shake256ContextPtr context, const char* message, unsigned int length)
+    {
+
+    }
+    const char* Shake256Finalize(Shake256ContextPtr context)
+    {
+        return NULL;
+    }
+
+#endif
+#if (defined(__SIPHASH64__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    Siphash64ContextPtr Siphash64Initialize()
+    {
+        return NULL;
+    }
+    void Siphash64Update(Siphash64ContextPtr context, const char* message, unsigned int length)
+    {
+
+    }
+    const char* Siphash64Finalize(Siphash64ContextPtr context)
+    {
+        return NULL;
+    }
+#endif
+#if (defined(__SIPHASH128__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    Siphash128ContextPtr Siphash128Initialize()
+    {
+        return NULL;
+    }
+    void Siphash128Update(Siphash128ContextPtr context, const char* message, unsigned int length)
+    {
+
+    }
+    const char* Siphash128Finalize(Siphash128ContextPtr context)
+    {
+        return NULL;
+    }
+
+#endif
+
+
+#if (defined(__LSH224__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    Lsh224ContextPtr Lsh224Initialize()
+    {
+        return NULL;
+    }
+    void Lsh224Update(Lsh224ContextPtr context, const char* message, unsigned int length)
+    {
+
+    }
+    const char* Lsh224Finalize(Lsh224ContextPtr context)
+    {
+        return NULL;
+    }
+
+#endif
+
+#if (defined(__LSH256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    Lsh256ContextPtr Lsh256Initialize()
+    {
+        return NULL;
+    }
+    void Lsh256Update(Lsh256ContextPtr context, const char* message, unsigned int length)
+    {
+
+    }
+    const char* Lsh256Finalize(Lsh256ContextPtr context)
+    {
+        return NULL;
+    }
+
+#endif
+#if (defined(__LSH384__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    Lsh384ContextPtr Lsh384Initialize()
+    {
+        return NULL;
+    }
+    void Lsh384Update(Lsh384ContextPtr context, const char* message, unsigned int length)
+    {
+
+    }
+    const char* Lsh384Finalize(Lsh384ContextPtr context)
+    {
+        return NULL;
+    }
+
+#endif
+#if (defined(__LSH512__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    Lsh512ContextPtr Lsh512Initialize()
+    {
+        return NULL;
+    }
+    void Lsh512Update(Lsh512ContextPtr context, const char* message, unsigned int length)
+    {
+
+    }
+    const char* Lsh512Finalize(Lsh512ContextPtr context)
+    {
+        return NULL;
+    }
+
+#endif
+
+#if (defined(__SM3__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    Sm3ContextPtr Sm3Initialize()
+    {
+        return NULL;
+    }
+    void Sm3Update(Sm3ContextPtr context, const char* message, unsigned int length)
+    {
+
+    }
+    const char* Sm3Finalize(Sm3ContextPtr context)
+    {
+        return NULL;
+    }
+
+#endif
+#if (defined(__WHIRLPOOL__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+    WhirlpoolContextPtr WhirlpoolInitialize()
+    {
+        return NULL;
+    }
+    void WhirlpoolUpdate(WhirlpoolContextPtr context, const char* message, unsigned int length)
+    {
+
+    }
+    const char* WhirlpoolFinalize(WhirlpoolContextPtr context)
+    {
+        return NULL;
+    }
+
 #endif
 
 }
