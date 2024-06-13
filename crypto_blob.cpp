@@ -401,7 +401,7 @@ typedef struct siphash64Context {
 #endif
 #if (defined(__SIPHASH128__) || defined (__ALL__)) && defined(__USE_BLOB__)
 typedef struct siphash128Context {
-    SipHash<4, 8, false>* context;
+    SipHash<4, 8, true>* context;
 }Siphash128Context, * Siphash128ContextPtr;
 #endif
 #if (defined(__LSH224__) || defined (__ALL__)) && defined(__USE_BLOB__)
@@ -1738,15 +1738,70 @@ extern "C" {
 
     TigerContextPtr TigerInitialize()
     {
-        return NULL;
+        TigerContextPtr context = (TigerContextPtr)malloc(sizeof(TigerContext));
+        if (context != NULL)
+        {
+            new(context)TigerContextPtr();
+            context->context = (Tiger*)malloc(sizeof(Tiger));
+            if (context->context)
+            {
+                new(context->context) Tiger();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
     }
+
     void TigerUpdate(TigerContextPtr context, const char* message, unsigned int length)
     {
-
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
     }
+
     const char* TigerFinalize(TigerContextPtr context)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(Tiger::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, Tiger::DIGESTSIZE, algo_tiger);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (Tiger::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (Tiger::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
     }
 
 #endif
@@ -1755,15 +1810,70 @@ extern "C" {
 
     Shake128ContextPtr Shake128Initialize()
     {
-        return NULL;
+        Shake128ContextPtr context = (Shake128ContextPtr)malloc(sizeof(Shake128Context));
+        if (context != NULL)
+        {
+            new(context)Shake128ContextPtr();
+            context->context = (SHAKE128*)malloc(sizeof(SHAKE128));
+            if (context->context)
+            {
+                new(context->context) SHAKE128();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
     }
+
     void Shake128Update(Shake128ContextPtr context, const char* message, unsigned int length)
     {
-
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
     }
+
     const char* Shake128Finalize(Shake128ContextPtr context)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(SHAKE128::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SHAKE128::DIGESTSIZE, algo_shake_128);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SHAKE128::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SHAKE128::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
     }
 
 #endif
@@ -1771,15 +1881,70 @@ extern "C" {
 
     Shake256ContextPtr Shake256Initialize()
     {
-        return NULL;
+        Shake256ContextPtr context = (Shake256ContextPtr)malloc(sizeof(Shake256Context));
+        if (context != NULL)
+        {
+            new(context)Shake256ContextPtr();
+            context->context = (SHAKE256*)malloc(sizeof(SHAKE256));
+            if (context->context)
+            {
+                new(context->context) SHAKE256();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
     }
+
     void Shake256Update(Shake256ContextPtr context, const char* message, unsigned int length)
     {
-
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
     }
+
     const char* Shake256Finalize(Shake256ContextPtr context)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(SHAKE256::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SHAKE256::DIGESTSIZE, algo_shake_256);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SHAKE256::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SHAKE256::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
     }
 
 #endif
@@ -1787,30 +1952,140 @@ extern "C" {
 
     Siphash64ContextPtr Siphash64Initialize()
     {
-        return NULL;
+        Siphash64ContextPtr context = (Siphash64ContextPtr)malloc(sizeof(Siphash64Context));
+        if (context != NULL)
+        {
+            new(context)Siphash64ContextPtr();
+            context->context = (SipHash<2, 4, false>*)malloc(sizeof(SipHash<2, 4, false>));
+            if (context->context)
+            {
+                new(context->context) SipHash<2, 4, false>();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
     }
+
     void Siphash64Update(Siphash64ContextPtr context, const char* message, unsigned int length)
     {
-
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
     }
+
     const char* Siphash64Finalize(Siphash64ContextPtr context)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(SipHash<2, 4, false>::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SipHash<2, 4, false>::DIGESTSIZE, algo_sip_hash64);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SipHash<2, 4, false>::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SipHash<2, 4, false>::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
     }
 #endif
 #if (defined(__SIPHASH128__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
     Siphash128ContextPtr Siphash128Initialize()
     {
-        return NULL;
+        Siphash128ContextPtr context = (Siphash128ContextPtr)malloc(sizeof(Siphash128Context));
+        if (context != NULL)
+        {
+            new(context)Siphash128ContextPtr();
+            context->context = (SipHash<4, 8, true>*)malloc(sizeof(SipHash<4, 8, true>));
+            if (context->context)
+            {
+                new(context->context) SipHash<4, 8, true>();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
     }
+
     void Siphash128Update(Siphash128ContextPtr context, const char* message, unsigned int length)
     {
-
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
     }
+
     const char* Siphash128Finalize(Siphash128ContextPtr context)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(SipHash<4, 8, true>::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SipHash<4, 8, true>::DIGESTSIZE, algo_sip_hash128);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SipHash<4, 8, true>::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SipHash<4, 8, true>::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
     }
 
 #endif
@@ -1820,15 +2095,70 @@ extern "C" {
 
     Lsh224ContextPtr Lsh224Initialize()
     {
-        return NULL;
+        Lsh224ContextPtr context = (Lsh224ContextPtr)malloc(sizeof(Lsh224Context));
+        if (context != NULL)
+        {
+            new(context)Lsh224ContextPtr();
+            context->context = (LSH224*)malloc(sizeof(LSH224));
+            if (context->context)
+            {
+                new(context->context) LSH224();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
     }
+
     void Lsh224Update(Lsh224ContextPtr context, const char* message, unsigned int length)
     {
-
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
     }
+
     const char* Lsh224Finalize(Lsh224ContextPtr context)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(LSH224::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, LSH224::DIGESTSIZE, algo_lsh_224);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (LSH224::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (LSH224::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
     }
 
 #endif
@@ -1837,15 +2167,70 @@ extern "C" {
 
     Lsh256ContextPtr Lsh256Initialize()
     {
-        return NULL;
+        Lsh256ContextPtr context = (Lsh256ContextPtr)malloc(sizeof(Lsh256Context));
+        if (context != NULL)
+        {
+            new(context)Lsh256ContextPtr();
+            context->context = (LSH256*)malloc(sizeof(LSH256));
+            if (context->context)
+            {
+                new(context->context) LSH256();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
     }
+
     void Lsh256Update(Lsh256ContextPtr context, const char* message, unsigned int length)
     {
-
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
     }
+
     const char* Lsh256Finalize(Lsh256ContextPtr context)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(LSH256::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, LSH256::DIGESTSIZE, algo_lsh_256);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (LSH256::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (LSH256::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
     }
 
 #endif
@@ -1853,15 +2238,70 @@ extern "C" {
 
     Lsh384ContextPtr Lsh384Initialize()
     {
-        return NULL;
+        Lsh384ContextPtr context = (Lsh384ContextPtr)malloc(sizeof(Lsh384Context));
+        if (context != NULL)
+        {
+            new(context)Lsh384ContextPtr();
+            context->context = (LSH384*)malloc(sizeof(LSH384));
+            if (context->context)
+            {
+                new(context->context) LSH384();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
     }
+
     void Lsh384Update(Lsh384ContextPtr context, const char* message, unsigned int length)
     {
-
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
     }
+
     const char* Lsh384Finalize(Lsh384ContextPtr context)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(LSH384::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, LSH384::DIGESTSIZE, algo_lsh_384);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (LSH384::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (LSH384::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
     }
 
 #endif
@@ -1869,15 +2309,70 @@ extern "C" {
 
     Lsh512ContextPtr Lsh512Initialize()
     {
-        return NULL;
+        Lsh512ContextPtr context = (Lsh512ContextPtr)malloc(sizeof(Lsh512Context));
+        if (context != NULL)
+        {
+            new(context)Lsh512ContextPtr();
+            context->context = (LSH512*)malloc(sizeof(LSH512));
+            if (context->context)
+            {
+                new(context->context) LSH512();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
     }
+
     void Lsh512Update(Lsh512ContextPtr context, const char* message, unsigned int length)
     {
-
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
     }
+
     const char* Lsh512Finalize(Lsh512ContextPtr context)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(LSH512::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, LSH512::DIGESTSIZE, algo_lsh_512);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (LSH512::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (LSH512::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
     }
 
 #endif
@@ -1886,15 +2381,70 @@ extern "C" {
 
     Sm3ContextPtr Sm3Initialize()
     {
-        return NULL;
+        Sm3ContextPtr context = (Sm3ContextPtr)malloc(sizeof(Sm3Context));
+        if (context != NULL)
+        {
+            new(context)Sm3ContextPtr();
+            context->context = (SM3*)malloc(sizeof(SM3));
+            if (context->context)
+            {
+                new(context->context) SM3();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
     }
+
     void Sm3Update(Sm3ContextPtr context, const char* message, unsigned int length)
     {
-
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
     }
+
     const char* Sm3Finalize(Sm3ContextPtr context)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(SM3::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SM3::DIGESTSIZE, algo_sm3);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SM3::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SM3::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
     }
 
 #endif
@@ -1902,15 +2452,70 @@ extern "C" {
 
     WhirlpoolContextPtr WhirlpoolInitialize()
     {
-        return NULL;
+        WhirlpoolContextPtr context = (WhirlpoolContextPtr)malloc(sizeof(WhirlpoolContext));
+        if (context != NULL)
+        {
+            new(context)WhirlpoolContextPtr();
+            context->context = (Whirlpool*)malloc(sizeof(Whirlpool));
+            if (context->context)
+            {
+                new(context->context) Whirlpool();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
     }
+
     void WhirlpoolUpdate(WhirlpoolContextPtr context, const char* message, unsigned int length)
     {
-
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
     }
+
     const char* WhirlpoolFinalize(WhirlpoolContextPtr context)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(Whirlpool::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, Whirlpool::DIGESTSIZE, algo_whirlpool);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (Whirlpool::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (Whirlpool::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
     }
 
 #endif
