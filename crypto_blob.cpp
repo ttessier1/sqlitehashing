@@ -257,28 +257,74 @@
 
 using namespace CryptoPP;
 
-
-
-#if defined(__MD2__) ||  defined(__MD4__) ||  defined(__MD5__) ||  (defined __ALL__)
+#if (defined(__MD2__) ||  defined(__MD4__) ||  defined(__MD5__) ||  defined (__ALL__)) && defined(__USE_BLOB__)
 
 using namespace CryptoPP::Weak;
 
-typedef struct md2Context
+#if (defined(__MD2__) ||  defined (__ALL__))&& defined(__USE_BLOB__)
+struct md2Context
 {
     CryptoPP::Weak1::MD2* context;
-} Md5Context, * Md5ContextPtr;
+};
+#endif
 
+#if (defined(__MD4__) || defined(__ALL__))&& defined(__USE_BLOB__)
+typedef struct md4Context
+{
+    CryptoPP::Weak1::MD4* context;
+} Md4Context, * Md4ContextPtr;
+#endif
+
+#if (defined(__MD5__)||defined(__ALL__)) && defined(__USE_BLOB__)
+typedef struct md5Context
+{
+    CryptoPP::Weak1::MD5* context;
+} Md5Context, * Md5ContextPtr;
+#endif
 
 #endif
 
 
-//SHA1 * g_sha = NULL ;
+#if (defined(__SHA1__)||defined(__ALL__)) && defined(__USE_BLOB__)
+typedef struct sha1Context
+{
+    SHA1* context;
+} Sha1Context, * Sha1ContextPtr;
+#endif
+
+#if (defined(__SHA224__)||defined(__ALL__)) && defined(__USE_BLOB__)
+typedef struct sha224Context
+{
+    SHA224* context;
+} Sha224Context, * Sha224ContextPtr;
+#endif
+
+#if (defined(__SHA256__)||defined(__ALL__)) && defined(__USE_BLOB__)
+typedef struct sha256Context
+{
+    SHA256* context;
+} Sha256Context, * Sha256ContextPtr;
+#endif
+
+#if (defined(__SHA384__)||defined(__ALL__)) && defined(__USE_BLOB__)
+typedef struct sha384Context
+{
+    SHA384* context;
+} Sha384Context, * Sha384ContextPtr;
+#endif
+
+#if (defined(__SHA512__)||defined(__ALL__)) && defined(__USE_BLOB__)
+typedef struct sha512Context
+{
+    SHA512* context;
+} Sha512Context, * Sha512ContextPtr;
+#endif
 
 #ifdef __cplusplus
 extern "C" {
     
 
-#if defined(__MD2__) || (defined __ALL__)
+#if (defined(__MD2__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
 
     Md2ContextPtr Md2Initialize()
@@ -325,7 +371,78 @@ extern "C" {
                     DebugMessage("Processed ToHex\r\n");
                     if (strlen(result) != (MD2::DIGESTSIZE * 2))
                     {
-                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlen(result), (MD2::DIGESTSIZE * 2), result);
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (MD2::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
+    }
+#endif 
+#if (defined(__MD4__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+
+    Md4ContextPtr Md4Initialize()
+    {
+        Md4ContextPtr context = (Md4ContextPtr)malloc(sizeof(Md4Context));
+        if (context != NULL)
+        {
+            new(context)Md4ContextPtr();
+            context->context = (MD4*)malloc(sizeof(MD4));
+            if (context->context)
+            {
+                new(context->context) MD4();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
+    }
+
+    void Md4Update(Md4ContextPtr context, const char* message, unsigned int length)
+    {
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* Md4Finalize(Md4ContextPtr context)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(MD4::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, MD4::DIGESTSIZE, algo_md4);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (MD4::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (MD4::DIGESTSIZE * 2), result);
                         return NULL;
                     }
                 }
@@ -349,5 +466,437 @@ extern "C" {
         return result;
     }
 #endif
+#if (defined(__MD5__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+
+    Md5ContextPtr Md5Initialize()
+    {
+        Md5ContextPtr context = (Md5ContextPtr)malloc(sizeof(Md5Context));
+        if (context != NULL)
+        {
+            new(context)Md5ContextPtr();
+            context->context = (MD5*)malloc(sizeof(MD5));
+            if (context->context)
+            {
+                new(context->context) MD5();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
+    }
+
+    void Md5Update(Md5ContextPtr context, const char* message, unsigned int length)
+    {
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* Md5Finalize(Md5ContextPtr context)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(MD5::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, MD5::DIGESTSIZE, algo_md5);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (MD5::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (MD5::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
+    }
+#endif
+
+#if (defined(__SHA1__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+
+    Sha1ContextPtr Sha1Initialize()
+    {
+        Sha1ContextPtr context = (Sha1ContextPtr)malloc(sizeof(Sha1Context));
+        if (context != NULL)
+        {
+            new(context)Sha1ContextPtr();
+            context->context = (SHA1*)malloc(sizeof(SHA1));
+            if (context->context)
+            {
+                new(context->context) SHA1();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
+    }
+
+    void Sha1Update(Sha1ContextPtr context, const char* message, unsigned int length)
+    {
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* Sha1Finalize(Sha1ContextPtr context)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(SHA1::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SHA1::DIGESTSIZE, algo_sha1);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SHA1::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SHA1::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
+    }
+#endif
+
+#if (defined(__SHA224__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+
+    Sha224ContextPtr Sha224Initialize()
+    {
+        Sha224ContextPtr context = (Sha224ContextPtr)malloc(sizeof(Sha224Context));
+        if (context != NULL)
+        {
+            new(context)Sha224ContextPtr();
+            context->context = (SHA224*)malloc(sizeof(SHA224));
+            if (context->context)
+            {
+                new(context->context) SHA224();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
+    }
+
+    void Sha224Update(Sha224ContextPtr context, const char* message, unsigned int length)
+    {
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* Sha224Finalize(Sha224ContextPtr context)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(SHA224::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SHA224::DIGESTSIZE, algo_sha224);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SHA224::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SHA224::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
+    }
+#endif
+
+#if (defined(__SHA256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+
+    Sha256ContextPtr Sha256Initialize()
+    {
+        Sha256ContextPtr context = (Sha256ContextPtr)malloc(sizeof(Sha256Context));
+        if (context != NULL)
+        {
+            new(context)Sha256ContextPtr();
+            context->context = (SHA256*)malloc(sizeof(SHA256));
+            if (context->context)
+            {
+                new(context->context) SHA256();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
+    }
+
+    void Sha256Update(Sha256ContextPtr context, const char* message, unsigned int length)
+    {
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* Sha256Finalize(Sha256ContextPtr context)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(SHA256::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SHA256::DIGESTSIZE, algo_sha256);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SHA256::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SHA256::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
+    }
+#endif
+
+#if (defined(__SHA384__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+
+    Sha384ContextPtr Sha384Initialize()
+    {
+        Sha384ContextPtr context = (Sha384ContextPtr)malloc(sizeof(Sha384Context));
+        if (context != NULL)
+        {
+            new(context)Sha384ContextPtr();
+            context->context = (SHA384*)malloc(sizeof(SHA384));
+            if (context->context)
+            {
+                new(context->context) SHA384();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
+    }
+
+    void Sha384Update(Sha384ContextPtr context, const char* message, unsigned int length)
+    {
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* Sha384Finalize(Sha384ContextPtr context)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(SHA384::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SHA384::DIGESTSIZE, algo_sha384);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SHA384::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SHA384::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
+    }
+#endif
+
+#if (defined(__SHA512__) || defined (__ALL__)) && defined(__USE_BLOB__)
+
+
+    Sha512ContextPtr Sha512Initialize()
+    {
+        Sha512ContextPtr context = (Sha512ContextPtr)malloc(sizeof(Sha512Context));
+        if (context != NULL)
+        {
+            new(context)Sha512ContextPtr();
+            context->context = (SHA512*)malloc(sizeof(SHA512));
+            if (context->context)
+            {
+                new(context->context) SHA512();
+            }
+            else
+            {
+                free(context);
+                context = NULL;
+            }
+        }
+        return context;
+    }
+
+    void Sha512Update(Sha512ContextPtr context, const char* message, unsigned int length)
+    {
+        if (context != NULL && context->context != NULL && message != NULL)
+        {
+            context->context->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* Sha512Finalize(Sha512ContextPtr context)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (context != NULL && context->context != NULL)
+        {
+            lpBuffer = (char*)malloc(SHA512::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                context->context->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SHA512::DIGESTSIZE, algo_sha512);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SHA512::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SHA512::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid Context\r\n");
+        }
+        return result;
+    }
+#endif
+
 }
 #endif

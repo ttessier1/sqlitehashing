@@ -208,7 +208,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_ROT13 "rot13"
 #define HASH_INFO_COLUMN_TYPE_ROT13 "transform"
-#define HASH_INFO_COLUMN_SIGNATURE_ROT13 "select rot('[stringtohash]');"
+#define HASH_INFO_COLUMN_SIGNATURE_ROT13 "select rot([stringtohash]);"
 #define HASH_INFO_FUNCTION_VERSION_ROT13 "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_ROT13 "2024-01-19-01:01:01"
 
@@ -226,7 +226,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_MD2BLOB "md2blob"
 #define HASH_INFO_COLUMN_TYPE_MD2BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_MD2BLOB "select md2blob(database,table,rowid,column);"
+#define HASH_INFO_COLUMN_SIGNATURE_MD2BLOB "select md2blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_MD2BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_MD2BLOB "2024-06-10-01:01:01"
 
@@ -246,7 +246,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_MD4BLOB "md4blob"
 #define HASH_INFO_COLUMN_TYPE_MD4BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_MD4BLOB "select md4blob(database,table,rowid,column);"
+#define HASH_INFO_COLUMN_SIGNATURE_MD4BLOB "select md4blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_MD4BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_MD4BLOB "2024-06-10-01:01:01"
 
@@ -266,7 +266,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_MD5BLOB "md5blob"
 #define HASH_INFO_COLUMN_TYPE_MD5BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_MD5BLOB "select md5blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_MD5BLOB "select md5blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_MD5BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_MD5BLOB "2024-06-10-01:01:01"
 
@@ -286,7 +286,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA1BLOB "sha1blob"
 #define HASH_INFO_COLUMN_TYPE_SHA1BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA1BLOB "select sha1blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA1BLOB "select sha1blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA1BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA1BLOB "2024-06-10-01:01:01"
 
@@ -306,7 +306,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA224BLOB "sha224blob"
 #define HASH_INFO_COLUMN_TYPE_SHA224BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA224BLOB "select sha224blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA224BLOB "select sha224blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA224BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA224BLOB "2024-06-10-01:01:01"
 
@@ -326,7 +326,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA256BLOB "sha256blob"
 #define HASH_INFO_COLUMN_TYPE_SHA256BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA256BLOB "select sha256blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA256BLOB "select sha256blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA256BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA256BLOB "2024-06-10-01:01:01"
 
@@ -346,7 +346,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA384BLOB "sha384blob"
 #define HASH_INFO_COLUMN_TYPE_SHA384BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA384BLOB "select sha384blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA384BLOB "select sha384blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA384BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA384BLOB "2024-06-10-01:01:01"
 
@@ -366,7 +366,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA512BLOB "sha512blob"
 #define HASH_INFO_COLUMN_TYPE_SHA512BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA512BLOB "select sha512blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA512BLOB "select sha512blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA512BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA512BLOB "2024-06-10-01:01:01"
 
@@ -386,7 +386,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA3224BLOB "sha3224blob"
 #define HASH_INFO_COLUMN_TYPE_SHA3224BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA3224BLOB "select sha3224blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA3224BLOB "select sha3224blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA3224BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA3224BLOB "2024-06-10-01:01:01"
 
@@ -406,7 +406,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA3256BLOB "sha3256blob"
 #define HASH_INFO_COLUMN_TYPE_SHA3256BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA3256BLOB "select sha3256blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA3256BLOB "select sha3256blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA3256BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA3256BLOB "2024-06-10-01:01:01"
 
@@ -426,7 +426,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA3384BLOB "sha3384blob"
 #define HASH_INFO_COLUMN_TYPE_SHA3384BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA3384BLOB "select sha3384blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA3384BLOB "select sha3384blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA3384BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA3384BLOB "2024-06-10-01:01:01"
 
@@ -446,7 +446,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA3512BLOB "sha3512blob"
 #define HASH_INFO_COLUMN_TYPE_SHA3512BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA3512BLOB "select sha3512blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA3512BLOB "select sha3512blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA3512BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA3512BLOB "2024-06-10-01:01:01"
 
@@ -466,7 +466,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_RIPEMD128BLOB "ripemd128blob"
 #define HASH_INFO_COLUMN_TYPE_RIPEMD128BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD128BLOB "select ripemd128blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD128BLOB "select ripemd128blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_RIPEMD128BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_RIPEMD128BLOB "2024-06-10-01:01:01"
 
@@ -486,7 +486,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_RIPEMD160BLOB "ripemd160blob"
 #define HASH_INFO_COLUMN_TYPE_RIPEMD160BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD160BLOB "select ripemd160blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD160BLOB "select ripemd160blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_RIPEMD160BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_RIPEMD160BLOB "2024-06-10-01:01:01"
 
@@ -506,7 +506,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_RIPEMD256BLOB "ripemd256blob"
 #define HASH_INFO_COLUMN_TYPE_RIPEMD256BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD256BLOB "select ripemd256blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD256BLOB "select ripemd256blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_RIPEMD256BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_RIPEMD256BLOB "2024-06-10-01:01:01"
 
@@ -526,7 +526,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_RIPEMD320BLOB "ripemd320blob"
 #define HASH_INFO_COLUMN_TYPE_RIPEMD320BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD320BLOB "select ripemd320blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD320BLOB "select ripemd320blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_RIPEMD320BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_RIPEMD320BLOB "2024-06-10-01:01:01"
 
@@ -546,7 +546,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_BLAKE2BBLOB "blake2bblob"
 #define HASH_INFO_COLUMN_TYPE_BLAKE2BBLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_BLAKE2BBLOB "select blake2bblob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_BLAKE2BBLOB "select blake2bblob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_BLAKE2BBLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_BLAKE2BBLOB "2024-06-10-01:01:01"
 
@@ -566,7 +566,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_BLAKE2SBLOB "blake2sblob"
 #define HASH_INFO_COLUMN_TYPE_BLAKE2SBLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_BLAKE2SBLOB "select blake2sblob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_BLAKE2SBLOB "select blake2sblob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_BLAKE2SBLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_BLAKE2SBLOB "2024-06-10-01:01:01"
 
@@ -586,7 +586,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_TIGERBLOB "tigerblob"
 #define HASH_INFO_COLUMN_TYPE_TIGERBLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_TIGERBLOB "select tigerblob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_TIGERBLOB "select tigerblob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_TIGERBLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_TIGERBLOB "2024-06-10-01:01:01"
 
@@ -606,7 +606,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHAKE128BLOB "shake128blob"
 #define HASH_INFO_COLUMN_TYPE_SHAKE128BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHAKE128BLOB "select shake128blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHAKE128BLOB "select shake128blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_SHAKE128BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHAKE128BLOB "2024-06-10-01:01:01"
 
@@ -626,7 +626,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHAKE256BLOB "shake256blob"
 #define HASH_INFO_COLUMN_TYPE_SHAKE256BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHAKE256BLOB "select shake256blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHAKE256BLOB "select shake256blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_SHAKE256BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHAKE256BLOB "2024-06-10-01:01:01"
 
@@ -646,7 +646,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SIPHASH64BLOB "siphash64blob"
 #define HASH_INFO_COLUMN_TYPE_SIPHASH64BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SIPHASH64BLOB "select siphash64blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SIPHASH64BLOB "select siphash64blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_SIPHASH64BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SIPHASH64BLOB "2024-06-10-01:01:01"
 
@@ -666,7 +666,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SIPHASH128BLOB "siphash128blob"
 #define HASH_INFO_COLUMN_TYPE_SIPHASH128BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SIPHASH128BLOB "select siphash128blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SIPHASH128BLOB "select siphash128blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_SIPHASH128BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SIPHASH128BLOB "2024-06-10-01:01:01"
 
@@ -686,7 +686,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_LSH224BLOB "lsh224blob"
 #define HASH_INFO_COLUMN_TYPE_LSH224BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_LSH224BLOB "select lsh224blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_LSH224BLOB "select lsh224blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_LSH224BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_LSH224BLOB "2024-06-10-01:01:01"
 
@@ -706,7 +706,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_LSH256BLOB "lsh256blob"
 #define HASH_INFO_COLUMN_TYPE_LSH256BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_LSH256BLOB "select lsh256blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_LSH256BLOB "select lsh256blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_LSH256BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_LSH256BLOB "2024-06-10-01:01:01"
 
@@ -726,7 +726,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_LSH384BLOB "lsh384blob"
 #define HASH_INFO_COLUMN_TYPE_LSH384BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_LSH384BLOB "select lsh384blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_LSH384BLOB "select lsh384blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_LSH384BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_LSH384BLOB "2024-06-10-01:01:01"
 
@@ -746,7 +746,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_LSH512BLOB "lsh512blob"
 #define HASH_INFO_COLUMN_TYPE_LSH512BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_LSH512BLOB "select lsh512blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_LSH512BLOB "select lsh512blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_LSH512BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_LSH512BLOB "2024-06-10-01:01:01"
 
@@ -766,7 +766,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SM3BLOB "sm3blob"
 #define HASH_INFO_COLUMN_TYPE_SM3BLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SM3BLOB "select sm3blob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SM3BLOB "select sm3blob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_SM3BLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SM3BLOB "2024-06-10-01:01:01"
 
@@ -786,7 +786,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_WHIRLPOOLBLOB "whirlpoolblob"
 #define HASH_INFO_COLUMN_TYPE_WHIRLPOOLBLOB "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_WHIRLPOOLBLOB "select whirlpoolblob([database],[table],[rowid],[column]);"
+#define HASH_INFO_COLUMN_SIGNATURE_WHIRLPOOLBLOB "select whirlpoolblob([database],[table],[column],[rowid]);"
 #define HASH_INFO_FUNCTION_VERSION_WHIRLPOOLBLOB "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_WHIRLPOOLBLOB "2024-06-10-01:01:01"
 

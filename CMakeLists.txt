@@ -8,9 +8,9 @@ if(POLICY CMP0091)
 endif()
 
  add_definitions(-DCRYPTOPP_ENABLE_NAMESPACE_WEAK=1)
- add_definitions(-D__MD2__=1)
- add_definitions(-D__MD4__=1)
- add_definitions(-D__MD5__=1)
+ add_definitions(-D__ALL__=1)
+ add_definitions(-D__USE_BLOB__=1)
+
 
  set(MSVC_RUNTIME "Static")
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")

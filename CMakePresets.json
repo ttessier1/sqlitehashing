@@ -22,8 +22,8 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
-        "CMAKE_CXX_FLAGS_DEBUG": "/MTd /Zi /Ob0 /Od /RTC1 /D__MD2__ /DCRYPTOPP_ENABLE_NAMESPACE_WEAK",
-        "CMAKE_C_FLAGS_DEBUG": "/MTd /Zi /Ob0 /Od /RTC1  /D__MD2__ /DCRYPTOPP_ENABLE_NAMESPACE_WEAK",
+        "CMAKE_CXX_FLAGS_DEBUG": "/MTd /Zi /Ob0 /Od /RTC1 /D__ALL__ /D__USE_BLOB__ /DCRYPTOPP_ENABLE_NAMESPACE_WEAK",
+        "CMAKE_C_FLAGS_DEBUG": "/MTd /Zi /Ob0 /Od /RTC1  /D__ALL__ /D__USE_BLOB__ /DCRYPTOPP_ENABLE_NAMESPACE_WEAK",
         "CRYPTOPP_LIB": "C:/Users/fliei/source/repos/ttessier1/cryptopp/x64/Output/Debug/cryptlib.lib",
         "MSVC_RUNTIME": "Static",
         "_ITERATOR_DEBUG_LEVEL": "2"
@@ -49,8 +49,8 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
-        "CMAKE_CXX_FLAGS_RELEASE": "/MT /Zi /Ob0 /Od /RTC1  /D__MD2__ /DCRYPTOPP_ENABLE_NAMESPACE_WEAK",
-        "CMAKE_C_FLAGS_RELEASE": "/MT /Zi /Ob0 /Od /RTC1  /D__MD2__ /DCRYPTOPP_ENABLE_NAMESPACE_WEAK",
+        "CMAKE_CXX_FLAGS_RELEASE": "/MT /Zi /Ob0 /Od /RTC1  /D__ALL__ /D__USE_BLOB__ /DCRYPTOPP_ENABLE_NAMESPACE_WEAK",
+        "CMAKE_C_FLAGS_RELEASE": "/MT /Zi /Ob0 /Od /RTC1  /D__ALL__ /D__USE_BLOB__ /DCRYPTOPP_ENABLE_NAMESPACE_WEAK",
         "CRYPTOPP_LIB": "C:/Users/fliei/source/repos/ttessier1/cryptopp/x64/Output/Release/cryptlib.lib",
         "MSVC_RUNTIME": "Static",
         "_ITERATOR_DEBUG_LEVEL": "0"

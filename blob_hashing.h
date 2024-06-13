@@ -139,6 +139,7 @@ static int blobmd2(
                         {
                             Md2Update(contextPtr, buffer,length);
                         }
+                        remainingSize -= length;
                     }
                     result = Md2Finalize(contextPtr);
                     if (result != NULL)
