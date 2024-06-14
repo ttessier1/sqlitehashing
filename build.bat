@@ -20,6 +20,25 @@ set HASHING_C=hashing.c
 set CRYPTO_HASHING_CPP=crypto_hashing.cpp
 set CRYPTO_HASHING_BLOB_CPP=crypto_blob.cpp
 set CRYPTO_MACCPP=crypto_mac.cpp
+
+REM uncomment below to enable 
+set CRYPTOPP=/D__CRYPTOCPP__
+REM set DEFINE_USE_BLOB=/D__USE_BLOB__
+set ENABLED_MD2=/D__MD2__
+set ENABLED_MD4=/D__MD4__
+set ENABLED_MD5=/D__MD5__
+set ENABLED_SHA1=/D__SHA1__
+REM set ENABLED_SHA224=/D__SHA224__
+REM set ENABLED_SHA256=/D__SHA256__
+REM set ENABLED_SHA384=/D__SHA384__
+REM set ENABLED_SHA512=/D__SHA512__
+REM set ENABLED_SHA3224=/D__SHA3224__
+REM set ENABLED_SHA3256=/D__SHA3256__
+REM set ENABLED_SHA3384=/D__SHA3384__
+REM set ENABLED_SHA3512=/D__SHA3512_
+
+
+
 set UTIL_CPP=util.cpp
 
 IF NOT EXIST %SQLITE% goto sqlite_ne
@@ -39,7 +58,7 @@ IF NOT EXIST %UTIL_CPP% goto util_cpp_ne
 IF NOT EXIST %SQLITE_LIB%\%SQLITE_LIB_FILE% goto sqlite_lib_file_ne
 IF NOT EXIST %CRYPTOPP_LIB%\%CRYPTOPP_LIB_FILE% goto crypto_lib_file_ne
 
-cl -Zi /GS /RTC1 %HASHING_C% %CRYPTO_HASHING_CPP% %CRYPTO_HASHING_BLOB_CPP% %CRYPTO_MACCPP% %UTIL_CPP% /EHsc -I %SQLITE_INC% -I %CRYPTOPP_INC% /D__ALL__  /D__USE_BLOB__ -link /MACHINE:X64 -LIBPATH:%SQLITE_LIB% -LIBPATH:%CRYPTOPP_LIB% sqlite3.lib cryptlib.lib kernel32.lib libcpmt.lib libcmt.lib libucrt.lib libvcruntime.lib -dll -out:hashing.dll
+cl -Zi /GS /RTC1 %HASHING_C% %CRYPTO_HASHING_CPP% %CRYPTO_HASHING_BLOB_CPP% %CRYPTO_MACCPP% %UTIL_CPP% /EHsc -I %SQLITE_INC% -I %CRYPTOPP_INC% %CRYPTOPP% %ENABLED_MD2% %ENABLED_MD4% %ENABLED_MD5% %ENABLED_SHA1% -link /MACHINE:X64 -LIBPATH:%SQLITE_LIB% -LIBPATH:%CRYPTOPP_LIB% sqlite3.lib cryptlib.lib kernel32.lib libcpmt.lib libcmt.lib libucrt.lib libvcruntime.lib -dll -out:hashing.dll
 
 REM "c:\Users\fliei\sources\repository\sqlite"
 REM "c:\fliei\sources\repository\cryptopp"
@@ -53,35 +72,299 @@ IF EXIST hashing.pdb copy /y *.pdb %SQLITE_DIR%
 echo .load hashing|..\sqlite\sqlite3.exe 
 if NOT "%ERRORLEVEL%"=="0" goto Failed
 
+goto test_ping_exist
+:after_test_ping_exist
+
+goto test_hash_info_exist
+:after_test_hash_info_exist
+
+goto test_hash_sizes_exist
+:after_test_hash_sizes_exist
+
+goto test_md2_exist
+:after_test_md2_exist
+
+goto test_md4_exist
+:after_test_md4_exist
+
+goto test_md5_exist
+:after_test_md5_exist
+
+goto test_sha1_exist
+:after_test_sha1_exist
+
+goto test_sha224_exist
+:after_test_sha224_exist
+
+goto test_sha256_exist
+:after_test_sha256_exist
+
+goto test_sha384_exist
+:after_test_sha384_exist
+
+goto test_sha512_exist
+:after_test_sha512_exist
+
+
+
+
+REM for /f %%A IN (test_functions.txt) do echo .load hashing>test%%A.sql && echo select %%A('')>>test%%A.sql && ..\sqlite\sqlite3.exe < test%%A.sql>result%%A.log && echo Testing %%A && type result%%A.log && del result%%A.log
+
+goto Done
+
+:Failed
+echo Failed to build Done
+exit /b 1
+
+:Done
+echo Done
+exit /b 0
+
+:sqlite_ne
+echo Sqlite Executable [%SQLITE%] does not exist
+
+:sqlite_dir_ne
+echo Sqlite Directory [%SQLITE_DIR%] does not exist
+exit /b 1
+
+:sqlite_inc_ne
+echo Sqlite Inc Directory [%SQLITE_INC%] does not exist
+exit /b 1
+
+:sqlite_lib_ne
+echo Sqlite Lib Directory [%SQLITE_LIB%] does not exist
+exit /b 1
+
+:cryptopp_dir_ne
+echo Crypto++ Directory [%CRYPTOPP_DIR%] does not exist
+exit /b 1
+
+:cryptopp_inc_ne
+echo Crypto++ Inc Directory [%CRYPTOPP_INC%] does not exist
+exit /b 1
+
+:cryptopp_lib_ne
+echo Crypto++ Lib Directory [%CRYPTOPP_LIB%] does not exist
+exit /b 1
+
+:test_funcs_ne
+echo Test Functions file: [%FUNCTIONS%] does not exist
+exit /b 1
+
+:hashing_file_ne
+echo source file: [%HASHING%] does not exist
+exit /b 1
+
+:crypto_file_ne
+echo source file: [%CRYPTO_HASHING_CPP%] does not exist
+exit /b 1
+
+:crypto_blob_file_ne
+echo source file: [%CRYPTO_HASHING_BLOB_CPP%] does not exist
+exit /b 1
+
+:crypto_macfile_ne
+echo source file: [%CRYPTO_MACCPP%] does not exist
+exit /b 1
+
+:util_cpp_ne
+echo source file: [%UTIL_CPP%] does not exist
+exit /b 1
+
+
+:sqlite_lib_file_ne
+echo lib file: [%SQLITE_LIB%\%SQLITE_LIB_FILE%] does not exist
+exit /b 1
+
+:crypto_lib_file_ne
+echo lib file: [%CRYPTOPP_LIB%\%CRYPTOPP_LIB_FILE%] does not exist
+exit /b 1
+
+:test_fail
+echo Test Failed
+exit /b 1
+
+:test_ping_exist
+
+echo Testing Ping Function Exists
+echo .load hashing>test.sql
+echo select * FROM pragma_function_list where name='hash_ping';>>test.sql
+echo .quit>>test.sql
+..\sqlite\sqlite3.exe < test.sql >result.log
+for /f "tokens=1 delims=|" %%A in (result.log) DO IF "%%A"=="hash_ping" set HASH_PING_EXISTS=1
+IF "%HASH_PING_EXISTS%"=="1" echo hash_ping exists
+IF NOT "%HASH_PING_EXISTS%"=="1" goto test_fail
+
 echo Testing Ping function
 echo .load hashing>test.sql
 echo select hash_ping();>>test.sql
 echo .quit>>test.sql
 
-type test.sql
-
 ..\sqlite\sqlite3.exe < test.sql>result.log
 type result.log
+
+goto after_test_ping_exist
+
+:test_hash_info_exist
+
+echo Testing hash_info Function Exists
+echo .load hashing>test.sql
+echo select * FROM pragma_module_list WHERE name='hash_info';>>test.sql
+echo .quit>>test.sql
+..\sqlite\sqlite3.exe < test.sql >result.log
+for /f "tokens=1 delims=|" %%A in (result.log) DO IF "%%A"=="hash_info" set HASH_INFO_EXISTS=1
+IF "%HASH_INFO_EXISTS%"=="1" echo hash_info exists
+IF NOT "%HASH_INFO_EXISTS%"=="1" goto test_fail
+
 
 echo Testing hash_info function
 echo .load hashing>test.sql
 echo select * FROM hash_info();>>test.sql
 echo .quit>>test.sql
 
-type test.sql
-
 ..\sqlite\sqlite3.exe < test.sql>result.log
 type result.log
 
+goto after_test_hash_info_exist
+
+:test_hash_sizes_exist
+
+echo Testing hash_sizes Function Exists
+echo .load hashing>test.sql
+echo select * FROM pragma_module_list WHERE name='hash_sizes';>>test.sql
+echo .quit>>test.sql
+..\sqlite\sqlite3.exe < test.sql >result.log
+for /f "tokens=1 delims=|" %%A in (result.log) DO IF "%%A"=="hash_sizes" set HASH_SIZES_EXISTS=1
+IF "%HASH_SIZES_EXISTS%"=="1" echo hash_sizes exists
+IF NOT "%HASH_SIZES_EXISTS%"=="1" goto test_fail
 
 echo Testing hash_sizes function
 echo .load hashing>test.sql
 echo select * FROM hash_sizes();>>test.sql
 echo .quit>>test.sql
-type test.sql
-
 ..\sqlite\sqlite3.exe < test.sql>result.log
 type result.log
+
+goto after_test_hash_sizes_exist
+
+:test_md2_exist
+
+echo .load hashing>test.sql
+echo select * FROM pragma_function_list where name='md2';>>test.sql
+echo .quit>>test.sql
+IF "%ENABLED_MD2%"=="" goto after_test_md2_exist
+echo Md2 Enabled - testing for md2 function
+IF NOT "%ENABLED_MD2%"=="" echo "MD2 Set" && ..\sqlite\sqlite3.exe <test.sql>result.log
+for /f "tokens=1 delims=|" %%A in (result.log) DO IF "%%A"=="md2" set MD2_EXISTS=1
+IF "%MD2_EXISTS%"=="1" echo md2 exists
+IF NOT "%MD2_EXISTS%"=="1" goto test_fail
+
+echo .load hashing>test.sql
+echo select 'select md2('''');';>>test.sql
+echo select md2('');>>test.sql
+echo select 'select md2(''a'');';>>test.sql
+echo select md2('a');>>test.sql
+echo select 'select md2(''this is a message'');';>>test.sql
+echo select md2('this is a message');>>test.sql
+echo select 'select md2(''1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'');';>>test.sql
+echo select md2('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890');>>test.sql
+echo .quit>>test.sql
+..\sqlite\sqlite3.exe <test.sql>result.log
+type result.log
+
+
+goto after_test_md2_exist
+
+:test_md4_exist
+
+echo .load hashing>test.sql
+echo select * FROM pragma_function_list where name='md4';>>test.sql
+echo .quit>>test.sql
+IF "%ENABLED_MD4%"=="" goto after_test_md4_exist
+echo Md4 Enabled - testing for md4 function
+IF NOT "%ENABLED_MD4%"=="" echo "MD4 Set" && ..\sqlite\sqlite3.exe <test.sql>result.log
+for /f "tokens=1 delims=|" %%A in (result.log) DO IF "%%A"=="md4" set MD4_EXISTS=1
+IF "%MD4_EXISTS%"=="1" echo md4 exists
+IF NOT "%MD4_EXISTS%"=="1" goto test_fail
+
+echo .load hashing>test.sql
+echo select 'select md4('''');';>>test.sql
+echo select md4('');>>test.sql
+echo select 'select md4(''a'');';>>test.sql
+echo select md4('a');>>test.sql
+echo select 'select md4(''this is a message'');';>>test.sql
+echo select md4('this is a message');>>test.sql
+echo select 'select md4(''1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'');';>>test.sql
+echo select md4('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890');>>test.sql
+echo .quit>>test.sql
+..\sqlite\sqlite3.exe <test.sql>result.log
+type result.log
+
+goto after_test_md4_exist
+:test_md5_exist
+
+echo .load hashing>test.sql
+echo select * FROM pragma_function_list where name='md5';>>test.sql
+echo .quit>>test.sql
+IF "%ENABLED_MD5%"=="" goto after_test_md5_exist
+echo Md5 Enabled - testing for md5 function
+IF NOT "%ENABLED_MD5%"=="" echo "MD5 Set" && ..\sqlite\sqlite3.exe <test.sql>result.log
+for /f "tokens=1 delims=|" %%A in (result.log) DO IF "%%A"=="md5" set MD5_EXISTS=1
+IF "%MD5_EXISTS%"=="1" echo md5 exists
+IF NOT "%MD5_EXISTS%"=="1" goto test_fail
+
+echo .load hashing>test.sql
+echo select 'select md5('''');';>>test.sql
+echo select md5('');>>test.sql
+echo select 'select md5(''a'');';>>test.sql
+echo select md5('a');>>test.sql
+echo select 'select md5(''this is a message'');';>>test.sql
+echo select md5('this is a message');>>test.sql
+echo select 'select md5(''1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'');';>>test.sql
+echo select md5('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890');>>test.sql
+echo .quit>>test.sql
+..\sqlite\sqlite3.exe <test.sql>result.log
+type result.log
+
+goto after_test_md5_exist
+
+:test_sha1_exist
+
+echo .load hashing>test.sql
+echo select * FROM pragma_function_list where name='sha1';>>test.sql
+echo .quit>>test.sql
+IF "%ENABLED_SHA1%"=="" goto after_test_sha1_exist
+echo Sha1 Enabled - testing for sha1 function
+IF NOT "%ENABLED_SHA1%"=="" echo "SHA1 Set" && ..\sqlite\sqlite3.exe <test.sql>result.log
+for /f "tokens=1 delims=|" %%A in (result.log) DO IF "%%A"=="sha1" set SHA1_EXISTS=1
+IF "%SHA1_EXISTS%"=="1" echo sha1 exists
+IF NOT "%SHA1_EXISTS%"=="1" goto test_fail
+
+echo .load hashing>test.sql
+echo select 'select sha1('''');';>>test.sql
+echo select sha1('');>>test.sql
+echo select 'select sha1(''a'');';>>test.sql
+echo select sha1('a');>>test.sql
+echo select 'select sha1(''this is a message'');';>>test.sql
+echo select sha1('this is a message');>>test.sql
+echo select 'select sha1(''1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'');';>>test.sql
+echo select sha1('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890');>>test.sql
+echo .quit>>test.sql
+..\sqlite\sqlite3.exe <test.sql>result.log
+type result.log
+
+
+goto after_test_sha1_exist
+
+:test_sha224_exist
+goto after_test_sha224_exist
+:test_sha256_exist
+goto after_test_sha256_exist
+:test_sha384_exist
+goto after_test_sha384_exist
+:test_sha512_exist
+goto after_test_sha512_exist
+
 
 echo Testing md2blob function
 echo .load hashing>test.sql
@@ -173,75 +456,26 @@ type test.sql
 type result.log
 
 
+echo Testing sha3224blob function
+echo .load hashing>test.sql
+echo create table test(test text,dateadded datetime);>>test.sql
+echo insert into test(test,dateadded)VALUES('12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890','2024-06-12 00:00:00');>>test.sql
+echo select sha3224blob('main','test','test',1);>>test.sql
+echo .quit>>test.sql
+type test.sql
 
-REM for /f %%A IN (test_functions.txt) do echo .load hashing>test%%A.sql && echo select %%A('')>>test%%A.sql && ..\sqlite\sqlite3.exe < test%%A.sql>result%%A.log && echo Testing %%A && type result%%A.log && del result%%A.log
-
-goto Done
-
-:Failed
-echo Failed to build Done
-exit /b 1
-
-:Done
-echo Done
-exit /b 0
-
-:sqlite_ne
-echo Sqlite Executable [%SQLITE%] does not exist
-
-:sqlite_dir_ne
-echo Sqlite Directory [%SQLITE_DIR%] does not exist
-exit /b 1
-
-:sqlite_inc_ne
-echo Sqlite Inc Directory [%SQLITE_INC%] does not exist
-exit /b 1
-
-:sqlite_lib_ne
-echo Sqlite Lib Directory [%SQLITE_LIB%] does not exist
-exit /b 1
-
-:cryptopp_dir_ne
-echo Crypto++ Directory [%CRYPTOPP_DIR%] does not exist
-exit /b 1
-
-:cryptopp_inc_ne
-echo Crypto++ Inc Directory [%CRYPTOPP_INC%] does not exist
-exit /b 1
-
-:cryptopp_lib_ne
-echo Crypto++ Lib Directory [%CRYPTOPP_LIB%] does not exist
-exit /b 1
-
-:test_funcs_ne
-echo Test Functions file: [%FUNCTIONS%] does not exist
-exit /b 1
-
-:hashing_file_ne
-echo source file: [%HASHING%] does not exist
-exit /b 1
-
-:crypto_file_ne
-echo source file: [%CRYPTO_HASHING_CPP%] does not exist
-exit /b 1
-
-:crypto_blob_file_ne
-echo source file: [%CRYPTO_HASHING_BLOB_CPP%] does not exist
-exit /b 1
-
-:crypto_macfile_ne
-echo source file: [%CRYPTO_MACCPP%] does not exist
-exit /b 1
-
-:util_cpp_ne
-echo source file: [%UTIL_CPP%] does not exist
-exit /b 1
+..\sqlite\sqlite3.exe < test.sql>result.log
+type result.log
 
 
-:sqlite_lib_file_ne
-echo lib file: [%SQLITE_LIB%\%SQLITE_LIB_FILE%] does not exist
-exit /b 1
+echo Testing sha3256blob function
+echo .load hashing>test.sql
+echo create table test(test text,dateadded datetime);>>test.sql
+echo insert into test(test,dateadded)VALUES('12345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890','2024-06-12 00:00:00');>>test.sql
+echo select sha3256blob('main','test','test',1);>>test.sql
+echo .quit>>test.sql
+type test.sql
 
-:crypto_lib_file_ne
-echo lib file: [%CRYPTOPP_LIB%\%CRYPTOPP_LIB_FILE%] does not exist
-exit /b 1
+..\sqlite\sqlite3.exe < test.sql>result.log
+type result.log
+

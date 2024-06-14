@@ -122,7 +122,7 @@ const char * DoMd4(const char * message);
 #if defined(__MD5__) || (defined __ALL__)
 const char * DoMd5(const char * message);
 #endif
-#if defined(__SHA__) || (defined __ALL__)
+#if defined(__SHA1__) || (defined __ALL__)
 const char * DoSha1(const char * message);
 #endif
 #if defined(__SHA224__) || (defined __ALL__)

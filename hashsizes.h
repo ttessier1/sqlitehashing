@@ -533,7 +533,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
     }
 #endif
-#if defined(__MD2__) || defined (__ALL__)
+#if defined(__MD4__) || defined (__ALL__)
     else if ( pCur->iRowid == hash_size_md4)
     {
         switch( i ){
@@ -549,7 +549,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
     }
 #endif
-#if (defined(__MD2__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if (defined(__MD4__) || defined (__ALL__)) && defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_md4blob)
     {
         switch (i) {

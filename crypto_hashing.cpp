@@ -1,8 +1,9 @@
 #define CRYPTOPP_DEFAULT_NO_DLL
 #define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
 
-#define __WINDOWS_BCRYPT__
-
+#if defined(__WINDOWS_BCRYPT__)
+#include <bcrypt.h>
+#endif
 #include "crypto_hashing.h"
 
 #include <cryptlib.h>
@@ -149,16 +150,16 @@ const char * DoMd2(const char * message)
         {
             memset(lpBuffer,0,MD2::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-#if defined __CRYPTOCPP__
-            MD2().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+#if defined(__CRYPTOCPP__)
+            MD2().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n", MD2::DIGESTSIZE);
             result= ToHex(lpBuffer,MD2::DIGESTSIZE,algo_md2);
             if(result!=NULL)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(MD2::DIGESTSIZE*2))
+                if(strlength(result)!=(MD2::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlen(result),(MD2::DIGESTSIZE*2), result );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result),(MD2::DIGESTSIZE*2), result );
                     return NULL;
                 }
             }
@@ -166,7 +167,7 @@ const char * DoMd2(const char * message)
             {
                 DebugMessage("Failed to convert to hex\r\n");
             }
-#elsif __WINDOWS_BCRYPT__
+#elif defined(__WINDOWS_BCRYPT__)
     BOOL bContinue = FALSE;
     BOOL returnCode = FALSE;
     DWORD result = 0;
@@ -347,15 +348,15 @@ const char * DoMd4(const char * message)
         {
             memset(lpBuffer,0,MD4::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            MD4().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            MD4().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n", MD4::DIGESTSIZE);
             result= ToHex(lpBuffer,MD4::DIGESTSIZE,algo_md4);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(MD4::DIGESTSIZE*2))
+                if(strlength(result)!=(MD4::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(MD4::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(MD4::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -398,15 +399,15 @@ const char * DoMd5(const char * message)
         {
             memset(lpBuffer,0,MD5::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            MD5().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            MD5().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",MD5::DIGESTSIZE);
             result= ToHex(lpBuffer,MD5::DIGESTSIZE,algo_md5);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(MD5::DIGESTSIZE*2))
+                if(strlength(result)!=(MD5::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(MD5::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(MD5::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -449,15 +450,15 @@ const char * DoSha1(const char * message)
         {
             memset(lpBuffer,0,SHA1::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            SHA1().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            SHA1().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA1::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA1::DIGESTSIZE,algo_sha1);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(SHA1::DIGESTSIZE*2))
+                if(strlength(result)!=(SHA1::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA1::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(SHA1::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -499,15 +500,15 @@ const char * DoSha224(const char * message)
         {
             memset(lpBuffer,0,SHA224::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            SHA224().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            SHA224().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA224::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA224::DIGESTSIZE,algo_sha224);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(SHA224::DIGESTSIZE*2))
+                if(strlength(result)!=(SHA224::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA224::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(SHA224::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -549,15 +550,15 @@ const char * DoSha256(const char * message)
         {
             memset(lpBuffer,0,SHA256::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            SHA256().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            SHA256().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA256::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA256::DIGESTSIZE,algo_sha256);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(SHA256::DIGESTSIZE*2))
+                if(strlength(result)!=(SHA256::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA256::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(SHA256::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -599,15 +600,15 @@ const char * DoSha384(const char * message)
         {
             memset(lpBuffer,0,SHA384::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            SHA384().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            SHA384().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA384::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA384::DIGESTSIZE,algo_sha384);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(SHA384::DIGESTSIZE*2))
+                if(strlength(result)!=(SHA384::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA384::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(SHA384::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -649,15 +650,15 @@ const char * DoSha512(const char * message)
         {
             memset(lpBuffer,0,SHA512::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            SHA512().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            SHA512().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA512::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA512::DIGESTSIZE,algo_sha512);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(SHA512::DIGESTSIZE*2))
+                if(strlength(result)!=(SHA512::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA512::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(SHA512::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -699,15 +700,15 @@ const char * DoSha3_224(const char * message)
         {
             memset(lpBuffer,0,SHA3_224::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            SHA3_224().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            SHA3_224().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA3_224::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA3_224::DIGESTSIZE,algo_sha3_224);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(SHA3_224::DIGESTSIZE*2))
+                if(strlength(result)!=(SHA3_224::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA3_224::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(SHA3_224::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -749,15 +750,15 @@ const char * DoSha3_256(const char * message)
         {
             memset(lpBuffer,0,SHA3_256::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            SHA3_256().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            SHA3_256().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA3_256::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA3_256::DIGESTSIZE,algo_sha3_256);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(SHA3_256::DIGESTSIZE*2))
+                if(strlength(result)!=(SHA3_256::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA3_256::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(SHA3_256::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -799,15 +800,15 @@ const char * DoSha3_384(const char * message)
         {
             memset(lpBuffer,0,SHA3_384::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            SHA3_384().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            SHA3_384().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA3_384::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA3_384::DIGESTSIZE,algo_sha3_384);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(SHA3_384::DIGESTSIZE*2))
+                if(strlength(result)!=(SHA3_384::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA3_384::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(SHA3_384::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -849,15 +850,15 @@ const char * DoSha3_512(const char * message)
         {
             memset(lpBuffer,0,SHA3_512::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            SHA3_512().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            SHA3_512().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",SHA3_512::DIGESTSIZE);
             result= ToHex(lpBuffer,SHA3_512::DIGESTSIZE,algo_sha3_512);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(SHA3_512::DIGESTSIZE*2))
+                if(strlength(result)!=(SHA3_512::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHA3_512::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(SHA3_512::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -899,15 +900,15 @@ const char * DoRipeMD128(const char * message)
         {
             memset(lpBuffer,0,RIPEMD128::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            RIPEMD128().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            RIPEMD128().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",RIPEMD128::DIGESTSIZE);
             result= ToHex(lpBuffer,RIPEMD128::DIGESTSIZE,algo_ripemd_128);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(RIPEMD128::DIGESTSIZE*2))
+                if(strlength(result)!=(RIPEMD128::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(RIPEMD128::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(RIPEMD128::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -949,15 +950,15 @@ const char * DoRipeMD160(const char * message)
         {
             memset(lpBuffer,0,RIPEMD160::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            RIPEMD160().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            RIPEMD160().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",RIPEMD160::DIGESTSIZE);
             result= ToHex(lpBuffer,RIPEMD160::DIGESTSIZE,algo_ripemd_160);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(RIPEMD160::DIGESTSIZE*2))
+                if(strlength(result)!=(RIPEMD160::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(RIPEMD160::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(RIPEMD160::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -999,15 +1000,15 @@ const char * DoRipeMD256(const char * message)
         {
             memset(lpBuffer,0,RIPEMD256::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            RIPEMD256().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            RIPEMD256().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",RIPEMD256::DIGESTSIZE);
             result= ToHex(lpBuffer,RIPEMD256::DIGESTSIZE,algo_ripemd_256);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(RIPEMD256::DIGESTSIZE*2))
+                if(strlength(result)!=(RIPEMD256::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(RIPEMD256::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(RIPEMD256::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -1049,15 +1050,15 @@ const char * DoRipeMD320(const char * message)
         {
             memset(lpBuffer,0,RIPEMD320::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            RIPEMD320().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            RIPEMD320().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",RIPEMD320::DIGESTSIZE);
             result= ToHex(lpBuffer,RIPEMD320::DIGESTSIZE,algo_ripemd_320);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(RIPEMD320::DIGESTSIZE*2))
+                if(strlength(result)!=(RIPEMD320::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(RIPEMD320::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(RIPEMD320::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -1099,15 +1100,15 @@ const char * DoBlake2b(const char * message)
         {
             memset(lpBuffer,0,BLAKE2b::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            BLAKE2b().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            BLAKE2b().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
             DebugFormat("Processed Message to Buffer Length: %i\r\n",BLAKE2b::DIGESTSIZE);
             result= ToHex(lpBuffer,BLAKE2b::DIGESTSIZE,algo_blake2b);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(BLAKE2b::DIGESTSIZE*2))
+                if(strlength(result)!=(BLAKE2b::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(BLAKE2b::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(BLAKE2b::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -1149,15 +1150,15 @@ const char * DoBlake2s(const char * message)
         {
             memset(lpBuffer,0,BLAKE2s::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            BLAKE2s().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            BLAKE2s().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",BLAKE2s::DIGESTSIZE);
             result= ToHex(lpBuffer,BLAKE2s::DIGESTSIZE,algo_blake2s);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(BLAKE2s::DIGESTSIZE*2))
+                if(strlength(result)!=(BLAKE2s::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(BLAKE2s::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(BLAKE2s::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -1199,15 +1200,15 @@ const char * DoTiger(const char * message)
         {
             memset(lpBuffer,0,Tiger::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            Tiger().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            Tiger().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",Tiger::DIGESTSIZE);
             result= ToHex(lpBuffer,Tiger::DIGESTSIZE,algo_tiger);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(Tiger::DIGESTSIZE*2))
+                if(strlength(result)!=(Tiger::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(Tiger::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(Tiger::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -1249,15 +1250,15 @@ const char * DoShake128(const char * message)
         {
             memset(lpBuffer,0,SHAKE128::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            SHAKE128().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            SHAKE128().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",SHAKE128::DIGESTSIZE);
             result= ToHex(lpBuffer,SHAKE128::DIGESTSIZE,algo_shake_128);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(SHAKE128::DIGESTSIZE*2))
+                if(strlength(result)!=(SHAKE128::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHAKE128::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(SHAKE128::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -1299,15 +1300,15 @@ const char * DoShake256(const char * message)
         {
             memset(lpBuffer,0,SHAKE256::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            SHAKE256().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            SHAKE256().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",SHAKE256::DIGESTSIZE);
             result= ToHex(lpBuffer,SHAKE256::DIGESTSIZE,algo_shake_256);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(SHAKE256::DIGESTSIZE*2))
+                if(strlength(result)!=(SHAKE256::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SHAKE256::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(SHAKE256::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -1349,15 +1350,15 @@ const char * DoSipHash64(const char * message)
         {
             memset(lpBuffer,0,SipHash<2,4,false>::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            SipHash<2,4,false>().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            SipHash<2,4,false>().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",SipHash<2,4,false>::DIGESTSIZE);
             result= ToHex(lpBuffer,SipHash<2,4,false>::DIGESTSIZE,algo_sip_hash64);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(SipHash<2,4,false>::DIGESTSIZE*2))
+                if(strlength(result)!=(SipHash<2,4,false>::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SipHash<2,4,false>::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(SipHash<2,4,false>::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -1399,15 +1400,15 @@ const char * DoSipHash128(const char * message)
         {
             memset(lpBuffer,0,SipHash<4,8,true>::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            SipHash<4,8,true>().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            SipHash<4,8,true>().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",SipHash<4,8,true>::DIGESTSIZE);
             result= ToHex(lpBuffer,SipHash<4,8,true>::DIGESTSIZE,algo_sip_hash128);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(SipHash<4,8,true>::DIGESTSIZE*2))
+                if(strlength(result)!=(SipHash<4,8,true>::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SipHash<4,8,true>::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(SipHash<4,8,true>::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -1449,15 +1450,15 @@ const char * DoLSH224(const char * message)
         {
             memset(lpBuffer,0,LSH224::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            LSH224().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            LSH224().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",LSH224::DIGESTSIZE);
             result= ToHex(lpBuffer,LSH224::DIGESTSIZE,algo_lsh_224);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(LSH224::DIGESTSIZE*2))
+                if(strlength(result)!=(LSH224::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(LSH224::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(LSH224::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -1498,15 +1499,15 @@ const char * DoLSH256(const char * message)
         {
             memset(lpBuffer,0,LSH256::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            LSH256().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            LSH256().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",LSH256::DIGESTSIZE);
             result= ToHex(lpBuffer,LSH256::DIGESTSIZE,algo_lsh_256);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(LSH256::DIGESTSIZE*2))
+                if(strlength(result)!=(LSH256::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(LSH256::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(LSH256::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -1548,15 +1549,15 @@ const char * DoLSH384(const char * message)
         {
             memset(lpBuffer,0,LSH384::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            LSH384().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            LSH384().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",LSH384::DIGESTSIZE);
             result= ToHex(lpBuffer,LSH384::DIGESTSIZE,algo_lsh_384);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(LSH384::DIGESTSIZE*2))
+                if(strlength(result)!=(LSH384::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(LSH384::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(LSH384::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -1598,15 +1599,15 @@ const char * DoLSH512(const char * message)
         {
             memset(lpBuffer,0,LSH512::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            LSH512().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            LSH512().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",LSH512::DIGESTSIZE);
             result= ToHex(lpBuffer,LSH512::DIGESTSIZE,algo_lsh_512);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(LSH512::DIGESTSIZE*2))
+                if(strlength(result)!=(LSH512::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(LSH512::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(LSH512::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -1648,15 +1649,15 @@ const char * DoSM3(const char * message)
         {
             memset(lpBuffer,0,SM3::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            SM3().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            SM3().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",SM3::DIGESTSIZE);
             result= ToHex(lpBuffer,SM3::DIGESTSIZE,algo_sm3);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(SM3::DIGESTSIZE*2))
+                if(strlength(result)!=(SM3::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(SM3::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(SM3::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
@@ -1698,15 +1699,15 @@ char * lpBuffer = NULL;
         {
             memset(lpBuffer,0,Whirlpool::DIGESTSIZE);
             DebugMessage("Buffer allocated\r\n");
-            Whirlpool().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlen(message));
+            Whirlpool().CalculateDigest((CryptoPP::byte *)lpBuffer, (const CryptoPP::byte *)message, strlength(message));
            DebugFormat("Processed Message to Buffer Length: %i\r\n",Whirlpool::DIGESTSIZE);
             result= ToHex(lpBuffer,Whirlpool::DIGESTSIZE,algo_whirlpool);
             if(result)
             {
                 DebugMessage("Processed ToHex\r\n");
-                if(strlen(result)!=(Whirlpool::DIGESTSIZE*2))
+                if(strlength(result)!=(Whirlpool::DIGESTSIZE*2))
                 {
-                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlen(result),(Whirlpool::DIGESTSIZE*2) );
+                    DebugFormat("Digest result to hex is not correct size: %i - %i\r\n", strlength(result),(Whirlpool::DIGESTSIZE*2) );
                     return NULL;
                 }
             }
