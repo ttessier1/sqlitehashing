@@ -8814,7 +8814,7 @@ static int macwhirlpool(
 
 #endif
 
-#if defined(__CMAC__)|| defined(__ALL__)
+#if (defined(__CMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
 
 static int maccmac(
     sqlite3_context *context,
@@ -8916,7 +8916,7 @@ static int maccmac(
 
 #endif
 
-#if defined(__CBCCMAC__)|| defined(__ALL__)
+#if (defined(__CBCCMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
 
 static int maccbccmac(
     sqlite3_context *context,
@@ -9018,7 +9018,7 @@ static int maccbccmac(
 
 #endif
 
-#if defined(__DMAC__)|| defined(__ALL__)
+#if (defined(__DMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
 
 static int macdmac(
     sqlite3_context *context,
@@ -9120,7 +9120,7 @@ static int macdmac(
 
 #endif
 
-#if defined(__GMAC__)|| defined(__ALL__)
+#if (defined(__GMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
 
 static int macgmac(
     sqlite3_context *context,
@@ -9222,7 +9222,7 @@ static int macgmac(
 
 #endif
 
-#if defined(__HMAC__)|| defined(__ALL__)
+#if (defined(__HMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
 // TODO: Verify HMAC
 static int machmac(
     sqlite3_context *context,
@@ -9324,7 +9324,7 @@ static int machmac(
 
 #endif
 
-#if defined(__POLY1305__)|| defined(__ALL__)
+#if (defined(__POLY1305__)|| defined(__ALL__))&& defined(__USE_MAC__)
 
 static int macpoly1305(
     sqlite3_context *context,
@@ -9426,7 +9426,7 @@ static int macpoly1305(
 
 #endif
 
-#if defined(__TWOTRACK__)|| defined(__ALL__)
+#if (defined(__TWOTRACK__)|| defined(__ALL__))&& defined(__USE_MAC__)
 
 static int mactwotrack(
     sqlite3_context *context,
@@ -9528,7 +9528,7 @@ static int mactwotrack(
 
 #endif
 
-#if defined(__VMAC__)|| defined(__ALL__)
+#if (defined(__VMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
 
 static int macvmac(
     sqlite3_context *context,
@@ -10201,35 +10201,35 @@ extern int sqlite3_hashing_init(
 #endif
 #endif
 
-#if defined(__CMAC__)|| defined(__ALL__)
+#if (defined(__CMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
   rc = sqlite3_create_function(db,"maccmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, maccmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #endif
-#if defined(__CBCCMAC__)|| defined(__ALL__)
+#if (defined(__CBCCMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
   rc = sqlite3_create_function(db,"maccbccmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, maccbccmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #endif
-#if defined(__DMAC__)|| defined(__ALL__)
+#if (defined(__DMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
   rc = sqlite3_create_function(db,"macdmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macdmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #endif
-#if defined(__GMAC__)|| defined(__ALL__)
+#if (defined(__GMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
   rc = sqlite3_create_function(db,"macgmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macgmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #endif
-#if defined(__HMAC__)|| defined(__ALL__)
+#if (defined(__HMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
   rc = sqlite3_create_function(db,"machmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, machmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #endif
-#if defined(__POLY1305__)|| defined(__ALL__)
+#if (defined(__POLY1305__)|| defined(__ALL__))&& defined(__USE_MAC__)
   rc = sqlite3_create_function(db,"macpoly1305", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macpoly1305, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #endif
-#if defined(__TWOTRACK__)|| defined(__ALL__)
+#if (defined(__TWOTRACK__)|| defined(__ALL__))&& defined(__USE_MAC__)
   rc = sqlite3_create_function(db,"mactwotrack", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, mactwotrack, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #endif
-#if defined(__VMAC__)|| defined(__ALL__)
+#if (defined(__VMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
   rc = sqlite3_create_function(db,"macvmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macvmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #endif
