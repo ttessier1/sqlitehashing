@@ -416,11 +416,11 @@ const char* Sha3224Finalize(Sha3224ContextPtr context);
 
 #endif
 
-#if (defined(__SHA256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if (defined(__SHA3256__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-Sha256ContextPtr Sha256Initialize();
-void Sha256Update(Sha256ContextPtr context, const char* message, unsigned int length);
-const char* Sha256Finalize(Sha256ContextPtr context);
+Sha3256ContextPtr Sha3256Initialize();
+void Sha3256Update(Sha3256ContextPtr context, const char* message, unsigned int length);
+const char* Sha3256Finalize(Sha3256ContextPtr context);
 
 #endif
 

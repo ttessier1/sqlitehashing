@@ -1,8 +1,11 @@
-Sqlite Hashing version 2024.06.12.1
+Sqlite Hashing version 2024.06.15.1
 
 #TODO: Bug Fix preprocessor macro inclusion -- priliminary completion
 #TODO: Add blob specific functions for less memory intensive access to blobs or text objects
+#TODO: Add test functions to batch build.bat file for base functions
+#TODO: Add test functions to batch build.bat file for blob functions
 TODO: Add blob specific functions for mac hashing algorithms
+TODO: Add test functions to batch build.bat file for mac functions
 TODO: Verify mac functions
 TODO: Complete encryption functions
 TODO: Add Compression

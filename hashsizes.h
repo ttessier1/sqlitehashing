@@ -369,7 +369,7 @@ enum hash_sizes
 #define HASH_SIZE_FUNCTION_NAME_SIPHASH64 "siphash64"
 #endif
 
-#if (defined(__SHAKE64__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if (defined(__SIPHASH64__) || defined (__ALL__)) && defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_SIPHASH64BLOB "siphash64blob"
 #endif
 

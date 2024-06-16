@@ -348,7 +348,7 @@ typedef struct sha3512Context
 } Sha3512Context, * Sha3512ContextPtr;
 #endif
 
-#if (defined(__RIPEMD128____) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if (defined(__RIPEMD128__) || defined (__ALL__)) && defined(__USE_BLOB__)
 typedef struct ripeMD128Context {
     RIPEMD128* context;
 }RipeMD128Context, * RipeMD128ContextPtr;
@@ -1302,7 +1302,7 @@ extern "C" {
 
 #endif
 
-#if (defined(__RIPEMD128____) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if (defined(__RIPEMD128__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
     RipeMD128ContextPtr RipeMD128Initialize()
     {
