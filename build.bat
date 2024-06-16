@@ -977,31 +977,225 @@ echo .quit>>test.sql
 ..\sqlite\sqlite3.exe <test.sql>result.log
 type result.log
 
-
 goto after_test_shake256_exist
 
 :test_siphash64_exist
+
+echo .load hashing>test.sql
+echo select * FROM pragma_function_list where name='siphash64';>>test.sql
+echo .quit>>test.sql
+IF "%ENABLED_SIPHASH64%"=="" goto after_test_siphash64_exist
+echo Siphash64 Enabled - testing for siphash64 function
+IF NOT "%ENABLED_SIPHASH64%"=="" echo "SIPHASH64 Set" && ..\sqlite\sqlite3.exe <test.sql>result.log
+for /f "tokens=1 delims=|" %%A in (result.log) DO IF "%%A"=="siphash64" set SIPHASH64_EXISTS=1
+IF "%SIPHASH64_EXISTS%"=="1" echo siphash64 exists
+IF NOT "%SIPHASH64_EXISTS%"=="1" goto test_fail
+
+echo .load hashing>test.sql
+echo select 'select siphash64('''');';>>test.sql
+echo select siphash64('');>>test.sql
+echo select 'select siphash64(''a'');';>>test.sql
+echo select siphash64('a');>>test.sql
+echo select 'select siphash64(''this is a message'');';>>test.sql
+echo select siphash64('this is a message');>>test.sql
+echo select 'select siphash64(''1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'');';>>test.sql
+echo select siphash64('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890');>>test.sql
+echo .quit>>test.sql
+..\sqlite\sqlite3.exe <test.sql>result.log
+type result.log
+
 goto after_test_siphash64_exist
 
 :test_siphash128_exist
+
+echo .load hashing>test.sql
+echo select * FROM pragma_function_list where name='siphash128';>>test.sql
+echo .quit>>test.sql
+IF "%ENABLED_SIPHASH128%"=="" goto after_test_siphash128_exist
+echo Siphash128 Enabled - testing for siphash128 function
+IF NOT "%ENABLED_SIPHASH128%"=="" echo "SIPHASH128 Set" && ..\sqlite\sqlite3.exe <test.sql>result.log
+for /f "tokens=1 delims=|" %%A in (result.log) DO IF "%%A"=="siphash128" set SIPHASH128_EXISTS=1
+IF "%SIPHASH128_EXISTS%"=="1" echo siphash128 exists
+IF NOT "%SIPHASH128_EXISTS%"=="1" goto test_fail
+
+echo .load hashing>test.sql
+echo select 'select siphash128('''');';>>test.sql
+echo select siphash128('');>>test.sql
+echo select 'select siphash128(''a'');';>>test.sql
+echo select siphash128('a');>>test.sql
+echo select 'select siphash128(''this is a message'');';>>test.sql
+echo select siphash128('this is a message');>>test.sql
+echo select 'select siphash128(''1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'');';>>test.sql
+echo select siphash128('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890');>>test.sql
+echo .quit>>test.sql
+..\sqlite\sqlite3.exe <test.sql>result.log
+type result.log
+
 goto after_test_siphash128_exist
 
 :test_lsh224_exist
+
+echo .load hashing>test.sql
+echo select * FROM pragma_function_list where name='lsh224';>>test.sql
+echo .quit>>test.sql
+IF "%ENABLED_LSH224%"=="" goto after_test_lsh224_exist
+echo Lsh224 Enabled - testing for lsh224 function
+IF NOT "%ENABLED_LSH224%"=="" echo "LSH224 Set" && ..\sqlite\sqlite3.exe <test.sql>result.log
+for /f "tokens=1 delims=|" %%A in (result.log) DO IF "%%A"=="lsh224" set LSH224_EXISTS=1
+IF "%LSH224_EXISTS%"=="1" echo lsh224 exists
+IF NOT "%LSH224_EXISTS%"=="1" goto test_fail
+
+echo .load hashing>test.sql
+echo select 'select lsh224('''');';>>test.sql
+echo select lsh224('');>>test.sql
+echo select 'select lsh224(''a'');';>>test.sql
+echo select lsh224('a');>>test.sql
+echo select 'select lsh224(''this is a message'');';>>test.sql
+echo select lsh224('this is a message');>>test.sql
+echo select 'select lsh224(''1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'');';>>test.sql
+echo select lsh224('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890');>>test.sql
+echo .quit>>test.sql
+..\sqlite\sqlite3.exe <test.sql>result.log
+type result.log
+
 goto after_test_lsh224_exist
 
 :test_lsh256_exist
+
+echo .load hashing>test.sql
+echo select * FROM pragma_function_list where name='lsh256';>>test.sql
+echo .quit>>test.sql
+IF "%ENABLED_LSH256%"=="" goto after_test_lsh256_exist
+echo Lsh256 Enabled - testing for lsh256 function
+IF NOT "%ENABLED_LSH256%"=="" echo "LSH256 Set" && ..\sqlite\sqlite3.exe <test.sql>result.log
+for /f "tokens=1 delims=|" %%A in (result.log) DO IF "%%A"=="lsh256" set LSH256_EXISTS=1
+IF "%LSH256_EXISTS%"=="1" echo lsh256 exists
+IF NOT "%LSH256_EXISTS%"=="1" goto test_fail
+
+echo .load hashing>test.sql
+echo select 'select lsh256('''');';>>test.sql
+echo select lsh256('');>>test.sql
+echo select 'select lsh256(''a'');';>>test.sql
+echo select lsh256('a');>>test.sql
+echo select 'select lsh256(''this is a message'');';>>test.sql
+echo select lsh256('this is a message');>>test.sql
+echo select 'select lsh256(''1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'');';>>test.sql
+echo select lsh256('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890');>>test.sql
+echo .quit>>test.sql
+..\sqlite\sqlite3.exe <test.sql>result.log
+type result.log
+
+
 goto after_test_lsh256_exist
 
 :test_lsh384_exist
+
+echo .load hashing>test.sql
+echo select * FROM pragma_function_list where name='lsh384';>>test.sql
+echo .quit>>test.sql
+IF "%ENABLED_LSH384%"=="" goto after_test_lsh384_exist
+echo Lsh384 Enabled - testing for lsh384 function
+IF NOT "%ENABLED_LSH384%"=="" echo "LSH384 Set" && ..\sqlite\sqlite3.exe <test.sql>result.log
+for /f "tokens=1 delims=|" %%A in (result.log) DO IF "%%A"=="lsh384" set LSH384_EXISTS=1
+IF "%LSH384_EXISTS%"=="1" echo lsh384 exists
+IF NOT "%LSH384_EXISTS%"=="1" goto test_fail
+
+echo .load hashing>test.sql
+echo select 'select lsh384('''');';>>test.sql
+echo select lsh384('');>>test.sql
+echo select 'select lsh384(''a'');';>>test.sql
+echo select lsh384('a');>>test.sql
+echo select 'select lsh384(''this is a message'');';>>test.sql
+echo select lsh384('this is a message');>>test.sql
+echo select 'select lsh384(''1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'');';>>test.sql
+echo select lsh384('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890');>>test.sql
+echo .quit>>test.sql
+..\sqlite\sqlite3.exe <test.sql>result.log
+type result.log
+
+
 goto after_test_lsh384_exist
 
 :test_lsh512_exist
+
+echo .load hashing>test.sql
+echo select * FROM pragma_function_list where name='lsh512';>>test.sql
+echo .quit>>test.sql
+IF "%ENABLED_LSH512%"=="" goto after_test_lsh512_exist
+echo Lsh512 Enabled - testing for lsh512 function
+IF NOT "%ENABLED_LSH512%"=="" echo "LSH512 Set" && ..\sqlite\sqlite3.exe <test.sql>result.log
+for /f "tokens=1 delims=|" %%A in (result.log) DO IF "%%A"=="lsh512" set LSH512_EXISTS=1
+IF "%LSH512_EXISTS%"=="1" echo lsh512 exists
+IF NOT "%LSH512_EXISTS%"=="1" goto test_fail
+
+echo .load hashing>test.sql
+echo select 'select lsh512('''');';>>test.sql
+echo select lsh512('');>>test.sql
+echo select 'select lsh512(''a'');';>>test.sql
+echo select lsh512('a');>>test.sql
+echo select 'select lsh512(''this is a message'');';>>test.sql
+echo select lsh512('this is a message');>>test.sql
+echo select 'select lsh512(''1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'');';>>test.sql
+echo select lsh512('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890');>>test.sql
+echo .quit>>test.sql
+..\sqlite\sqlite3.exe <test.sql>result.log
+type result.log
+
 goto after_test_lsh512_exist
 
 :test_sm3_exist
+
+echo .load hashing>test.sql
+echo select * FROM pragma_function_list where name='sm3';>>test.sql
+echo .quit>>test.sql
+IF "%ENABLED_SM3%"=="" goto after_test_sm3_exist
+echo Sm3 Enabled - testing for sm3 function
+IF NOT "%ENABLED_SM3%"=="" echo "SM3 Set" && ..\sqlite\sqlite3.exe <test.sql>result.log
+for /f "tokens=1 delims=|" %%A in (result.log) DO IF "%%A"=="sm3" set SM3_EXISTS=1
+IF "%SM3_EXISTS%"=="1" echo sm3 exists
+IF NOT "%SM3_EXISTS%"=="1" goto test_fail
+
+echo .load hashing>test.sql
+echo select 'select sm3('''');';>>test.sql
+echo select sm3('');>>test.sql
+echo select 'select sm3(''a'');';>>test.sql
+echo select sm3('a');>>test.sql
+echo select 'select sm3(''this is a message'');';>>test.sql
+echo select sm3('this is a message');>>test.sql
+echo select 'select sm3(''1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'');';>>test.sql
+echo select sm3('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890');>>test.sql
+echo .quit>>test.sql
+..\sqlite\sqlite3.exe <test.sql>result.log
+type result.log
+
 goto after_test_sm3_exist
 
 :test_whirlpool_exist
+
+echo .load hashing>test.sql
+echo select * FROM pragma_function_list where name='whirlpool';>>test.sql
+echo .quit>>test.sql
+IF "%ENABLED_WHIRLPOOL%"=="" goto after_test_whirlpool_exist
+echo Whirlpool Enabled - testing for whirlpool function
+IF NOT "%ENABLED_WHIRLPOOL%"=="" echo "WHIRLPOOL Set" && ..\sqlite\sqlite3.exe <test.sql>result.log
+for /f "tokens=1 delims=|" %%A in (result.log) DO IF "%%A"=="whirlpool" set WHIRLPOOL_EXISTS=1
+IF "%WHIRLPOOL_EXISTS%"=="1" echo whirlpool exists
+IF NOT "%WHIRLPOOL_EXISTS%"=="1" goto test_fail
+
+echo .load hashing>test.sql
+echo select 'select whirlpool('''');';>>test.sql
+echo select whirlpool('');>>test.sql
+echo select 'select whirlpool(''a'');';>>test.sql
+echo select whirlpool('a');>>test.sql
+echo select 'select whirlpool(''this is a message'');';>>test.sql
+echo select whirlpool('this is a message');>>test.sql
+echo select 'select whirlpool(''1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'');';>>test.sql
+echo select whirlpool('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890');>>test.sql
+echo .quit>>test.sql
+..\sqlite\sqlite3.exe <test.sql>result.log
+type result.log
+
+
 goto after_test_whirlpool_exist
 
 
