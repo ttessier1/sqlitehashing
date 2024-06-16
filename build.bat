@@ -48,7 +48,20 @@ set ENABLED_BLAKE2S=/D__BLAKE2S__
 set ENABLED_TIGER=/D__TIGER__
 
 
+set ENABLED_SHAKE128=/D__SHAKE128__
+set ENABLED_SHAKE256=/D__SHAKE256__
 
+set ENABLED_SIPHASH64=/D__SIPHASH64__
+set ENABLED_SIPHASH128=/D__SIPHASH128__
+
+
+set ENABLED_LSH224=/D__LSH224__
+set ENABLED_LSH256=/D__LSH256__
+set ENABLED_LSH384=/D__LSH384__
+set ENABLED_LSH512=/D__LSH512__
+
+set ENABLED_SM3=/D__SM3__
+set ENABLED_WHIRLPOOL=/D__WHIRLPOOL__
 
 set UTIL_CPP=util.cpp
 
@@ -69,8 +82,12 @@ IF NOT EXIST %UTIL_CPP% goto util_cpp_ne
 IF NOT EXIST %SQLITE_LIB%\%SQLITE_LIB_FILE% goto sqlite_lib_file_ne
 IF NOT EXIST %CRYPTOPP_LIB%\%CRYPTOPP_LIB_FILE% goto crypto_lib_file_ne
 
-echo cl -Zi /GS /RTC1 %HASHING_C% %CRYPTO_HASHING_CPP% %CRYPTO_HASHING_BLOB_CPP% %CRYPTO_MACCPP% %UTIL_CPP% /EHsc -I %SQLITE_INC% -I %CRYPTOPP_INC% %CRYPTOPP% %ENABLED_MD2% %ENABLED_MD4% %ENABLED_MD5% %ENABLED_SHA1% %ENABLED_SHA224% %ENABLED_SHA256% %ENABLED_SHA384% %ENABLED_SHA512% %ENABLED_SHA3224% %ENABLED_SHA3256% %ENABLED_SHA3384% %ENABLED_SHA3512% %ENABLED_RIPEMD128% %ENABLED_RIPEMD160% %ENABLED_RIPEMD256% %ENABLED_RIPEMD320% %ENABLED_BLAKE2B% %ENABLED_BLAKE2S% %ENABLED_TIGER% -link /MACHINE:X64 -LIBPATH:%SQLITE_LIB% -LIBPATH:%CRYPTOPP_LIB% sqlite3.lib cryptlib.lib kernel32.lib libcpmt.lib libcmt.lib libucrt.lib libvcruntime.lib -dll -out:hashing.dll
-cl -Zi /GS /RTC1 %HASHING_C% %CRYPTO_HASHING_CPP% %CRYPTO_HASHING_BLOB_CPP% %CRYPTO_MACCPP% %UTIL_CPP% /EHsc -I %SQLITE_INC% -I %CRYPTOPP_INC% %CRYPTOPP% %ENABLED_MD2% %ENABLED_MD4% %ENABLED_MD5% %ENABLED_SHA1% %ENABLED_SHA224% %ENABLED_SHA256% %ENABLED_SHA384% %ENABLED_SHA512% %ENABLED_SHA3224% %ENABLED_SHA3256% %ENABLED_SHA3384% %ENABLED_SHA3512% %ENABLED_RIPEMD128% %ENABLED_RIPEMD160% %ENABLED_RIPEMD256% %ENABLED_RIPEMD320% %ENABLED_BLAKE2B% %ENABLED_BLAKE2S% %ENABLED_TIGER% -link /MACHINE:X64 -LIBPATH:%SQLITE_LIB% -LIBPATH:%CRYPTOPP_LIB% sqlite3.lib cryptlib.lib kernel32.lib libcpmt.lib libcmt.lib libucrt.lib libvcruntime.lib -dll -out:hashing.dll
+REM the conditional compilation above if REM d out should appear here as empty strings and therefore not defined
+REM __ALL__ condition for tests does not currently work and will be left until the very end if at all except for the compilation
+REM TODO: Add conditional compilation for mac functions and the catch all __USE_BLOB__ maybe __USE_MAC__
+
+echo cl -Zi /GS /RTC1 %HASHING_C% %CRYPTO_HASHING_CPP% %CRYPTO_HASHING_BLOB_CPP% %CRYPTO_MACCPP% %UTIL_CPP% /EHsc -I %SQLITE_INC% -I %CRYPTOPP_INC% %CRYPTOPP% %ENABLED_MD2% %ENABLED_MD4% %ENABLED_MD5% %ENABLED_SHA1% %ENABLED_SHA224% %ENABLED_SHA256% %ENABLED_SHA384% %ENABLED_SHA512% %ENABLED_SHA3224% %ENABLED_SHA3256% %ENABLED_SHA3384% %ENABLED_SHA3512% %ENABLED_RIPEMD128% %ENABLED_RIPEMD160% %ENABLED_RIPEMD256% %ENABLED_RIPEMD320% %ENABLED_BLAKE2B% %ENABLED_BLAKE2S% %ENABLED_TIGER% %ENABLED_SHAKE128% %ENABLED_SHAKE256% %ENABLED_SIPHASH64% %ENABLED_SIPHASH128% %ENABLED_LSH224% %ENABLED_LSH256% %ENABLED_LSH384% %ENABLED_LSH512% %ENABLED_SM3% %ENABLED_WHIRLPOOL% -link /MACHINE:X64 -LIBPATH:%SQLITE_LIB% -LIBPATH:%CRYPTOPP_LIB% sqlite3.lib cryptlib.lib kernel32.lib libcpmt.lib libcmt.lib libucrt.lib libvcruntime.lib -dll -out:hashing.dll
+cl -Zi /GS /RTC1 %HASHING_C% %CRYPTO_HASHING_CPP% %CRYPTO_HASHING_BLOB_CPP% %CRYPTO_MACCPP% %UTIL_CPP% /EHsc -I %SQLITE_INC% -I %CRYPTOPP_INC% %CRYPTOPP% %ENABLED_MD2% %ENABLED_MD4% %ENABLED_MD5% %ENABLED_SHA1% %ENABLED_SHA224% %ENABLED_SHA256% %ENABLED_SHA384% %ENABLED_SHA512% %ENABLED_SHA3224% %ENABLED_SHA3256% %ENABLED_SHA3384% %ENABLED_SHA3512% %ENABLED_RIPEMD128% %ENABLED_RIPEMD160% %ENABLED_RIPEMD256% %ENABLED_RIPEMD320% %ENABLED_BLAKE2B% %ENABLED_BLAKE2S% %ENABLED_TIGER% %ENABLED_SHAKE128% %ENABLED_SHAKE256% %ENABLED_SIPHASH64% %ENABLED_SIPHASH128% %ENABLED_LSH224% %ENABLED_LSH256% %ENABLED_LSH384% %ENABLED_LSH512% %ENABLED_SM3% %ENABLED_WHIRLPOOL% -link /MACHINE:X64 -LIBPATH:%SQLITE_LIB% -LIBPATH:%CRYPTOPP_LIB% sqlite3.lib cryptlib.lib kernel32.lib libcpmt.lib libcmt.lib libucrt.lib libvcruntime.lib -dll -out:hashing.dll
 
 REM "c:\Users\fliei\sources\repository\sqlite"
 REM "c:\fliei\sources\repository\cryptopp"
@@ -84,101 +101,163 @@ IF EXIST hashing.pdb copy /y *.pdb %SQLITE_DIR%
 echo .load hashing|..\sqlite\sqlite3.exe 
 if NOT "%ERRORLEVEL%"=="0" goto Failed
 
+echo:
+echo Test Hash Ping Functions
 goto test_ping_exist
 :after_test_ping_exist
 
+echo:
+echo Test Hash Info Module
 goto test_hash_info_exist
 :after_test_hash_info_exist
 
+
+echo:
+echo Test Hash Sizes Module
 goto test_hash_sizes_exist
 :after_test_hash_sizes_exist
 
+echo Test Md2 Functions
 goto test_md2_exist
 :after_test_md2_exist
 
+echo:
+echo Test Md4 Functions
 goto test_md4_exist
 :after_test_md4_exist
 
+echo:
+echo Test Md5 Functions
 goto test_md5_exist
 :after_test_md5_exist
 
+echo:
+echo Test Sha1 Functions
 goto test_sha1_exist
 :after_test_sha1_exist
 
+echo:
+echo Test Sha224 Functions
 goto test_sha224_exist
 :after_test_sha224_exist
 
+echo:
+echo Test Sha256 Functions
 goto test_sha256_exist
 :after_test_sha256_exist
 
+echo:
+echo Test Sha384 Functions
 goto test_sha384_exist
 :after_test_sha384_exist
 
+echo:
+echo Test Sha512 Functions
 goto test_sha512_exist
 :after_test_sha512_exist
 
+echo:
+echo Test Sha3 224 Functions
 goto test_sha3224_exist
 :after_test_sha3224_exist
 
+echo:
+echo Test Sha3 256 Functions
 goto test_sha3256_exist
 :after_test_sha3256_exist
 
+echo:
+echo Test Sha3 384 Functions
 goto test_sha3384_exist
 :after_test_sha3384_exist
 
+echo:
+echo Test Sha3 512 Functions
 goto test_sha3512_exist
 :after_test_sha3512_exist
 
-
+echo:
+echo Test RipeMD128 Functions
 goto test_ripemd128_exist
 :after_test_ripemd128_exist
 
+echo:
+echo Test RipeMD160 Functions
 goto test_ripemd160_exist
 :after_test_ripemd160_exist
 
+echo:
+echo Test RipeMD256 Functions
 goto test_ripemd256_exist
 :after_test_ripemd256_exist
 
+echo:
+echo Test RipeMD320 Functions
 goto test_ripemd320_exist
 :after_test_ripemd320_exist
 
+echo:
+echo Test Blake2B Functions
 goto test_blake2b_exist
 :after_test_blake2b_exist
 
+echo:
+echo Test Blake2S Functions
 goto test_blake2s_exist
 :after_test_blake2s_exist
 
+echo:
+echo Test Tiger Functions
 goto test_tiger_exist
 :after_test_tiger_exist
 
-
+echo:
+echo Test Shake128 Functions
 goto test_shake128_exist
 :after_test_shake128_exist
 
+echo:
+echo Test Shake256 Functions
 goto test_shake256_exist
 :after_test_shake256_exist
 
+echo:
+echo Test SipHash64 Functions
 goto test_siphash64_exist
 :after_test_siphash64_exist
 
+echo:
+echo Test SipHash128 Functions
 goto test_siphash128_exist
 :after_test_siphash128_exist
 
+echo:
+echo Test Lsh224 Functions
 goto test_lsh224_exist
 :after_test_lsh224_exist
 
+echo:
+echo Test Lsh256 Functions
 goto test_lsh256_exist
 :after_test_lsh256_exist
 
+echo:
+echo Test Lsh384 Functions
 goto test_lsh384_exist
 :after_test_lsh384_exist
 
+echo:
+echo Test Lsh512 Functions
 goto test_lsh512_exist
 :after_test_lsh512_exist
 
+echo:
+echo Test Sm3 Functions
 goto test_sm3_exist
 :after_test_sm3_exist
 
+echo:
+echo Test Whirlpool Functions
 goto test_whirlpool_exist
 :after_test_whirlpool_exist
 
@@ -846,9 +925,59 @@ type result.log
 goto after_test_tiger_exist
 
 :test_shake128_exist
+
+echo .load hashing>test.sql
+echo select * FROM pragma_function_list where name='shake128';>>test.sql
+echo .quit>>test.sql
+IF "%ENABLED_SHAKE128%"=="" goto after_test_shake128_exist
+echo Shake128 Enabled - testing for shake128 function
+IF NOT "%ENABLED_SHAKE128%"=="" echo "SHAKE128 Set" && ..\sqlite\sqlite3.exe <test.sql>result.log
+for /f "tokens=1 delims=|" %%A in (result.log) DO IF "%%A"=="shake128" set SHAKE128_EXISTS=1
+IF "%SHAKE128_EXISTS%"=="1" echo shake128 exists
+IF NOT "%SHAKE128_EXISTS%"=="1" goto test_fail
+
+echo .load hashing>test.sql
+echo select 'select shake128('''');';>>test.sql
+echo select shake128('');>>test.sql
+echo select 'select shake128(''a'');';>>test.sql
+echo select shake128('a');>>test.sql
+echo select 'select shake128(''this is a message'');';>>test.sql
+echo select shake128('this is a message');>>test.sql
+echo select 'select shake128(''1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'');';>>test.sql
+echo select shake128('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890');>>test.sql
+echo .quit>>test.sql
+..\sqlite\sqlite3.exe <test.sql>result.log
+type result.log
+
+
 goto after_test_shake128_exist
 
 :test_shake256_exist
+
+echo .load hashing>test.sql
+echo select * FROM pragma_function_list where name='shake256';>>test.sql
+echo .quit>>test.sql
+IF "%ENABLED_SHAKE256%"=="" goto after_test_shake256_exist
+echo Shake256 Enabled - testing for shake256 function
+IF NOT "%ENABLED_SHAKE256%"=="" echo "SHAKE256 Set" && ..\sqlite\sqlite3.exe <test.sql>result.log
+for /f "tokens=1 delims=|" %%A in (result.log) DO IF "%%A"=="shake256" set SHAKE256_EXISTS=1
+IF "%SHAKE256_EXISTS%"=="1" echo shake256 exists
+IF NOT "%SHAKE256_EXISTS%"=="1" goto test_fail
+
+echo .load hashing>test.sql
+echo select 'select shake256('''');';>>test.sql
+echo select shake256('');>>test.sql
+echo select 'select shake256(''a'');';>>test.sql
+echo select shake256('a');>>test.sql
+echo select 'select shake256(''this is a message'');';>>test.sql
+echo select shake256('this is a message');>>test.sql
+echo select 'select shake256(''1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890'');';>>test.sql
+echo select shake256('1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890');>>test.sql
+echo .quit>>test.sql
+..\sqlite\sqlite3.exe <test.sql>result.log
+type result.log
+
+
 goto after_test_shake256_exist
 
 :test_siphash64_exist
