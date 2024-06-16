@@ -160,25 +160,25 @@ unsigned int GetDigestSize(unsigned int algorithms)
                 return SHA3_512::DIGESTSIZE ;
             break;
 #endif
-#if defined ( __MD128__ ) || defined(__ALL__)
+#if defined ( __RIPEMD128__ ) || defined(__ALL__)
             case algo_ripemd_128:
             case algo_hmac_ripemd_128:
                 return RIPEMD128::DIGESTSIZE ;
             break;
 #endif
-#if defined ( __MD160__ ) || defined(__ALL__)
+#if defined ( __RIPEMD160__ ) || defined(__ALL__)
             case algo_ripemd_160:
             case algo_hmac_ripemd_160:
                 return RIPEMD160::DIGESTSIZE ;
             break;
 #endif
-#if defined ( __MD256__ ) || defined(__ALL__)
+#if defined ( __RIPEMD256__ ) || defined(__ALL__)
             case algo_ripemd_256:
             case algo_hmac_ripemd_256:
                 return RIPEMD256::DIGESTSIZE ;
             break;
 #endif
-#if defined ( __MD320__ ) || defined(__ALL__)
+#if defined ( __RIPEMD320__ ) || defined(__ALL__)
             case algo_ripemd_320:
             case algo_hmac_ripemd_320:
                 return RIPEMD320::DIGESTSIZE ;
@@ -514,7 +514,7 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 maxLength = SHA512::DIGESTSIZE*2 ;
             break;
 #endif
-#if defined ( __MD128__ ) || defined(__ALL__)
+#if defined ( __RIPEMD128__ ) || defined(__ALL__)
             case algo_ripemd_128:
             case algo_hmac_ripemd_128:
                 if(length!=RIPEMD128::DIGESTSIZE)
@@ -525,7 +525,7 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 maxLength = RIPEMD128::DIGESTSIZE*2 ;
             break;
 #endif
-#if defined ( __MD160__ ) || defined(__ALL__)
+#if defined ( __RIPEMD160__ ) || defined(__ALL__)
             case algo_ripemd_160:
             case algo_hmac_ripemd_160:
                 if(length!=RIPEMD160::DIGESTSIZE)
@@ -536,7 +536,7 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 maxLength = RIPEMD160::DIGESTSIZE*2 ;
             break;
 #endif
-#if defined ( __MD256__ ) || defined(__ALL__)
+#if defined ( __RIPEMD256__ ) || defined(__ALL__)
             case algo_ripemd_256:
             case algo_hmac_ripemd_256:
                 if(length!=RIPEMD256::DIGESTSIZE)
@@ -547,7 +547,7 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 maxLength = RIPEMD256::DIGESTSIZE*2 ;
             break;
 #endif
-#if defined ( __MD320__ ) || defined(__ALL__)
+#if defined ( __RIPEMD320__ ) || defined(__ALL__)
             case algo_ripemd_320:
             case algo_hmac_ripemd_320:
                 if(length!=RIPEMD320::DIGESTSIZE)
@@ -1009,7 +1009,7 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 maxLength = SHA3_512::DIGESTSIZE*2 ;
             break;
 #endif
-#if defined ( __MD128__ ) || defined(__ALL__)
+#if defined ( __RIPEMD128__ ) || defined(__ALL__)
             case algo_ripemd_128:
             case algo_hmac_ripemd_128:
                 if(length!=RIPEMD128::DIGESTSIZE*2)
@@ -1020,7 +1020,7 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 maxLength = RIPEMD128::DIGESTSIZE*2 ;
             break;
 #endif
-#if defined ( __MD160__ ) || defined(__ALL__)
+#if defined ( __RIPEMD160__ ) || defined(__ALL__)
             case algo_ripemd_160:
             case algo_hmac_ripemd_160:
                 if(length!=RIPEMD160::DIGESTSIZE*2)
@@ -1031,7 +1031,7 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 maxLength = RIPEMD160::DIGESTSIZE*2 ;
             break;
 #endif
-#if defined ( __MD256__ ) || defined(__ALL__)
+#if defined ( __RIPEMD256__ ) || defined(__ALL__)
             case algo_ripemd_256:
             case algo_hmac_ripemd_256:
                 if(length!=RIPEMD256::DIGESTSIZE*2)
@@ -1042,7 +1042,7 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 maxLength = RIPEMD256::DIGESTSIZE*2 ;
             break;
 #endif
-#if defined ( __MD320__ ) || defined(__ALL__)
+#if defined ( __RIPEMD320__ ) || defined(__ALL__)
             case algo_ripemd_320:
             case algo_hmac_ripemd_320:
                 if(length!=RIPEMD320::DIGESTSIZE*2)

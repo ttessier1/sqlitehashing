@@ -2471,7 +2471,7 @@ static int sha3512blob(
 #endif
 
 #endif
-#if defined(__MD128__)|| defined(__ALL__)
+#if defined(__RIPEMD128__)|| defined(__ALL__)
 
 static int ripemd128(
     sqlite3_context *context,
@@ -2667,7 +2667,7 @@ static int ripemd128blob(
 }
 #endif
 #endif
-#if defined(__MD160__)|| defined(__ALL__)
+#if defined(__RIPEMD160__)|| defined(__ALL__)
 
 static int ripemd160(
     sqlite3_context *context,
@@ -2863,7 +2863,7 @@ static int ripemd160blob(
 }
 #endif
 #endif
-#if defined(__MD256__)|| defined(__ALL__)
+#if defined(__RIPEMD256__)|| defined(__ALL__)
 
 static int ripemd256(
     sqlite3_context *context,
@@ -3059,7 +3059,7 @@ static int ripemd256blob(
 }
 #endif
 #endif
-#if defined(__MD320__)|| defined(__ALL__)
+#if defined(__RIPEMD320__)|| defined(__ALL__)
 
 static int ripemd320(
     sqlite3_context *context,
@@ -9815,7 +9815,7 @@ extern int sqlite3_hashing_init(
   if (rc != SQLITE_OK) return rc;
 #endif
 #endif
-#if defined(__MD128__)|| defined(__ALL__)
+#if defined(__RIPEMD128__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"ripemd128", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, ripemd128, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #if defined(__USE_BLOB__)
@@ -9823,7 +9823,7 @@ extern int sqlite3_hashing_init(
   if (rc != SQLITE_OK) return rc;
 #endif
 #endif
-#if defined(__MD160__)|| defined(__ALL__)
+#if defined(__RIPEMD160__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"ripemd160", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, ripemd160, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #if defined(__USE_BLOB__)
@@ -9831,7 +9831,7 @@ extern int sqlite3_hashing_init(
   if (rc != SQLITE_OK) return rc;
 #endif
 #endif
-#if defined(__MD256__)|| defined(__ALL__)
+#if defined(__RIPEMD256__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"ripemd256", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, ripemd256, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #if defined(__USE_BLOB__)
@@ -9839,7 +9839,7 @@ extern int sqlite3_hashing_init(
   if (rc != SQLITE_OK) return rc;
 #endif
 #endif
-#if defined(__MD320__)|| defined(__ALL__)
+#if defined(__RIPEMD320__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"ripemd320", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, ripemd320, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #if defined(__USE_BLOB__)
@@ -9999,19 +9999,19 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db,"macsha3512",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macsha3512, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #endif
-#if defined(__MD128__)|| defined(__ALL__)
+#if defined(__RIPEMD128__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macripemd128",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macripemd128, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #endif
-#if defined(__MD160__)|| defined(__ALL__)
+#if defined(__RIPEMD160__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macripemd160",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macripemd160, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #endif
-#if defined(__MD256__)|| defined(__ALL__)
+#if defined(__RIPEMD256__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macripemd256",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macripemd256, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #endif
-#if defined(__MD320__)|| defined(__ALL__)
+#if defined(__RIPEMD320__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"macripemd320",3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macripemd320, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 #endif

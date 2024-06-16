@@ -90,24 +90,24 @@
 #pragma message( "SHA3 NOT Set")
 #endif
 
-#if defined(__MD128__) ||defined(__MD160__) ||defined(__MD256__) ||defined(__MD256__) || defined(__ALL__)
-#if defined(__MD128__) ||defined (__ALL__)
+#if defined(__RIPEMD128__) ||defined(__RIPEMD160__) ||defined(__RIPEMD256__) ||defined(__RIPEMD320__) || defined(__ALL__)
+#if defined(__RIPEMD128__) ||defined (__ALL__)
 #pragma message( "MD128 Set")
 #else
 #pragma message( "MD128 NOT Set")
 #endif
-#if defined(__MD160__) ||defined (__ALL__)
+#if defined(__RIPEMD160__) ||defined (__ALL__)
 #pragma message( "MD160 Set")
 #else
 #pragma message( "MD160 NOT Set")
 #endif
-#if defined(__MD256__) ||defined (__ALL__)
+#if defined(__RIPEMD256__) ||defined (__ALL__)
 #pragma message( "MD256 Set")
 #else
 #pragma message( "MD256 NOT Set")
 #endif
-#if defined(__MD256__) ||defined (__ALL__)
-#pragma message( "MD256 Set")
+#if defined(__RIPEMD320__) ||defined (__ALL__)
+#pragma message( "MD320 Set")
 #else
 #pragma message( "MD256 NOT Set")
 #endif
@@ -348,7 +348,7 @@ typedef struct sha3512Context
 } Sha3512Context, * Sha3512ContextPtr;
 #endif
 
-#if (defined(__RIPEMD128__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if (defined(__RIPEMD128____) || defined (__ALL__)) && defined(__USE_BLOB__)
 typedef struct ripeMD128Context {
     RIPEMD128* context;
 }RipeMD128Context, * RipeMD128ContextPtr;
@@ -1302,7 +1302,7 @@ extern "C" {
 
 #endif
 
-#if (defined(__RIPEMD128__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if (defined(__RIPEMD128____) || defined (__ALL__)) && defined(__USE_BLOB__)
 
     RipeMD128ContextPtr RipeMD128Initialize()
     {

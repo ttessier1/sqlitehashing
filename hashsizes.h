@@ -301,11 +301,11 @@ enum hash_sizes
 #define HASH_SIZE_FUNCTION_NAME_RIPEMD128BLOB "ripemd128blob"
 #endif
 
-#if defined(__RIPEMD160) || defined (__ALL__)
+#if defined(__RIPEMD160__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_RIPEMD160 "ripenmd160"
 #endif
 
-#if (defined(__RIPEMD160) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if (defined(__RIPEMD160__) || defined (__ALL__)) && defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_RIPEMD160BLOB "ripenmd160blob"
 #endif
 
@@ -935,7 +935,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
 #endif
 
-#if defined(__RIPEMD160) || defined (__ALL__)
+#if defined(__RIPEMD160__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_ripemd160)
     {
         switch (i) {
@@ -952,7 +952,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
 #endif
 
-#if (defined(__RIPEMD160) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if (defined(__RIPEMD160__) || defined (__ALL__)) && defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_ripemd160blob)
     {
         switch (i) {

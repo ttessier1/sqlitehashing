@@ -50,16 +50,16 @@ extern "C" const char * DoSha3_384(const char * message);
 #if defined(__SSH3512__) || (defined __ALL__)
 extern "C" const char * DoSha3_512(const char * message);
 #endif
-#if defined(__MD128__) || (defined __ALL__)
+#if defined(__RIPEMD128__) || (defined __ALL__)
 extern "C" const char * DoRipeMD128(const char * message);
 #endif
-#if defined(__MD160__) || (defined __ALL__)
+#if defined(__RIPEMD160__) || (defined __ALL__)
 extern "C" const char * DoRipeMD160(const char * message);
 #endif
-#if defined(__MD256__) || (defined __ALL__)
+#if defined(__RIPEMD256__) || (defined __ALL__)
 extern "C" const char * DoRipeMD256(const char * message);
 #endif
-#if defined(__MD320__) || (defined __ALL__)
+#if defined(__RIPEMD320__) || (defined __ALL__)
 extern "C" const char * DoRipeMD320(const char * message);
 #endif
 #if defined(__BLAKE2B__) || (defined __ALL__)
@@ -149,16 +149,16 @@ const char * DoSha3_384(const char * message);
 #if defined(__SHA3512__) || (defined __ALL__)
 const char * DoSha3_512(const char * message);
 #endif
-#if defined(__MD128__) || (defined __ALL__)
+#if defined(__RIPEMD128__) || (defined __ALL__)
 const char * DoRipeMD128(const char * message);
 #endif
-#if defined(__MD160__) || (defined __ALL__)
+#if defined(__RIPEMD160__) || (defined __ALL__)
 const char * DoRipeMD160(const char * message);
 #endif
-#if defined(__MD256__) || (defined __ALL__)
+#if defined(__RIPEMD256__) || (defined __ALL__)
 const char * DoRipeMD256(const char * message);
 #endif
-#if defined(__MD320__) || (defined __ALL__)
+#if defined(__RIPEMD320__) || (defined __ALL__)
 const char * DoRipeMD320(const char * message);
 #endif
 #if defined(__BLAKE2B__) || (defined __ALL__)

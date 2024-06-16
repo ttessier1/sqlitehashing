@@ -622,7 +622,7 @@ const char * DoMacSha3512(const char * key, unsigned int length, const char * me
 
 #endif
 
-#if defined(__MD128__)|| defined(__ALL__)
+#if defined(__RIPEMD128__)|| defined(__ALL__)
 
 const char * DoMacRipeMd128(const char * key, unsigned int length, const char * message)
 {
@@ -667,7 +667,7 @@ const char * DoMacRipeMd128(const char * key, unsigned int length, const char * 
 
 #endif
 
-#if defined(__MD160__)|| defined(__ALL__)
+#if defined(__RIPEMD160__)|| defined(__ALL__)
 
 const char * DoMacRipeMd160(const char * key, unsigned int length, const char * message)
 {
@@ -712,7 +712,7 @@ const char * DoMacRipeMd160(const char * key, unsigned int length, const char * 
 
 #endif
 
-#if defined(__MD256__)|| defined(__ALL__)
+#if defined(__RIPEMD256__)|| defined(__ALL__)
 
 const char * DoMacRipeMd256(const char * key, unsigned int length, const char * message)
 {
@@ -757,7 +757,7 @@ const char * DoMacRipeMd256(const char * key, unsigned int length, const char * 
 
 #endif
 
-#if defined(__MD320__)|| defined(__ALL__)
+#if defined(__RIPEMD320__)|| defined(__ALL__)
 
 const char * DoMacRipeMd320(const char * key, unsigned int length, const char * message)
 {
