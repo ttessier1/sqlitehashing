@@ -71,7 +71,7 @@ extern "C" const char * DoMacShake256(const char * key, unsigned int length, con
 extern "C" const char * DoMacSipHash64(const char * key, unsigned int length, const char * message);
 #endif
 #if (defined(__SIPHASH128__)|| defined(__ALL__)) && defined(__USE_MAC__)
-xtern "C" const char * DoMacSipHash128(const char * key, unsigned int length, const char * message);
+extern "C" const char * DoMacSipHash128(const char * key, unsigned int length, const char * message);
 #endif
 #if (defined(__LSH224__)|| defined(__ALL__)) && defined(__USE_MAC__)
 extern "C" const char * DoMacLsh224(const char * key, unsigned int length, const char * message);
@@ -91,7 +91,7 @@ extern "C" const char * DoMacSm3(const char * key, unsigned int length, const ch
 #if (defined(__WHIRLPOOL__)|| defined(__ALL__)) && defined(__USE_MAC__)
 extern "C" const char * DoMacWhirlpool(const char * key, unsigned int length, const char * message);
 #endif
-#if defined(__CMAC__)|| defined(__ALL__)
+#if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
 extern "C" const char * DoMacCMac(const char * key, unsigned int length, const char * message);
 #endif
 #if (defined(__CBCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
