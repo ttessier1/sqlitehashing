@@ -14,177 +14,316 @@ enum hash_sizes
     hash_size_first_record = 0, // allways 0 - next item will be 1 whatever it is
 #if defined(__MD2__) || defined (__ALL__)
     hash_size_md2, // md2 enabled
-#endif
-#if (defined(__MD2__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_md2blob, // md2 enabled
 #endif
+#if defined(__USE_MAC__)
+    hash_size_md2mac, // md2 enabled
+#endif
+
+#endif
+
 #if defined(__MD4__) || defined (__ALL__)
     hash_size_md4, // md4 enabled
-#endif
-#if (defined(__MD4__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_md4blob, // md4 enabled
 #endif
+#if defined(__USE_MAC__)
+    hash_size_md4mac, // md4 enabled
+#endif
+#endif
+
 #if defined(__MD5__) || defined (__ALL__)
     hash_size_md5, // md5 enabled
-#endif
-#if (defined(__MD5__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_md5blob, // md5 enabled
 #endif
+#if defined(__USE_MAC__)
+    hash_size_md5mac, // md5 mac enabled
+#endif
+
+#endif
+
 #if defined(__SHA1__) || defined (__ALL__)
     hash_size_sha1, // sha1 enabled
-#endif
-#if (defined(__SHA1__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_sha1blob, // mdsha1blob enabled
 #endif
+#if defined(__USE_MAC__)
+    hash_size_sha1mac, // mdsha1mac enabled
+#endif
+#endif
+
 #if defined(__SHA224__) || defined (__ALL__)
     hash_size_sha224, // sha224 enabled
-#endif
-#if (defined(__SHA224__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_sha224blob, // mdsha224blob enabled
+#endif
+#if defined(__USE_MAC__)
+    hash_size_sha224mac, // mdsha224mac enabled
+#endif
 #endif
 #if defined(__SHA256__) || defined (__ALL__)
     hash_size_sha256, // sha256 enabled
-#endif
-#if (defined(__SHA256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_sha256blob, // mdsha256blob enabled
 #endif
+#if defined(__USE_MAC__)
+    hash_size_sha256mac, // mdsha256blob enabled
+#endif
+#endif
+
 #if defined(__SHA384__) || defined (__ALL__)
     hash_size_sha384, // sha384 enabled
-#endif
-#if (defined(__SHA384__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_sha384blob, // mdsha384blob enabled
 #endif
+#if defined(__USE_MAC__)
+    hash_size_sha384mac, // mdsha384blob enabled
+#endif
+#endif
+
 #if defined(__SHA512__) || defined (__ALL__)
     hash_size_sha512, // sha512 enabled
-#endif
-#if (defined(__SHA512__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_sha512blob, // mdsha512blob enabled
 #endif
+#if defined(__USE_MAC__)
+    hash_size_sha512mac, // mdsha512mac enabled
+#endif
+#endif
+
 #if defined(__SHA3224__) || defined (__ALL__)
     hash_size_sha3224, // sha3224 enabled
-#endif
-#if (defined(__SHA3224__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_sha3224blob, // mdsha3224blob enabled
 #endif
+#if defined(__USE_MAC__)
+    hash_size_sha3224mac, // mdsha3224mac enabled
+#endif
+#endif
+
 #if defined(__SHA3256__) || defined (__ALL__)
     hash_size_sha3256, // sha3256 enabled
-#endif
-#if (defined(__SHA3256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_sha3256blob, // mdsha3256blob enabled
 #endif
+#if defined(__USE_MAC__)
+    hash_size_sha3256mac, // mdsha3256mac enabled
+#endif
+#endif
+
 #if defined(__SHA3384__) || defined (__ALL__)
     hash_size_sha3384, // sha3384 enabled
-#endif
-#if (defined(__SHA3384__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_sha3384blob, // mdsha384blob enabled
 #endif
+#if defined(__USE_MAC__)
+    hash_size_sha3384mac, // mdsha384mac enabled
+#endif
+#endif
+
 #if defined(__SHA3512__) || defined (__ALL__)
     hash_size_sha3512, // sha3512 enabled
+#if defined(__USE_BLOB__)
+        hash_size_sha3512blob, // mdsha3512blob enabled
 #endif
-#if (defined(__SHA3512__) || defined (__ALL__)) && defined(__USE_BLOB__)
-    hash_size_sha3512blob, // mdsha3512blob enabled
+#if defined(__USE_MAC__)
+        hash_size_sha3512mac, // mdsha3512mac enabled
 #endif
+#endif
+
 #if defined(__RIPEMD128__) || defined (__ALL__)
     hash_size_ripemd128,
+#if defined(__USE_BLOB__)
+        hash_size_ripemd128blob,
 #endif
-#if (defined(__RIPEMD128__) || defined (__ALL__)) && defined(__USE_BLOB__)
-    hash_size_ripemd128blob,
+#if defined(__USE_MAC__)
+        hash_size_ripemd128mac,
+#endif
 #endif
 #if defined(__RIPEMD160__) || defined (__ALL__)
     hash_size_ripemd160,
+#if defined(__USE_BLOB__)
+        hash_size_ripemd160blob,
 #endif
-#if (defined(__RIPEMD160__) || defined (__ALL__)) && defined(__USE_BLOB__)
-    hash_size_ripemd160blob,
+#if defined(__USE_MAC__)
+        hash_size_ripemd160mac,
 #endif
+#endif
+
 #if defined(__RIPEMD256__) || defined (__ALL__)
     hash_size_ripemd256,
+#if defined(__USE_BLOB__)
+        hash_size_ripemd256blob,
 #endif
-#if (defined(__RIPEMD256__) || defined (__ALL__)) && defined(__USE_BLOB__)
-    hash_size_ripemd256blob,
+#if defined(__USE_MAC__)
+        hash_size_ripemd256mac,
 #endif
+#endif
+
 #if defined(__RIPEMD320__) || defined (__ALL__)
     hash_size_ripemd320,
-#endif
-#if (defined(__RIPEMD320__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_ripemd320blob,
 #endif
+#if defined(__USE_MAC__)
+        hash_size_ripemd320mac,
+#endif
+#endif
+
 #if defined(__BLAKE2B__) || defined (__ALL__)
     hash_size_blake2b,
+#if defined(__USE_BLOB__)
+        hash_size_blake2bblob,
 #endif
-#if (defined(__BLAKE2B__) || defined (__ALL__)) && defined(__USE_BLOB__)
-    hash_size_blake2bblob,
+#if defined(__USE_MAC__)
+        hash_size_blake2bmac,
 #endif
+#endif
+
 #if defined(__BLAKE2S__) || defined (__ALL__)
     hash_size_blake2s,
-#endif
-#if (defined(__BLAKE2S__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_blake2sblob,
 #endif
+#if defined(__USE_MAC__)
+        hash_size_blake2smac,
+#endif
+#endif
+
 #if defined(__TIGER__) || defined (__ALL__)
     hash_size_tiger,
-#endif
-#if (defined(__TIGER__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_tigerblob,
 #endif
+#if defined(__USE_MAC__)
+    hash_size_tigermac,
+#endif
+#endif
+
 #if defined(__SHAKE128__) || defined (__ALL__)
     hash_size_shake128,
-#endif
-#if (defined(__SHAKE128__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_shake128blob,
 #endif
+#if defined(__USE_MAC__)
+        hash_size_shake128mac,
+#endif
+#endif
+
 #if defined(__SHAKE256__) || defined (__ALL__)
     hash_size_shake256,
-#endif
-#if (defined(__SHAKE256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_shake256blob,
 #endif
+#if defined(__USE_MAC__)
+        hash_size_shake256mac,
+#endif
+#endif
+
 #if defined(__SIPHASH64__) || defined (__ALL__)
     hash_size_siphash64,
-#endif
-#if (defined(__SIPHASH64__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_siphash64blob,
 #endif
+#if defined(__USE_MAC__)
+            hash_size_siphash64mac,
+#endif
+#endif
+
 #if defined(__SIPHASH128__) || defined (__ALL__)
     hash_size_siphash128,
-#endif
-#if (defined(__SIPHASH128__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_siphash128blob,
 #endif
+#if defined(__USE_MAC__)
+    hash_size_siphash128mac,
+#endif
+#endif
+
 #if defined(__LSH224__) || defined (__ALL__)
     hash_size_lsh224,
-#endif
-#if (defined(__LSH224__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_lsh224blob,
 #endif
+#if defined(__USE_MAC__)
+    hash_size_lsh224mac,
+#endif
+#endif
+
 #if defined(__LSH256__) || defined (__ALL__)
     hash_size_lsh256,
-#endif
-#if (defined(__LSH256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_lsh256blob,
 #endif
+#if defined(__USE_MAC__)
+    hash_size_lsh256mac,
+#endif
+#endif
+
 #if defined(__LSH384__) || defined (__ALL__)
     hash_size_lsh384,
-#endif
-#if (defined(__LSH384__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_lsh384blob,
 #endif
+#if defined(__USE_MAC__)
+    hash_size_lsh384mac,
+#endif
+#endif
+
 #if defined(__LSH512__) || defined (__ALL__)
     hash_size_lsh512,
-#endif
-#if (defined(__LSH512__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_lsh512blob,
 #endif
+#if defined(__USE_MAC__)
+    hash_size_lsh512mac,
+#endif
+#endif
+
 #if defined(__SM3__) || defined (__ALL__)
     hash_size_sm3,
-#endif
-#if (defined(__SM3__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_sm3blob,
 #endif
+#if defined(__USE_MAC__)
+    hash_size_sm3mac,
+#endif
+#endif
+
 #if defined(__WHIRLPOOL__) || defined (__ALL__)
     hash_size_whirlpool,
-#endif
-#if (defined(__WHIRLPOOL__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     hash_size_whirlpoolblob,
+#endif
+#if defined(__USE_MAC__)
+    hash_size_whirlpoolmac,
+#endif
+#endif
+#if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+         hash_size_cmac,
+#endif
+#if (defined(__CBCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+         hash_size_cbcmac,
+#endif
+#if (defined(__DMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
+         hash_size_dmac,
+#endif
+#if (defined(__GMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
+         hash_size_gmac,
+#endif
+#if (defined(__HMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
+         hash_size_hmac,
+#endif
+#if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__)
+    hash_size_poly1305mac,
+#endif
+#if (defined(__TWOTRACK__)|| defined(__ALL__)) && defined(__USE_MAC__)
+         hash_size_twotrackmac,
+#endif
+#if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+         hash_size_vmacmac,
 #endif
 
     hash_size_hash_max
@@ -199,235 +338,340 @@ enum hash_sizes
 
 #if defined(__MD2__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_MD2 "md2"
-#endif
-
-#if (defined(__MD2__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_MD2BLOB "md2blob"
-#endif`
+#endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_MD2MAC "macmd2"
+#endif
+#endif
 
 #if defined(__MD4__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_MD4 "md4"
-#endif
-
-#if (defined(__MD4__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_MD4BLOB "md4blob"
+#endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_MD4MAC "macmd4"
+#endif
 #endif
 
 #if defined(__MD5__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_MD5 "md5"
-#endif
-
-#if (defined(__MD5__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_MD5BLOB "md5blob"
+#endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_MD5MAC "macmd5"
+#endif
 #endif
 
 #if defined(__SHA1__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_SHA1 "sha1"
-#endif
-
-#if (defined(__SHA1__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_SHA1BLOB "sha1blob"
 #endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_SHA1MAC "macsha1"
+#endif
+#endif
+
 
 #if defined(__SHA224__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_SHA224 "sha224"
-#endif
-
-#if (defined(__SHA224__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_SHA224BLOB "sha224blob"
 #endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_SHA224MAC "macsha224"
+#endif
+#endif
+
+
 
 #if defined(__SHA256__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_SHA256 "sha256"
-#endif
-
-#if (defined(__SHA256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_SHA256BLOB "sha256blob"
+#endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_SHA256MAC "macsha256"
+#endif
 #endif
 
 #if defined(__SHA384__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_SHA384 "sha384"
-#endif
-
-#if (defined(__SHA384__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_SHA384BLOB "sha384blob"
+#endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_SHA384MAC "macsha384"
+#endif
 #endif
 
 #if defined(__SHA512__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_SHA512 "sha512"
-#endif
-
-#if (defined(__SHA512__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_SHA512BLOB "sha512blob"
 #endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_SHA512MAC "macsha512"
+#endif
+#endif
+
+
 
 #if defined(__SHA3224__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_SHA3224 "sha3224"
-#endif
-
-#if (defined(__SHA3224__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_SHA3224BLOB "sha3224blob"
 #endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_SHA3224MAC "macsha3224"
+#endif
+#endif
+
 
 #if defined(__SHA3256__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_SHA3256 "sha3256"
-#endif
-
-#if (defined(__SHA3256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_SHA3256BLOB "sha3256blob"
 #endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_SHA3256MAC "macsha3256"
+#endif
+#endif
+
+
 
 #if defined(__SHA3384__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_SHA3384 "sha3384"
-#endif
-
-#if (defined(__SHA3384__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_SHA3384BLOB "sha3384blob"
 #endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_SHA3384MAC "macsha3384"
+#endif
+#endif
+
+
 
 #if defined(__SHA3512__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_SHA3512 "sha3512"
-#endif
-
-#if (defined(__SHA3512__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_SHA3512BLOB "sha3512blob"
+#endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_SHA3512MAC "macsha3512"
+#endif
 #endif
 
 #if defined(__RIPEMD128__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_RIPEMD128 "ripemd128"
-#endif
 
-#if (defined(__RIPEMD128__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_RIPEMD128BLOB "ripemd128blob"
+#endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_RIPEMD128MAC "macripemd128"
+#endif
 #endif
 
 #if defined(__RIPEMD160__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_RIPEMD160 "ripenmd160"
-#endif
-
-#if (defined(__RIPEMD160__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_RIPEMD160BLOB "ripenmd160blob"
 #endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_RIPEMD160MAC "macripenmd160"
+#endif
+#endif
+
+
 
 #if defined(__RIPEMD256__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_RIPEMD256 "ripemd256"
-#endif
-
-#if (defined(__RIPEMD256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_RIPEMD256BLOB "ripemd256blob"
 #endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_RIPEMD256MAC "macripemd256"
+#endif
+#endif
+
+
 
 #if defined(__RIPEMD320__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_RIPEMD320 "ripemd320"
-#endif
-
-#if (defined(__RIPEMD320__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_RIPEMD320BLOB "ripemd320blob"
+#endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_RIPEMD320MAC "macripemd320"
+#endif
 #endif
 
 #if defined(__BLAKE2B__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_BLAKE2B "blake2b" 
-#endif
-
-#if (defined(__BLAKE2B__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_BLAKE2BBLOB "blake2bblob" 
 #endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_BLAKE2BMAC "macblake2b" 
+#endif
+#endif
+
 
 #if defined(__BLAKE2S__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_BLAKE2S "blake2s"
-#endif
-
-#if (defined(__BLAKE2S__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_BLAKE2SBLOB "blake2sblob"
+#endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_BLAKE2SMAC "macblake2s"
+#endif
 #endif
 
 #if defined(__TIGER__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_TIGER "tiger"
-#endif
-
-#if (defined(__TIGER__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_TIGERBLOB "tigerblob"
+#endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_TIGERMAC "mactiger"
+#endif
 #endif
 
 #if defined(__SHAKE128__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_SHAKE128 "shake128"
-#endif
-
-#if (defined(__SHAKE128__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_SHAKE128BLOB "shake128blob"
+#endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_SHAKE128MAC "macshake128"
+#endif
 #endif
 
 #if defined(__SHAKE256__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_SHAKE256 "shake256"
-#endif
-
-#if (defined(__SHAKE128__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_SHAKE256BLOB "shake256blob"
+#endif
+#if defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_SHAKE256MAC "shake256blob"
+#endif
 #endif
 
 #if defined(__SIPHASH64__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_SIPHASH64 "siphash64"
-#endif
-
-#if (defined(__SIPHASH64__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_SIPHASH64BLOB "siphash64blob"
 #endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_SIPHASH64MAC "macsiphash64"
+#endif
+#endif
+
 
 #if defined(__SIPHASH128__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_SIPHASH128 "siphash128"
-#endif
-
-#if (defined(__SIPHASH128__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_SIPHASH128BLOB "siphash128blob"
+#endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_SIPHASH128MAC "macsiphash128"
+#endif
 #endif
 
 #if defined(__LSH224__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_LSH224 "lsh224"
-#endif
-
-#if (defined(__LSH224__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_LSH224BLOB "lsh224blob"
+#endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_LSH224MAC "maclsh224"
+#endif
 #endif
 
 #if defined(__LSH256__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_LSH256 "lsh256"
-#endif
-
-#if (defined(__LSH256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_LSH256BLOB "lsh256blob"
+#endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_LSH256MAC "maclsh256"
+#endif
 #endif
 
 #if defined(__LSH384__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_LSH384 "lsh384"
-#endif
-
-#if (defined(__LSH384__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_LSH384BLOB "lsh384blob"
 #endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_LSH384MAC "maclsh384"
+#endif
+#endif
+
+
 
 #if defined(__LSH512__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_LSH512 "lsh512"
-#endif
-
-#if (defined(__LSH384__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_LSH512BLOB "lsh512blob"
 #endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_LSH512MAC "maclsh512"
+#endif
+#endif
+
+
 
 #if defined(__SM3__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_SM3 "sm3"
-#endif
-
-#if (defined(__SM3__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_SM3BLOB "sm3blob"
+#endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_SM3MAC "macsm3"
+#endif
 #endif
 
 #if defined(__WHIRLPOOL__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_WHIRLPOOL "whirlpool"
-#endif
-
-#if (defined(__SM3__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_WHIRLPOOLBLOB "whirlpoolblob"
 #endif
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_WHIRLPOOLMAC "macwhirlpool"
+#endif
+#endif
+
+#if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_CMACMAC "maccmac"
+#endif
+#if (defined(__CBCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_CBCMACMAC "maccbcmac"
+#endif
+#if (defined(__DMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_DMACMAC "macdmac"
+#endif
+#if (defined(__GMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_GMACMAC "macgmac"
+#endif
+#if (defined(__HMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_HMACMAC "machmac"
+#endif
+#if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_POLY1305MACMAC "macpoly1305"
+#endif
+#if (defined(__TWOTRACK__)|| defined(__ALL__)) && defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_TWOTRACKMAC "mactwotrack"
+#endif
+#if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_VMACMAC "macvmac"
+#endif
+
 
 #define HASH_SIZE_MAX hash_size_hash_max
 
@@ -516,7 +760,6 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
     }
-#endif
 #if (defined(__MD2__) || defined (__ALL__)) && defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_md2blob)
     {
@@ -533,6 +776,40 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
     }
 #endif
+#if defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_md2blob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_MD2BLOB), strlength(HASH_SIZE_FUNCTION_NAME_MD2BLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_md2));
+            break;
+        }
+    }
+#endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_md2mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_MD2MAC), strlength(HASH_SIZE_FUNCTION_NAME_MD2MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_md2));
+            break;
+        }
+    }
+#endif
+#endif
+
 #if defined(__MD4__) || defined (__ALL__)
     else if ( pCur->iRowid == hash_size_md4)
     {
@@ -548,8 +825,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
     }
-#endif
-#if (defined(__MD4__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_md4blob)
     {
         switch (i) {
@@ -565,6 +841,24 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
     }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_md4mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_MD4MAC), strlength(HASH_SIZE_FUNCTION_NAME_MD4MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_md4));
+            break;
+        }
+        }
+#endif
+#endif
+
 #if defined(__MD5__) || defined (__ALL__)
 #define HASH_SIZE_FUNCTION_NAME_MD5 "md5"
     else if (pCur->iRowid == hash_size_md5)
@@ -581,8 +875,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
     }
-#endif
-#if (defined(__MD5__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_md5blob)
     {
         switch (i) {
@@ -596,8 +889,26 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_int(ctx, GetDigestSize(algo_md5));
             break;
         }
-    }
+        }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_md5mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_MD5MAC), strlength(HASH_SIZE_FUNCTION_NAME_MD5MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_md5));
+            break;
+        }
+        }
+#endif
+#endif
+
 #if defined(__SHA1__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_sha1)
     {
@@ -613,9 +924,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
-#endif
-
-#if (defined(__SHA1__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_sha1blob)
     {
         switch (i) {
@@ -631,6 +940,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_sha1mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SHA1MAC), strlength(HASH_SIZE_FUNCTION_NAME_SHA1MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sha1));
+            break;
+        }
+        }
+#endif
+#endif
+
+
 
 #if defined(__SHA224__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_sha224)
@@ -647,9 +975,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
-#endif
-
-#if (defined(__SHA224__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_sha224blob)
     {
         switch (i) {
@@ -665,6 +991,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_sha224mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SHA224MAC), strlength(HASH_SIZE_FUNCTION_NAME_SHA224MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sha224));
+            break;
+        }
+        }
+#endif
+#endif
+
+
  
 #if defined(__SHA256__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_sha256)
@@ -681,9 +1026,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
             }
     }
-#endif
-
-#if (defined(__SHA256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_sha256blob)
     {
         switch (i) {
@@ -699,6 +1042,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_sha256mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SHA256MAC), strlength(HASH_SIZE_FUNCTION_NAME_SHA256MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sha224));
+            break;
+        }
+        }
+#endif
+
+#endif
+
 
 #if defined(__SHA384__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_sha384)
@@ -715,9 +1077,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
-#endif
-
-#if (defined(__SHA384__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_sha384blob)
     {
         switch (i) {
@@ -731,8 +1091,27 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_int(ctx, GetDigestSize(algo_sha256));
             break;
         }
-    }
+        }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_sha384mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SHA384MAC), strlength(HASH_SIZE_FUNCTION_NAME_SHA384MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sha256));
+            break;
+        }
+        }
+#endif
+#endif
+
+
 
 #if defined(__SHA512__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_sha512)
@@ -749,9 +1128,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
-#endif
-
-#if (defined(__SHA512__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_sha512blob)
     {
         switch (i) {
@@ -767,6 +1144,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_sha512mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SHA512MAC), strlength(HASH_SIZE_FUNCTION_NAME_SHA512MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sha384));
+            break;
+        }
+        }
+#endif
+#endif
+
+
 #if defined(__SHA3224__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_sha3224)
     {
@@ -782,9 +1178,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
     }
-#endif
-
-#if (defined(__SHA3224__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_sha3224blob)
     {
         switch (i) {
@@ -800,6 +1194,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_sha3224mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SHA3224MAC), strlength(HASH_SIZE_FUNCTION_NAME_SHA3224MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sha3_224));
+            break;
+        }
+        }
+#endif
+#endif
+
+
 #if defined(__SHA3256__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_sha3256)
     {
@@ -815,9 +1228,8 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
-#endif
 
-#if (defined(__SHA3256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_sha3256blob)
     {
         switch (i) {
@@ -833,6 +1245,24 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_sha3256mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SHA3256MAC), strlength(HASH_SIZE_FUNCTION_NAME_SHA3256MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sha3_256));
+            break;
+        }
+        }
+#endif
+#endif
+
 
 #if defined(__SHA3384__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_sha3384)
@@ -849,9 +1279,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
-#endif
-
-#if (defined(__SHA3384__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_sha3384blob)
     {
         switch (i) {
@@ -867,6 +1295,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_sha3384mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SHA3384MAC), strlength(HASH_SIZE_FUNCTION_NAME_SHA3384MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sha3_384));
+            break;
+        }
+        }
+#endif
+#endif
+
+
 
 #if defined(__SHA3512__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_sha3512)
@@ -883,9 +1330,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
-#endif
-
-#if (defined(__SHA3512__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_sha3512blob)
     {
         switch (i) {
@@ -901,6 +1346,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_sha3512mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SHA3512MAC), strlength(HASH_SIZE_FUNCTION_NAME_SHA3512MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sha3_512));
+            break;
+        }
+        }
+#endif
+#endif
+
+
 #if defined(__RIPEMD128__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_ripemd128)
     {
@@ -916,9 +1380,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
             }
     }
-#endif
-
-#if (defined(__RIPEMD128__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_ripemd128blob)
     {
         switch (i) {
@@ -934,6 +1396,26 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_ripemd128mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_RIPEMD128MAC), strlength(HASH_SIZE_FUNCTION_NAME_RIPEMD128MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_ripemd_128));
+            break;
+        }
+        }
+#endif
+
+#endif
+
+
 
 #if defined(__RIPEMD160__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_ripemd160)
@@ -950,9 +1432,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
-#endif
-
-#if (defined(__RIPEMD160__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_ripemd160blob)
     {
         switch (i) {
@@ -968,6 +1448,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_ripemd160mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_RIPEMD160MAC), strlength(HASH_SIZE_FUNCTION_NAME_RIPEMD160MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_ripemd_160));
+            break;
+        }
+        }
+#endif
+#endif
+
+
 
 #if defined(__RIPEMD256__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_ripemd256)
@@ -984,9 +1483,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
-#endif
-
-#if (defined(__RIPEMD256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_ripemd256blob)
     {
         switch (i) {
@@ -1003,6 +1500,26 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
 
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_ripemd256mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_RIPEMD256MAC), strlength(HASH_SIZE_FUNCTION_NAME_RIPEMD256MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_ripemd_256));
+            break;
+        }
+        }
+
+#endif
+#endif
+
+
 
 #if defined(__RIPEMD320__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_ripemd320)
@@ -1019,9 +1536,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
-#endif
-
-#if (defined(__RIPEMD320__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_ripemd320blob)
     {
         switch (i) {
@@ -1037,6 +1552,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif 
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_ripemd320mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_RIPEMD320MAC), strlength(HASH_SIZE_FUNCTION_NAME_RIPEMD320MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_ripemd_320));
+            break;
+        }
+        }
+#endif 
+#endif
+
+
     
 #if defined(__BLAKE2B__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_blake2b)
@@ -1053,9 +1587,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
             }
     }
-#endif
-
-#if (defined(__BLAKE2B__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_blake2bblob)
     {
         switch (i) {
@@ -1068,9 +1600,28 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         case HASH_SIZE_COLUMN_HASH_SIZE:
             sqlite3_result_int(ctx, GetDigestSize(algo_blake2b));
             break;
-            }
-    }
+        }
+        }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_blake2bmac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_BLAKE2BMAC), strlength(HASH_SIZE_FUNCTION_NAME_BLAKE2BMAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_blake2b));
+            break;
+        }
+        }
+#endif
+#endif
+
+
 
 #if defined(__BLAKE2S__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_blake2s)
@@ -1087,9 +1638,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
             }
     }
-#endif
-
-#if (defined(__BLAKE2S__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_blake2sblob)
     {
         switch (i) {
@@ -1105,7 +1654,24 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_blake2smac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_BLAKE2SMAC), strlength(HASH_SIZE_FUNCTION_NAME_BLAKE2SMAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_blake2s));
+            break;
+        }
+        }
+#endif
 
+#endif
     
 #if defined(__TIGER__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_tiger)
@@ -1122,9 +1688,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
             }
     }
-#endif
-
-#if (defined(__TIGER__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_tigerblob)
     {
         switch (i) {
@@ -1140,6 +1704,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_tigermac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_TIGERMAC), strlength(HASH_SIZE_FUNCTION_NAME_TIGERMAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_tiger));
+            break;
+        }
+        }
+#endif
+#endif
+
+
     
 #if defined(__SHAKE128__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_shake128)
@@ -1156,9 +1739,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
             }
     }
-#endif
-
-#if (defined(__SHAKE128__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_shake128blob)
     {
         switch (i) {
@@ -1172,8 +1753,28 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_int(ctx, GetDigestSize(algo_shake_128));
             break;
         }
-    }
+        }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_shake128mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SHAKE128MAC), strlength(HASH_SIZE_FUNCTION_NAME_SHAKE128MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_shake_128));
+            break;
+        }
+        }
+#endif
+
+#endif
+
+
 
 #if defined(__SHAKE256__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_shake256)
@@ -1190,9 +1791,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
-#endif
-
-#if (defined(__SHAKE256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_shake256blob)
     {
         switch (i) {
@@ -1208,6 +1807,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_shake256mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SHAKE256MAC), strlength(HASH_SIZE_FUNCTION_NAME_SHAKE256MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_shake_256));
+            break;
+        }
+        }
+#endif
+#endif
+
+
     
 #if defined(__SIPHASH64__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_siphash64)
@@ -1224,9 +1842,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
             }
     }
-#endif
-
-#if (defined(__SIPHASH64__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_siphash64blob)
     {
         switch (i) {
@@ -1242,6 +1858,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_siphash64mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SIPHASH64MAC), strlength(HASH_SIZE_FUNCTION_NAME_SIPHASH64MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_shake_256));
+            break;
+        }
+        }
+#endif
+#endif
+
+
 
 #if defined(__SIPHASH128__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_siphash128)
@@ -1258,9 +1893,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
-#endif
-
-#if (defined(__SIPHASH128__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_siphash128blob)
     {
         switch (i) {
@@ -1276,6 +1909,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_siphash128mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SIPHASH128MAC), strlength(HASH_SIZE_FUNCTION_NAME_SIPHASH128MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_shake_256));
+            break;
+        }
+        }
+#endif
+#endif
+
+
     
 #if defined(__LSH224__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_lsh224)
@@ -1292,9 +1944,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
             }
     }
-#endif
-
-#if (defined(__LSH224__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_lsh224blob)
     {
         switch (i) {
@@ -1310,6 +1960,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_lsh224mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_LSH224MAC), strlength(HASH_SIZE_FUNCTION_NAME_LSH224MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            break;
+        }
+        }
+#endif
+#endif
+
+
 
 #if defined(__LSH256__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_lsh256)
@@ -1326,9 +1995,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
-#endif
-
-#if (defined(__LSH256__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_lsh256blob)
     {
         switch (i) {
@@ -1344,6 +2011,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_lsh256mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_LSH256MAC), strlength(HASH_SIZE_FUNCTION_NAME_LSH256MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            break;
+        }
+        }
+#endif
+#endif
+
+
 
 #if defined(__LSH384__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_lsh384)
@@ -1360,9 +2046,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
-#endif
-
-#if (defined(__LSH384__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_lsh384blob)
     {
         switch (i) {
@@ -1377,6 +2061,23 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
+#endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_lsh384mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_LSH384MAC), strlength(HASH_SIZE_FUNCTION_NAME_LSH384MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            break;
+        }
+        }
+#endif
 #endif
 
 #if defined(__LSH512__) || defined (__ALL__)
@@ -1394,9 +2095,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
-#endif
-
-#if (defined(__LSH512__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_lsh512blob)
     {
         switch (i) {
@@ -1411,6 +2110,23 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
+#endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_lsh512mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_LSH512MAC), strlength(HASH_SIZE_FUNCTION_NAME_LSH512MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            break;
+        }
+        }
+#endif
 #endif
 
 #if defined(__SM3__) || defined (__ALL__)
@@ -1428,9 +2144,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
-#endif
-
-#if (defined(__SM3__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_sm3blob)
     {
         switch (i) {
@@ -1446,6 +2160,26 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_sm3mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SM3MAC), strlength(HASH_SIZE_FUNCTION_NAME_SM3MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            break;
+        }
+        }
+#endif
+
+#endif
+
+
 
 #if defined(__WHIRLPOOL__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_whirlpool)
@@ -1462,9 +2196,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         }
         }
-#endif
-
-#if (defined(__WHIRLPOOL__) || defined (__ALL__)) && defined(__USE_BLOB__)
+#if defined(__USE_BLOB__)
     else if (pCur->iRowid == hash_size_whirlpoolblob)
     {
         switch (i) {
@@ -1480,6 +2212,154 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_whirlpoolmac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_WHIRLPOOLMAC), strlength(HASH_SIZE_FUNCTION_NAME_WHIRLPOOLMAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            break;
+        }
+        }
+#endif
+#endif
+#if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_cmac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_CMACMAC), strlength(HASH_SIZE_FUNCTION_NAME_CMACMAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            break;
+        }
+        }
+#endif
+#if (defined(__CBCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_cbcmac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_CBCMACMAC), strlength(HASH_SIZE_FUNCTION_NAME_CBCMACMAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            break;
+        }
+        }
+#endif
+#if (defined(__DMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_dmac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_DMACMAC), strlength(HASH_SIZE_FUNCTION_NAME_DMACMAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            break;
+            }
+        }
+
+#endif
+#if (defined(__GMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_gmac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_GMACMAC), strlength(HASH_SIZE_FUNCTION_NAME_GMACMAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            break;
+            }
+        }
+
+#endif
+#if (defined(__HMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_hmac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_HMACMAC), strlength(HASH_SIZE_FUNCTION_NAME_HMACMAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            break;
+            }
+        }
+#endif
+#if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_poly1305mac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_POLY1305MACMAC), strlength(HASH_SIZE_FUNCTION_NAME_POLY1305MACMAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            break;
+            }
+        }
+#endif
+#if (defined(__TWOTRACK__)|| defined(__ALL__)) && defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_twotrackmac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_TWOTRACKMAC), strlength(HASH_SIZE_FUNCTION_NAME_TWOTRACKMAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            break;
+            }
+        }
+#endif
+#if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_vmacmac)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_VMACMAC), strlength(HASH_SIZE_FUNCTION_NAME_VMACMAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            break;
+        }
+        }
+#endif
+
     else
     {
         error_message = sqlite3_mprintf("Invalid Cursor Position: %lld", pCur->iRowid);
