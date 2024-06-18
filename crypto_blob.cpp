@@ -1,8 +1,6 @@
 #define CRYPTOPP_DEFAULT_NO_DLL
 #define CRYPTOPP_ENABLE_NAMESPACE_WEAK 1
 
-#define __WINDOWS_BCRYPT__
-
 #include "crypto_blob.h"
 
 #include <cryptlib.h>
@@ -256,183 +254,184 @@
 //#endif
 
 using namespace CryptoPP;
+using namespace CryptoPP::Weak;
 
 #if (defined(__MD2__) ||  defined(__MD4__) ||  defined(__MD5__) ||  defined (__ALL__)) && defined(__USE_BLOB__)
 
-using namespace CryptoPP::Weak;
+
 
 #if (defined(__MD2__) ||  defined (__ALL__))&& defined(__USE_BLOB__)
-struct md2Context
+struct md2BlobContext
 {
-    CryptoPP::Weak1::MD2* context;
+    CryptoPP::Weak1::MD2* blobContext;
 };
 #endif
 
 #if (defined(__MD4__) || defined(__ALL__))&& defined(__USE_BLOB__)
-typedef struct md4Context
+typedef struct md4BlobContext
 {
-    CryptoPP::Weak1::MD4* context;
-} Md4Context, * Md4ContextPtr;
+    CryptoPP::Weak1::MD4* blobContext;
+} Md4BlobBlobContext, * Md4BlobBlobContextPtr;
 #endif
 
 #if (defined(__MD5__)||defined(__ALL__)) && defined(__USE_BLOB__)
-typedef struct md5Context
+typedef struct md5BlobContext
 {
-    CryptoPP::Weak1::MD5* context;
-} Md5Context, * Md5ContextPtr;
+    CryptoPP::Weak1::MD5* blobContext;
+} Md5BlobContext, * Md5BlobContextPtr;
 #endif
 
 #endif
 
 
 #if (defined(__SHA1__)||defined(__ALL__)) && defined(__USE_BLOB__)
-typedef struct sha1Context
+typedef struct sha1BlobContext
 {
-    SHA1* context;
-} Sha1Context, * Sha1ContextPtr;
+    SHA1* blobContext;
+} Sha1BlobContext, * Sha1BlobContextPtr;
 #endif
 
 #if (defined(__SHA224__)||defined(__ALL__)) && defined(__USE_BLOB__)
-typedef struct sha224Context
+typedef struct sha224BlobContext
 {
-    SHA224* context;
-} Sha224Context, * Sha224ContextPtr;
+    SHA224* blobContext;
+} Sha224BlobContext, * Sha224BlobContextPtr;
 #endif
 
 #if (defined(__SHA256__)||defined(__ALL__)) && defined(__USE_BLOB__)
-typedef struct sha256Context
+typedef struct sha256BlobContext
 {
-    SHA256* context;
-} Sha256Context, * Sha256ContextPtr;
+    SHA256* blobContext;
+} Sha256BlobContext, * Sha256BlobContextPtr;
 #endif
 
 #if (defined(__SHA384__)||defined(__ALL__)) && defined(__USE_BLOB__)
-typedef struct sha384Context
+typedef struct sha384BlobContext
 {
-    SHA384* context;
-} Sha384Context, * Sha384ContextPtr;
+    SHA384* blobContext;
+} Sha384BlobContext, * Sha384BlobContextPtr;
 #endif
 
 #if (defined(__SHA512__)||defined(__ALL__)) && defined(__USE_BLOB__)
-typedef struct sha512Context
+typedef struct sha512BlobContext
 {
-    SHA512* context;
-} Sha512Context, * Sha512ContextPtr;
+    SHA512* blobContext;
+} Sha512BlobContext, * Sha512BlobContextPtr;
 #endif
 
 #if (defined(__SHA3224__)||defined(__ALL__)) && defined(__USE_BLOB__)
-typedef struct sha3224Context
+typedef struct sha3224BlobContext
 {
-    SHA3_224* context;
-} Sha3224Context, * Sha3224ContextPtr;
+    SHA3_224* blobContext;
+} Sha3224BlobContext, * Sha3224BlobContextPtr;
 #endif
 
 #if (defined(__SHA3256__)||defined(__ALL__)) && defined(__USE_BLOB__)
-typedef struct sha3256Context
+typedef struct sha3256BlobContext
 {
-    SHA3_256* context;
-} Sha3256Context, * Sha3256ContextPtr;
+    SHA3_256* blobContext;
+} Sha3256BlobContext, * Sha3256BlobContextPtr;
 #endif
 
 #if (defined(__SHA3384__)||defined(__ALL__)) && defined(__USE_BLOB__)
-typedef struct sha3384Context
+typedef struct sha3384BlobContext
 {
-    SHA3_384* context;
-} Sha3384Context, * Sha3384ContextPtr;
+    SHA3_384* blobContext;
+} Sha3384BlobContext, * Sha3384BlobContextPtr;
 #endif
 
 #if (defined(__SHA3512__)||defined(__ALL__)) && defined(__USE_BLOB__)
-typedef struct sha3512Context
+typedef struct sha3512BlobContext
 {
-    SHA3_512* context;
-} Sha3512Context, * Sha3512ContextPtr;
+    SHA3_512* blobContext;
+} Sha3512BlobContext, * Sha3512BlobContextPtr;
 #endif
 
 #if (defined(__RIPEMD128__) || defined (__ALL__)) && defined(__USE_BLOB__)
-typedef struct ripeMD128Context {
-    RIPEMD128* context;
-}RipeMD128Context, * RipeMD128ContextPtr;
+typedef struct ripeMD128BlobContext {
+    RIPEMD128* blobContext;
+}RipeMD128BlobContext, * RipeMD128BlobContextPtr;
 #endif
 #if (defined(__RIPEMD160__) || defined (__ALL__)) && defined(__USE_BLOB__)
-typedef struct ripeMD160Context {
-    RIPEMD160* context;
-}RipeMD160Context, * RipeMD160ContextPtr;
+typedef struct ripeMD160BlobContext {
+    RIPEMD160* blobContext;
+}RipeMD160BlobContext, * RipeMD160BlobContextPtr;
 #endif
 #if (defined(__RIPEMD256__) || defined (__ALL__)) && defined(__USE_BLOB__)
-typedef struct ripeMD256Context {
-    RIPEMD256* context;
-}RipeMD256Context, * RipeMD256ContextPtr;
+typedef struct ripeMD256BlobContext {
+    RIPEMD256* blobContext;
+}RipeMD256BlobContext, * RipeMD256BlobContextPtr;
 #endif
 #if (defined(__RIPEMD320__) || defined (__ALL__)) && defined(__USE_BLOB__)
-typedef struct ripeMD320Context {
-    RIPEMD320* context;
-}RipeMD320Context, * RipeMD320ContextPtr;
+typedef struct ripeMD320BlobContext {
+    RIPEMD320* blobContext;
+}RipeMD320BlobContext, * RipeMD320BlobContextPtr;
 #endif
 #if (defined(__BLAKE2B__) || defined (__ALL__)) && defined(__USE_BLOB__)
-typedef struct blake2BContext
+typedef struct blake2BBlobContext
 {
-    BLAKE2b* context;
-}Blake2BContext, * Blake2BContextPtr;
+    BLAKE2b* blobContext;
+}Blake2BBlobContext, * Blake2BBlobContextPtr;
 #endif
 #if (defined(__BLAKE2S__) || defined (__ALL__)) && defined(__USE_BLOB__)
-typedef struct blake2SContext {
-    BLAKE2s * context;
-}Blake2SContext, * Blake2SContextPtr;
+typedef struct blake2SBlobContext {
+    BLAKE2s * blobContext;
+}Blake2SBlobContext, * Blake2SBlobContextPtr;
 #endif
 #if (defined(__TIGER__) || defined (__ALL__)) && defined(__USE_BLOB__)
-typedef struct tigerContext {
-    Tiger* context;
-}TigerContext, * TigerContextPtr;
+typedef struct tigerBlobContext {
+    Tiger* blobContext;
+}TigerBlobContext, * TigerBlobContextPtr;
 #endif
 #if (defined(__SHAKE128__) || defined (__ALL__)) && defined(__USE_BLOB__)
-typedef struct shake128Context {
-    SHAKE128* context;
-}Shake128Context, * Shake128ContextPtr;
+typedef struct shake128BlobContext {
+    SHAKE128* blobContext;
+}Shake128BlobContext, * Shake128BlobContextPtr;
 #endif
 #if (defined(__SHAKE256__) || defined (__ALL__)) && defined(__USE_BLOB__)
-typedef struct shake256Context {
-    SHAKE256* context;
-}Shake256Context, * Shake256ContextPtr;
+typedef struct shake256BlobContext {
+    SHAKE256* blobContext;
+}Shake256BlobContext, * Shake256BlobContextPtr;
 #endif
 #if (defined(__SIPHASH64__) || defined (__ALL__)) && defined(__USE_BLOB__)
-typedef struct siphash64Context {
-    SipHash<2, 4, false>* context;
-}Siphash64Context, * Siphash64ContextPtr;
+typedef struct siphash64BlobContext {
+    SipHash<2, 4, false>* blobContext;
+}Siphash64BlobContext, * Siphash64BlobContextPtr;
 #endif
 #if (defined(__SIPHASH128__) || defined (__ALL__)) && defined(__USE_BLOB__)
-typedef struct siphash128Context {
-    SipHash<4, 8, true>* context;
-}Siphash128Context, * Siphash128ContextPtr;
+typedef struct siphash128BlobContext {
+    SipHash<4, 8, true>* blobContext;
+}Siphash128BlobContext, * Siphash128BlobContextPtr;
 #endif
 #if (defined(__LSH224__) || defined (__ALL__)) && defined(__USE_BLOB__)
-typedef struct lsh224Context {
-    LSH224* context;
-}Lsh224Context, * Lsh224ContextPtr;
+typedef struct lsh224BlobContext {
+    LSH224* blobContext;
+}Lsh224BlobContext, * Lsh224BlobContextPtr;
 #endif
 #if (defined(__LSH256__) || defined (__ALL__)) && defined(__USE_BLOB__)
-typedef struct lsh256Context {
-    LSH256* context;
-}Lsh256Context, * Lsh256ContextPtr;
+typedef struct lsh256BlobContext {
+    LSH256* blobContext;
+}Lsh256BlobContext, * Lsh256BlobContextPtr;
 #endif
 #if (defined(__LSH384__) || defined (__ALL__)) && defined(__USE_BLOB__)
-typedef struct lsh384Context {
-    LSH384* context;
-}Lsh384Context, * Lsh384ContextPtr;
+typedef struct lsh384BlobContext {
+    LSH384* blobContext;
+}Lsh384BlobContext, * Lsh384BlobContextPtr;
 #endif
 #if (defined(__LSH512__) || defined (__ALL__)) && defined(__USE_BLOB__)
-typedef struct lsh512Context {
-    LSH512* context;
-} Lsh512Context, * Lsh512ContextPtr;
+typedef struct lsh512BlobContext {
+    LSH512* blobContext;
+} Lsh512BlobContext, * Lsh512BlobContextPtr;
 #endif
 #if (defined(__SM3__) || defined (__ALL__)) && defined(__USE_BLOB__)
-typedef struct sm3Context {
-    SM3* context;
-}Sm3Context, * Sm3ContextPtr;
+typedef struct sm3BlobContext {
+    SM3* blobContext;
+}Sm3BlobContext, * Sm3BlobContextPtr;
 #endif
 #if (defined(__WHIRLPOOL__) || defined (__ALL__)) && defined(__USE_BLOB__)
-typedef struct whirlpoolContext {
-    Whirlpool * context;
-}WhirlpoolContext, * WhirlpoolContextPtr;
+typedef struct whirlpoolBlobContext {
+    Whirlpool * blobContext;
+}WhirlpoolBlobContext, * WhirlpoolBlobContextPtr;
 #endif
 
 
@@ -443,44 +442,44 @@ extern "C" {
 #if (defined(__MD2__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
 
-    Md2ContextPtr Md2Initialize()
+    Md2BlobContextPtr Md2Initialize()
     {
-        Md2ContextPtr context = (Md2ContextPtr)malloc(sizeof(Md2Context));
-        if (context != NULL)
+        Md2BlobContextPtr blobContext = (Md2BlobContextPtr)malloc(sizeof(Md2BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Md2ContextPtr();
-            context->context = (MD2*)malloc(sizeof(MD2));
-            if (context->context)
+            new(blobContext)Md2BlobContextPtr();
+            blobContext->blobContext = (MD2*)malloc(sizeof(MD2));
+            if (blobContext->blobContext)
             {
-                new(context->context) MD2();
+                new(blobContext->blobContext) MD2();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Md2Update(Md2ContextPtr context, const char* message, unsigned int length)
+    void Md2Update(Md2BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Md2Finalize(Md2ContextPtr context)
+    const char* Md2Finalize(Md2BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(MD2::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, MD2::DIGESTSIZE, algo_md2);
                 if (result != NULL)
                 {
@@ -506,7 +505,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -514,44 +513,44 @@ extern "C" {
 #if (defined(__MD4__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
 
-    Md4ContextPtr Md4Initialize()
+    Md4BlobContextPtr Md4Initialize()
     {
-        Md4ContextPtr context = (Md4ContextPtr)malloc(sizeof(Md4Context));
-        if (context != NULL)
+        Md4BlobContextPtr blobContext = (Md4BlobContextPtr)malloc(sizeof(Md4BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Md4ContextPtr();
-            context->context = (MD4*)malloc(sizeof(MD4));
-            if (context->context)
+            new(blobContext)Md4BlobContextPtr();
+            blobContext->blobContext = (MD4*)malloc(sizeof(MD4));
+            if (blobContext->blobContext)
             {
-                new(context->context) MD4();
+                new(blobContext->blobContext) MD4();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Md4Update(Md4ContextPtr context, const char* message, unsigned int length)
+    void Md4Update(Md4BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Md4Finalize(Md4ContextPtr context)
+    const char* Md4Finalize(Md4BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(MD4::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, MD4::DIGESTSIZE, algo_md4);
                 if (result != NULL)
                 {
@@ -577,7 +576,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -585,44 +584,44 @@ extern "C" {
 #if (defined(__MD5__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
 
-    Md5ContextPtr Md5Initialize()
+    Md5BlobContextPtr Md5Initialize()
     {
-        Md5ContextPtr context = (Md5ContextPtr)malloc(sizeof(Md5Context));
-        if (context != NULL)
+        Md5BlobContextPtr blobContext = (Md5BlobContextPtr)malloc(sizeof(Md5BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Md5ContextPtr();
-            context->context = (MD5*)malloc(sizeof(MD5));
-            if (context->context)
+            new(blobContext)Md5BlobContextPtr();
+            blobContext->blobContext = (MD5*)malloc(sizeof(MD5));
+            if (blobContext->blobContext)
             {
-                new(context->context) MD5();
+                new(blobContext->blobContext) MD5();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Md5Update(Md5ContextPtr context, const char* message, unsigned int length)
+    void Md5Update(Md5BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Md5Finalize(Md5ContextPtr context)
+    const char* Md5Finalize(Md5BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(MD5::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, MD5::DIGESTSIZE, algo_md5);
                 if (result != NULL)
                 {
@@ -648,7 +647,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -657,44 +656,44 @@ extern "C" {
 #if (defined(__SHA1__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
 
-    Sha1ContextPtr Sha1Initialize()
+    Sha1BlobContextPtr Sha1Initialize()
     {
-        Sha1ContextPtr context = (Sha1ContextPtr)malloc(sizeof(Sha1Context));
-        if (context != NULL)
+        Sha1BlobContextPtr blobContext = (Sha1BlobContextPtr)malloc(sizeof(Sha1BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Sha1ContextPtr();
-            context->context = (SHA1*)malloc(sizeof(SHA1));
-            if (context->context)
+            new(blobContext)Sha1BlobContextPtr();
+            blobContext->blobContext = (SHA1*)malloc(sizeof(SHA1));
+            if (blobContext->blobContext)
             {
-                new(context->context) SHA1();
+                new(blobContext->blobContext) SHA1();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Sha1Update(Sha1ContextPtr context, const char* message, unsigned int length)
+    void Sha1Update(Sha1BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Sha1Finalize(Sha1ContextPtr context)
+    const char* Sha1Finalize(Sha1BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(SHA1::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, SHA1::DIGESTSIZE, algo_sha1);
                 if (result != NULL)
                 {
@@ -720,7 +719,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -729,44 +728,44 @@ extern "C" {
 #if (defined(__SHA224__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
 
-    Sha224ContextPtr Sha224Initialize()
+    Sha224BlobContextPtr Sha224Initialize()
     {
-        Sha224ContextPtr context = (Sha224ContextPtr)malloc(sizeof(Sha224Context));
-        if (context != NULL)
+        Sha224BlobContextPtr blobContext = (Sha224BlobContextPtr)malloc(sizeof(Sha224BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Sha224ContextPtr();
-            context->context = (SHA224*)malloc(sizeof(SHA224));
-            if (context->context)
+            new(blobContext)Sha224BlobContextPtr();
+            blobContext->blobContext = (SHA224*)malloc(sizeof(SHA224));
+            if (blobContext->blobContext)
             {
-                new(context->context) SHA224();
+                new(blobContext->blobContext) SHA224();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Sha224Update(Sha224ContextPtr context, const char* message, unsigned int length)
+    void Sha224Update(Sha224BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Sha224Finalize(Sha224ContextPtr context)
+    const char* Sha224Finalize(Sha224BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(SHA224::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, SHA224::DIGESTSIZE, algo_sha224);
                 if (result != NULL)
                 {
@@ -792,7 +791,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -801,44 +800,44 @@ extern "C" {
 #if (defined(__SHA256__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
 
-    Sha256ContextPtr Sha256Initialize()
+    Sha256BlobContextPtr Sha256Initialize()
     {
-        Sha256ContextPtr context = (Sha256ContextPtr)malloc(sizeof(Sha256Context));
-        if (context != NULL)
+        Sha256BlobContextPtr blobContext = (Sha256BlobContextPtr)malloc(sizeof(Sha256BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Sha256ContextPtr();
-            context->context = (SHA256*)malloc(sizeof(SHA256));
-            if (context->context)
+            new(blobContext)Sha256BlobContextPtr();
+            blobContext->blobContext = (SHA256*)malloc(sizeof(SHA256));
+            if (blobContext->blobContext)
             {
-                new(context->context) SHA256();
+                new(blobContext->blobContext) SHA256();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Sha256Update(Sha256ContextPtr context, const char* message, unsigned int length)
+    void Sha256Update(Sha256BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Sha256Finalize(Sha256ContextPtr context)
+    const char* Sha256Finalize(Sha256BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(SHA256::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, SHA256::DIGESTSIZE, algo_sha256);
                 if (result != NULL)
                 {
@@ -864,7 +863,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -873,44 +872,44 @@ extern "C" {
 #if (defined(__SHA384__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
 
-    Sha384ContextPtr Sha384Initialize()
+    Sha384BlobContextPtr Sha384Initialize()
     {
-        Sha384ContextPtr context = (Sha384ContextPtr)malloc(sizeof(Sha384Context));
-        if (context != NULL)
+        Sha384BlobContextPtr blobContext = (Sha384BlobContextPtr)malloc(sizeof(Sha384BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Sha384ContextPtr();
-            context->context = (SHA384*)malloc(sizeof(SHA384));
-            if (context->context)
+            new(blobContext)Sha384BlobContextPtr();
+            blobContext->blobContext = (SHA384*)malloc(sizeof(SHA384));
+            if (blobContext->blobContext)
             {
-                new(context->context) SHA384();
+                new(blobContext->blobContext) SHA384();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Sha384Update(Sha384ContextPtr context, const char* message, unsigned int length)
+    void Sha384Update(Sha384BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Sha384Finalize(Sha384ContextPtr context)
+    const char* Sha384Finalize(Sha384BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(SHA384::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, SHA384::DIGESTSIZE, algo_sha384);
                 if (result != NULL)
                 {
@@ -936,7 +935,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -945,44 +944,44 @@ extern "C" {
 #if (defined(__SHA512__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
 
-    Sha512ContextPtr Sha512Initialize()
+    Sha512BlobContextPtr Sha512Initialize()
     {
-        Sha512ContextPtr context = (Sha512ContextPtr)malloc(sizeof(Sha512Context));
-        if (context != NULL)
+        Sha512BlobContextPtr blobContext = (Sha512BlobContextPtr)malloc(sizeof(Sha512BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Sha512ContextPtr();
-            context->context = (SHA512*)malloc(sizeof(SHA512));
-            if (context->context)
+            new(blobContext)Sha512BlobContextPtr();
+            blobContext->blobContext = (SHA512*)malloc(sizeof(SHA512));
+            if (blobContext->blobContext)
             {
-                new(context->context) SHA512();
+                new(blobContext->blobContext) SHA512();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Sha512Update(Sha512ContextPtr context, const char* message, unsigned int length)
+    void Sha512Update(Sha512BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Sha512Finalize(Sha512ContextPtr context)
+    const char* Sha512Finalize(Sha512BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(SHA512::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, SHA512::DIGESTSIZE, algo_sha512);
                 if (result != NULL)
                 {
@@ -1008,7 +1007,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -1016,44 +1015,44 @@ extern "C" {
 
 #if (defined(__SHA3224__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    Sha3224ContextPtr Sha3224Initialize()
+    Sha3224BlobContextPtr Sha3224Initialize()
     {
-        Sha3224ContextPtr context = (Sha3224ContextPtr)malloc(sizeof(Sha3224Context));
-        if (context != NULL)
+        Sha3224BlobContextPtr blobContext = (Sha3224BlobContextPtr)malloc(sizeof(Sha3224BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Sha3224ContextPtr();
-            context->context = (SHA3_224*)malloc(sizeof(SHA3_224));
-            if (context->context)
+            new(blobContext)Sha3224BlobContextPtr();
+            blobContext->blobContext = (SHA3_224*)malloc(sizeof(SHA3_224));
+            if (blobContext->blobContext)
             {
-                new(context->context) SHA3_224();
+                new(blobContext->blobContext) SHA3_224();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Sha3224Update(Sha3224ContextPtr context, const char* message, unsigned int length)
+    void Sha3224Update(Sha3224BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Sha3224Finalize(Sha3224ContextPtr context)
+    const char* Sha3224Finalize(Sha3224BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(SHA3_224::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, SHA3_224::DIGESTSIZE, algo_sha3_224);
                 if (result != NULL)
                 {
@@ -1079,7 +1078,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -1088,44 +1087,44 @@ extern "C" {
 
 #if (defined(__SHA3256__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    Sha3256ContextPtr Sha3256Initialize()
+    Sha3256BlobContextPtr Sha3256Initialize()
     {
-        Sha3256ContextPtr context = (Sha3256ContextPtr)malloc(sizeof(Sha3256Context));
-        if (context != NULL)
+        Sha3256BlobContextPtr blobContext = (Sha3256BlobContextPtr)malloc(sizeof(Sha3256BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Sha3256ContextPtr();
-            context->context = (SHA3_256*)malloc(sizeof(SHA3_256));
-            if (context->context)
+            new(blobContext)Sha3256BlobContextPtr();
+            blobContext->blobContext = (SHA3_256*)malloc(sizeof(SHA3_256));
+            if (blobContext->blobContext)
             {
-                new(context->context) SHA3_256();
+                new(blobContext->blobContext) SHA3_256();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Sha3256Update(Sha3256ContextPtr context, const char* message, unsigned int length)
+    void Sha3256Update(Sha3256BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Sha3256Finalize(Sha3256ContextPtr context)
+    const char* Sha3256Finalize(Sha3256BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(SHA3_256::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, SHA3_256::DIGESTSIZE, algo_sha3_256);
                 if (result != NULL)
                 {
@@ -1151,7 +1150,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -1160,44 +1159,44 @@ extern "C" {
 
 #if (defined(__SHA3384__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    Sha3384ContextPtr Sha3384Initialize()
+    Sha3384BlobContextPtr Sha3384Initialize()
     {
-        Sha3384ContextPtr context = (Sha3384ContextPtr)malloc(sizeof(Sha3384Context));
-        if (context != NULL)
+        Sha3384BlobContextPtr blobContext = (Sha3384BlobContextPtr)malloc(sizeof(Sha3384BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Sha3384ContextPtr();
-            context->context = (SHA3_384*)malloc(sizeof(SHA3_384));
-            if (context->context)
+            new(blobContext)Sha3384BlobContextPtr();
+            blobContext->blobContext = (SHA3_384*)malloc(sizeof(SHA3_384));
+            if (blobContext->blobContext)
             {
-                new(context->context) SHA3_384();
+                new(blobContext->blobContext) SHA3_384();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Sha3384Update(Sha3384ContextPtr context, const char* message, unsigned int length)
+    void Sha3384Update(Sha3384BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Sha3384Finalize(Sha3384ContextPtr context)
+    const char* Sha3384Finalize(Sha3384BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(SHA3_384::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, SHA3_384::DIGESTSIZE, algo_sha3_384);
                 if (result != NULL)
                 {
@@ -1223,7 +1222,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -1232,44 +1231,44 @@ extern "C" {
 
 #if (defined(__SHA3512__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    Sha3512ContextPtr Sha3512Initialize()
+    Sha3512BlobContextPtr Sha3512Initialize()
     {
-        Sha3512ContextPtr context = (Sha3512ContextPtr)malloc(sizeof(Sha3512Context));
-        if (context != NULL)
+        Sha3512BlobContextPtr blobContext = (Sha3512BlobContextPtr)malloc(sizeof(Sha3512BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Sha3512ContextPtr();
-            context->context = (SHA3_512*)malloc(sizeof(SHA3_512));
-            if (context->context)
+            new(blobContext)Sha3512BlobContextPtr();
+            blobContext->blobContext = (SHA3_512*)malloc(sizeof(SHA3_512));
+            if (blobContext->blobContext)
             {
-                new(context->context) SHA3_512();
+                new(blobContext->blobContext) SHA3_512();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Sha3512Update(Sha3512ContextPtr context, const char* message, unsigned int length)
+    void Sha3512Update(Sha3512BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Sha3512Finalize(Sha3512ContextPtr context)
+    const char* Sha3512Finalize(Sha3512BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(SHA3_512::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, SHA3_512::DIGESTSIZE, algo_sha3_512);
                 if (result != NULL)
                 {
@@ -1295,7 +1294,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -1304,44 +1303,44 @@ extern "C" {
 
 #if (defined(__RIPEMD128__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    RipeMD128ContextPtr RipeMD128Initialize()
+    RipeMD128BlobContextPtr RipeMD128Initialize()
     {
-        RipeMD128ContextPtr context = (RipeMD128ContextPtr)malloc(sizeof(RipeMD128Context));
-        if (context != NULL)
+        RipeMD128BlobContextPtr blobContext = (RipeMD128BlobContextPtr)malloc(sizeof(RipeMD128BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)RipeMD128ContextPtr();
-            context->context = (RIPEMD128*)malloc(sizeof(RIPEMD128));
-            if (context->context)
+            new(blobContext)RipeMD128BlobContextPtr();
+            blobContext->blobContext = (RIPEMD128*)malloc(sizeof(RIPEMD128));
+            if (blobContext->blobContext)
             {
-                new(context->context) RIPEMD128();
+                new(blobContext->blobContext) RIPEMD128();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void RipeMD128Update(RipeMD128ContextPtr context, const char* message, unsigned int length)
+    void RipeMD128Update(RipeMD128BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* RipeMD128Finalize(RipeMD128ContextPtr context)
+    const char* RipeMD128Finalize(RipeMD128BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(RIPEMD128::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, RIPEMD128::DIGESTSIZE, algo_ripemd_128);
                 if (result != NULL)
                 {
@@ -1367,7 +1366,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -1376,44 +1375,44 @@ extern "C" {
 
 #if (defined(__RIPEMD160__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    RipeMD160ContextPtr RipeMD160Initialize()
+    RipeMD160BlobContextPtr RipeMD160Initialize()
     {
-        RipeMD160ContextPtr context = (RipeMD160ContextPtr)malloc(sizeof(RipeMD160Context));
-        if (context != NULL)
+        RipeMD160BlobContextPtr blobContext = (RipeMD160BlobContextPtr)malloc(sizeof(RipeMD160BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)RipeMD160ContextPtr();
-            context->context = (RIPEMD160*)malloc(sizeof(RIPEMD160));
-            if (context->context)
+            new(blobContext)RipeMD160BlobContextPtr();
+            blobContext->blobContext = (RIPEMD160*)malloc(sizeof(RIPEMD160));
+            if (blobContext->blobContext)
             {
-                new(context->context) RIPEMD160();
+                new(blobContext->blobContext) RIPEMD160();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void RipeMD160Update(RipeMD160ContextPtr context, const char* message, unsigned int length)
+    void RipeMD160Update(RipeMD160BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* RipeMD160Finalize(RipeMD160ContextPtr context)
+    const char* RipeMD160Finalize(RipeMD160BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(RIPEMD160::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, RIPEMD160::DIGESTSIZE, algo_ripemd_160);
                 if (result != NULL)
                 {
@@ -1439,7 +1438,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -1448,44 +1447,44 @@ extern "C" {
 
 #if (defined(__RIPEMD256__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    RipeMD256ContextPtr RipeMD256Initialize()
+    RipeMD256BlobContextPtr RipeMD256Initialize()
     {
-        RipeMD256ContextPtr context = (RipeMD256ContextPtr)malloc(sizeof(RipeMD256Context));
-        if (context != NULL)
+        RipeMD256BlobContextPtr blobContext = (RipeMD256BlobContextPtr)malloc(sizeof(RipeMD256BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)RipeMD256ContextPtr();
-            context->context = (RIPEMD256*)malloc(sizeof(RIPEMD256));
-            if (context->context)
+            new(blobContext)RipeMD256BlobContextPtr();
+            blobContext->blobContext = (RIPEMD256*)malloc(sizeof(RIPEMD256));
+            if (blobContext->blobContext)
             {
-                new(context->context) RIPEMD256();
+                new(blobContext->blobContext) RIPEMD256();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void RipeMD256Update(RipeMD256ContextPtr context, const char* message, unsigned int length)
+    void RipeMD256Update(RipeMD256BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* RipeMD256Finalize(RipeMD256ContextPtr context)
+    const char* RipeMD256Finalize(RipeMD256BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(RIPEMD256::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, RIPEMD256::DIGESTSIZE, algo_ripemd_256);
                 if (result != NULL)
                 {
@@ -1511,7 +1510,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -1520,44 +1519,44 @@ extern "C" {
 
 #if (defined(__RIPEMD320__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    RipeMD320ContextPtr RipeMD320Initialize()
+    RipeMD320BlobContextPtr RipeMD320Initialize()
     {
-        RipeMD320ContextPtr context = (RipeMD320ContextPtr)malloc(sizeof(RipeMD320Context));
-        if (context != NULL)
+        RipeMD320BlobContextPtr blobContext = (RipeMD320BlobContextPtr)malloc(sizeof(RipeMD320BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)RipeMD320ContextPtr();
-            context->context = (RIPEMD320*)malloc(sizeof(RIPEMD320));
-            if (context->context)
+            new(blobContext)RipeMD320BlobContextPtr();
+            blobContext->blobContext = (RIPEMD320*)malloc(sizeof(RIPEMD320));
+            if (blobContext->blobContext)
             {
-                new(context->context) RIPEMD320();
+                new(blobContext->blobContext) RIPEMD320();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void RipeMD320Update(RipeMD320ContextPtr context, const char* message, unsigned int length)
+    void RipeMD320Update(RipeMD320BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* RipeMD320Finalize(RipeMD320ContextPtr context)
+    const char* RipeMD320Finalize(RipeMD320BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(RIPEMD320::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, RIPEMD320::DIGESTSIZE, algo_ripemd_320);
                 if (result != NULL)
                 {
@@ -1583,7 +1582,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -1592,44 +1591,44 @@ extern "C" {
 
 #if (defined(__BLAKE2B__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    Blake2BContextPtr Blake2BInitialize()
+    Blake2BBlobContextPtr Blake2BInitialize()
     {
-        Blake2BContextPtr context = (Blake2BContextPtr)malloc(sizeof(Blake2BContext));
-        if (context != NULL)
+        Blake2BBlobContextPtr blobContext = (Blake2BBlobContextPtr)malloc(sizeof(Blake2BBlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Blake2BContextPtr();
-            context->context = (BLAKE2b*)malloc(sizeof(BLAKE2b));
-            if (context->context)
+            new(blobContext)Blake2BBlobContextPtr();
+            blobContext->blobContext = (BLAKE2b*)malloc(sizeof(BLAKE2b));
+            if (blobContext->blobContext)
             {
-                new(context->context) BLAKE2b();
+                new(blobContext->blobContext) BLAKE2b();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Blake2BUpdate(Blake2BContextPtr context, const char* message, unsigned int length)
+    void Blake2BUpdate(Blake2BBlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Blake2BFinalize(Blake2BContextPtr context)
+    const char* Blake2BFinalize(Blake2BBlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(BLAKE2b::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, BLAKE2b::DIGESTSIZE, algo_blake2b);
                 if (result != NULL)
                 {
@@ -1655,7 +1654,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -1664,44 +1663,44 @@ extern "C" {
 
 #if (defined(__BLAKE2S__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    Blake2SContextPtr Blake2SInitialize()
+    Blake2SBlobContextPtr Blake2SInitialize()
     {
-        Blake2SContextPtr context = (Blake2SContextPtr)malloc(sizeof(Blake2SContext));
-        if (context != NULL)
+        Blake2SBlobContextPtr blobContext = (Blake2SBlobContextPtr)malloc(sizeof(Blake2SBlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Blake2SContextPtr();
-            context->context = (BLAKE2s*)malloc(sizeof(BLAKE2s));
-            if (context->context)
+            new(blobContext)Blake2SBlobContextPtr();
+            blobContext->blobContext = (BLAKE2s*)malloc(sizeof(BLAKE2s));
+            if (blobContext->blobContext)
             {
-                new(context->context) BLAKE2s();
+                new(blobContext->blobContext) BLAKE2s();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Blake2SUpdate(Blake2SContextPtr context, const char* message, unsigned int length)
+    void Blake2SUpdate(Blake2SBlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Blake2SFinalize(Blake2SContextPtr context)
+    const char* Blake2SFinalize(Blake2SBlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(BLAKE2s::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, BLAKE2s::DIGESTSIZE, algo_blake2s);
                 if (result != NULL)
                 {
@@ -1727,7 +1726,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -1736,44 +1735,44 @@ extern "C" {
 
 #if (defined(__TIGER__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    TigerContextPtr TigerInitialize()
+    TigerBlobContextPtr TigerInitialize()
     {
-        TigerContextPtr context = (TigerContextPtr)malloc(sizeof(TigerContext));
-        if (context != NULL)
+        TigerBlobContextPtr blobContext = (TigerBlobContextPtr)malloc(sizeof(TigerBlobContext));
+        if (blobContext != NULL)
         {
-            new(context)TigerContextPtr();
-            context->context = (Tiger*)malloc(sizeof(Tiger));
-            if (context->context)
+            new(blobContext)TigerBlobContextPtr();
+            blobContext->blobContext = (Tiger*)malloc(sizeof(Tiger));
+            if (blobContext->blobContext)
             {
-                new(context->context) Tiger();
+                new(blobContext->blobContext) Tiger();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void TigerUpdate(TigerContextPtr context, const char* message, unsigned int length)
+    void TigerUpdate(TigerBlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* TigerFinalize(TigerContextPtr context)
+    const char* TigerFinalize(TigerBlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(Tiger::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, Tiger::DIGESTSIZE, algo_tiger);
                 if (result != NULL)
                 {
@@ -1799,7 +1798,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -1808,44 +1807,44 @@ extern "C" {
 
 #if (defined(__SHAKE128__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    Shake128ContextPtr Shake128Initialize()
+    Shake128BlobContextPtr Shake128Initialize()
     {
-        Shake128ContextPtr context = (Shake128ContextPtr)malloc(sizeof(Shake128Context));
-        if (context != NULL)
+        Shake128BlobContextPtr blobContext = (Shake128BlobContextPtr)malloc(sizeof(Shake128BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Shake128ContextPtr();
-            context->context = (SHAKE128*)malloc(sizeof(SHAKE128));
-            if (context->context)
+            new(blobContext)Shake128BlobContextPtr();
+            blobContext->blobContext = (SHAKE128*)malloc(sizeof(SHAKE128));
+            if (blobContext->blobContext)
             {
-                new(context->context) SHAKE128();
+                new(blobContext->blobContext) SHAKE128();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Shake128Update(Shake128ContextPtr context, const char* message, unsigned int length)
+    void Shake128Update(Shake128BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Shake128Finalize(Shake128ContextPtr context)
+    const char* Shake128Finalize(Shake128BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(SHAKE128::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, SHAKE128::DIGESTSIZE, algo_shake_128);
                 if (result != NULL)
                 {
@@ -1871,7 +1870,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -1879,44 +1878,44 @@ extern "C" {
 #endif
 #if (defined(__SHAKE256__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    Shake256ContextPtr Shake256Initialize()
+    Shake256BlobContextPtr Shake256Initialize()
     {
-        Shake256ContextPtr context = (Shake256ContextPtr)malloc(sizeof(Shake256Context));
-        if (context != NULL)
+        Shake256BlobContextPtr blobContext = (Shake256BlobContextPtr)malloc(sizeof(Shake256BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Shake256ContextPtr();
-            context->context = (SHAKE256*)malloc(sizeof(SHAKE256));
-            if (context->context)
+            new(blobContext)Shake256BlobContextPtr();
+            blobContext->blobContext = (SHAKE256*)malloc(sizeof(SHAKE256));
+            if (blobContext->blobContext)
             {
-                new(context->context) SHAKE256();
+                new(blobContext->blobContext) SHAKE256();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Shake256Update(Shake256ContextPtr context, const char* message, unsigned int length)
+    void Shake256Update(Shake256BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Shake256Finalize(Shake256ContextPtr context)
+    const char* Shake256Finalize(Shake256BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(SHAKE256::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, SHAKE256::DIGESTSIZE, algo_shake_256);
                 if (result != NULL)
                 {
@@ -1942,7 +1941,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -1950,44 +1949,44 @@ extern "C" {
 #endif
 #if (defined(__SIPHASH64__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    Siphash64ContextPtr Siphash64Initialize()
+    Siphash64BlobContextPtr Siphash64Initialize()
     {
-        Siphash64ContextPtr context = (Siphash64ContextPtr)malloc(sizeof(Siphash64Context));
-        if (context != NULL)
+        Siphash64BlobContextPtr blobContext = (Siphash64BlobContextPtr)malloc(sizeof(Siphash64BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Siphash64ContextPtr();
-            context->context = (SipHash<2, 4, false>*)malloc(sizeof(SipHash<2, 4, false>));
-            if (context->context)
+            new(blobContext)Siphash64BlobContextPtr();
+            blobContext->blobContext = (SipHash<2, 4, false>*)malloc(sizeof(SipHash<2, 4, false>));
+            if (blobContext->blobContext)
             {
-                new(context->context) SipHash<2, 4, false>();
+                new(blobContext->blobContext) SipHash<2, 4, false>();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Siphash64Update(Siphash64ContextPtr context, const char* message, unsigned int length)
+    void Siphash64Update(Siphash64BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Siphash64Finalize(Siphash64ContextPtr context)
+    const char* Siphash64Finalize(Siphash64BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(SipHash<2, 4, false>::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, SipHash<2, 4, false>::DIGESTSIZE, algo_sip_hash64);
                 if (result != NULL)
                 {
@@ -2013,51 +2012,51 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
 #endif
 #if (defined(__SIPHASH128__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    Siphash128ContextPtr Siphash128Initialize()
+    Siphash128BlobContextPtr Siphash128Initialize()
     {
-        Siphash128ContextPtr context = (Siphash128ContextPtr)malloc(sizeof(Siphash128Context));
-        if (context != NULL)
+        Siphash128BlobContextPtr blobContext = (Siphash128BlobContextPtr)malloc(sizeof(Siphash128BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Siphash128ContextPtr();
-            context->context = (SipHash<4, 8, true>*)malloc(sizeof(SipHash<4, 8, true>));
-            if (context->context)
+            new(blobContext)Siphash128BlobContextPtr();
+            blobContext->blobContext = (SipHash<4, 8, true>*)malloc(sizeof(SipHash<4, 8, true>));
+            if (blobContext->blobContext)
             {
-                new(context->context) SipHash<4, 8, true>();
+                new(blobContext->blobContext) SipHash<4, 8, true>();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Siphash128Update(Siphash128ContextPtr context, const char* message, unsigned int length)
+    void Siphash128Update(Siphash128BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Siphash128Finalize(Siphash128ContextPtr context)
+    const char* Siphash128Finalize(Siphash128BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(SipHash<4, 8, true>::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, SipHash<4, 8, true>::DIGESTSIZE, algo_sip_hash128);
                 if (result != NULL)
                 {
@@ -2083,7 +2082,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -2093,44 +2092,44 @@ extern "C" {
 
 #if (defined(__LSH224__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    Lsh224ContextPtr Lsh224Initialize()
+    Lsh224BlobContextPtr Lsh224Initialize()
     {
-        Lsh224ContextPtr context = (Lsh224ContextPtr)malloc(sizeof(Lsh224Context));
-        if (context != NULL)
+        Lsh224BlobContextPtr blobContext = (Lsh224BlobContextPtr)malloc(sizeof(Lsh224BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Lsh224ContextPtr();
-            context->context = (LSH224*)malloc(sizeof(LSH224));
-            if (context->context)
+            new(blobContext)Lsh224BlobContextPtr();
+            blobContext->blobContext = (LSH224*)malloc(sizeof(LSH224));
+            if (blobContext->blobContext)
             {
-                new(context->context) LSH224();
+                new(blobContext->blobContext) LSH224();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Lsh224Update(Lsh224ContextPtr context, const char* message, unsigned int length)
+    void Lsh224Update(Lsh224BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Lsh224Finalize(Lsh224ContextPtr context)
+    const char* Lsh224Finalize(Lsh224BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(LSH224::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, LSH224::DIGESTSIZE, algo_lsh_224);
                 if (result != NULL)
                 {
@@ -2156,7 +2155,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -2165,44 +2164,44 @@ extern "C" {
 
 #if (defined(__LSH256__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    Lsh256ContextPtr Lsh256Initialize()
+    Lsh256BlobContextPtr Lsh256Initialize()
     {
-        Lsh256ContextPtr context = (Lsh256ContextPtr)malloc(sizeof(Lsh256Context));
-        if (context != NULL)
+        Lsh256BlobContextPtr blobContext = (Lsh256BlobContextPtr)malloc(sizeof(Lsh256BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Lsh256ContextPtr();
-            context->context = (LSH256*)malloc(sizeof(LSH256));
-            if (context->context)
+            new(blobContext)Lsh256BlobContextPtr();
+            blobContext->blobContext = (LSH256*)malloc(sizeof(LSH256));
+            if (blobContext->blobContext)
             {
-                new(context->context) LSH256();
+                new(blobContext->blobContext) LSH256();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Lsh256Update(Lsh256ContextPtr context, const char* message, unsigned int length)
+    void Lsh256Update(Lsh256BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Lsh256Finalize(Lsh256ContextPtr context)
+    const char* Lsh256Finalize(Lsh256BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(LSH256::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, LSH256::DIGESTSIZE, algo_lsh_256);
                 if (result != NULL)
                 {
@@ -2228,7 +2227,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -2236,44 +2235,44 @@ extern "C" {
 #endif
 #if (defined(__LSH384__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    Lsh384ContextPtr Lsh384Initialize()
+    Lsh384BlobContextPtr Lsh384Initialize()
     {
-        Lsh384ContextPtr context = (Lsh384ContextPtr)malloc(sizeof(Lsh384Context));
-        if (context != NULL)
+        Lsh384BlobContextPtr blobContext = (Lsh384BlobContextPtr)malloc(sizeof(Lsh384BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Lsh384ContextPtr();
-            context->context = (LSH384*)malloc(sizeof(LSH384));
-            if (context->context)
+            new(blobContext)Lsh384BlobContextPtr();
+            blobContext->blobContext = (LSH384*)malloc(sizeof(LSH384));
+            if (blobContext->blobContext)
             {
-                new(context->context) LSH384();
+                new(blobContext->blobContext) LSH384();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Lsh384Update(Lsh384ContextPtr context, const char* message, unsigned int length)
+    void Lsh384Update(Lsh384BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Lsh384Finalize(Lsh384ContextPtr context)
+    const char* Lsh384Finalize(Lsh384BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(LSH384::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, LSH384::DIGESTSIZE, algo_lsh_384);
                 if (result != NULL)
                 {
@@ -2299,7 +2298,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -2307,44 +2306,44 @@ extern "C" {
 #endif
 #if (defined(__LSH512__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    Lsh512ContextPtr Lsh512Initialize()
+    Lsh512BlobContextPtr Lsh512Initialize()
     {
-        Lsh512ContextPtr context = (Lsh512ContextPtr)malloc(sizeof(Lsh512Context));
-        if (context != NULL)
+        Lsh512BlobContextPtr blobContext = (Lsh512BlobContextPtr)malloc(sizeof(Lsh512BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Lsh512ContextPtr();
-            context->context = (LSH512*)malloc(sizeof(LSH512));
-            if (context->context)
+            new(blobContext)Lsh512BlobContextPtr();
+            blobContext->blobContext = (LSH512*)malloc(sizeof(LSH512));
+            if (blobContext->blobContext)
             {
-                new(context->context) LSH512();
+                new(blobContext->blobContext) LSH512();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Lsh512Update(Lsh512ContextPtr context, const char* message, unsigned int length)
+    void Lsh512Update(Lsh512BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Lsh512Finalize(Lsh512ContextPtr context)
+    const char* Lsh512Finalize(Lsh512BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(LSH512::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, LSH512::DIGESTSIZE, algo_lsh_512);
                 if (result != NULL)
                 {
@@ -2370,7 +2369,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -2379,44 +2378,44 @@ extern "C" {
 
 #if (defined(__SM3__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    Sm3ContextPtr Sm3Initialize()
+    Sm3BlobContextPtr Sm3Initialize()
     {
-        Sm3ContextPtr context = (Sm3ContextPtr)malloc(sizeof(Sm3Context));
-        if (context != NULL)
+        Sm3BlobContextPtr blobContext = (Sm3BlobContextPtr)malloc(sizeof(Sm3BlobContext));
+        if (blobContext != NULL)
         {
-            new(context)Sm3ContextPtr();
-            context->context = (SM3*)malloc(sizeof(SM3));
-            if (context->context)
+            new(blobContext)Sm3BlobContextPtr();
+            blobContext->blobContext = (SM3*)malloc(sizeof(SM3));
+            if (blobContext->blobContext)
             {
-                new(context->context) SM3();
+                new(blobContext->blobContext) SM3();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void Sm3Update(Sm3ContextPtr context, const char* message, unsigned int length)
+    void Sm3Update(Sm3BlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* Sm3Finalize(Sm3ContextPtr context)
+    const char* Sm3Finalize(Sm3BlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(SM3::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, SM3::DIGESTSIZE, algo_sm3);
                 if (result != NULL)
                 {
@@ -2442,7 +2441,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }
@@ -2450,44 +2449,44 @@ extern "C" {
 #endif
 #if (defined(__WHIRLPOOL__) || defined (__ALL__)) && defined(__USE_BLOB__)
 
-    WhirlpoolContextPtr WhirlpoolInitialize()
+    WhirlpoolBlobContextPtr WhirlpoolInitialize()
     {
-        WhirlpoolContextPtr context = (WhirlpoolContextPtr)malloc(sizeof(WhirlpoolContext));
-        if (context != NULL)
+        WhirlpoolBlobContextPtr blobContext = (WhirlpoolBlobContextPtr)malloc(sizeof(WhirlpoolBlobContext));
+        if (blobContext != NULL)
         {
-            new(context)WhirlpoolContextPtr();
-            context->context = (Whirlpool*)malloc(sizeof(Whirlpool));
-            if (context->context)
+            new(blobContext)WhirlpoolBlobContextPtr();
+            blobContext->blobContext = (Whirlpool*)malloc(sizeof(Whirlpool));
+            if (blobContext->blobContext)
             {
-                new(context->context) Whirlpool();
+                new(blobContext->blobContext) Whirlpool();
             }
             else
             {
-                free(context);
-                context = NULL;
+                free(blobContext);
+                blobContext = NULL;
             }
         }
-        return context;
+        return blobContext;
     }
 
-    void WhirlpoolUpdate(WhirlpoolContextPtr context, const char* message, unsigned int length)
+    void WhirlpoolUpdate(WhirlpoolBlobContextPtr blobContext, const char* message, unsigned int length)
     {
-        if (context != NULL && context->context != NULL && message != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL && message != NULL)
         {
-            context->context->Update((CryptoPP::byte*)message, length);
+            blobContext->blobContext->Update((CryptoPP::byte*)message, length);
         }
     }
 
-    const char* WhirlpoolFinalize(WhirlpoolContextPtr context)
+    const char* WhirlpoolFinalize(WhirlpoolBlobContextPtr blobContext)
     {
         char* lpBuffer = NULL;
         const char* result = NULL;;
-        if (context != NULL && context->context != NULL)
+        if (blobContext != NULL && blobContext->blobContext != NULL)
         {
             lpBuffer = (char*)malloc(Whirlpool::DIGESTSIZE);
             if (lpBuffer)
             {
-                context->context->Final((CryptoPP::byte*)lpBuffer);
+                blobContext->blobContext->Final((CryptoPP::byte*)lpBuffer);
                 result = ToHex(lpBuffer, Whirlpool::DIGESTSIZE, algo_whirlpool);
                 if (result != NULL)
                 {
@@ -2513,7 +2512,7 @@ extern "C" {
         }
         else
         {
-            DebugMessage("Invalid Context\r\n");
+            DebugMessage("Invalid BlobContext\r\n");
         }
         return result;
     }

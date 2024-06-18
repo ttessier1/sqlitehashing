@@ -13,6 +13,7 @@
 #include "crypto_hashing.h"
 #include "crypto_blob.h"
 #include "crypto_mac.h"
+#include "crypto_mac_blob.h"
 
 SQLITE_EXTENSION_INIT1
 #include "blob_hashing.h"
@@ -47,7 +48,7 @@ static unsigned char rot13c(unsigned char c)
 }
 
 static int hash_ping(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -63,18 +64,18 @@ static int hash_ping(
     zOut = zToFree = (unsigned char * ) sqlite3_malloc64(nIn+1);
     if(zOut == 0 )
     {
-        sqlite3_result_error_nomem(context);
+        sqlite3_result_error_nomem(blobContext);
         return-1;
     }
     strcpy_s(zOut,nIn+1,PING_MESSAGE);
     
-    sqlite3_result_text(context, (char*) zOut, nIn, SQLITE_TRANSIENT);
+    sqlite3_result_text(blobContext, (char*) zOut, nIn, SQLITE_TRANSIENT);
     sqlite3_free(zToFree);
     return 0;
 }
 
 static int rot13(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -94,7 +95,7 @@ static int rot13(
     zOut = zToFree = ( unsigned char *) sqlite3_malloc64(nIn+1);
     if(zOut==0)
     {
-        sqlite3_result_error_nomem(context);
+        sqlite3_result_error_nomem(blobContext);
         return -1;
     }
     for(index=0;index<nIn;index++)
@@ -102,7 +103,7 @@ static int rot13(
         zOut[index]=rot13c(zIn[index]);
     }
     zOut[index]=0;
-    sqlite3_result_text(context,(char *)zOut,index,SQLITE_TRANSIENT);
+    sqlite3_result_text(blobContext,(char *)zOut,index,SQLITE_TRANSIENT);
     sqlite3_free(zToFree);
     return 0;
 }
@@ -110,7 +111,7 @@ static int rot13(
 #if defined(__MD2__)|| defined(__ALL__)
 
 static int md2(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -152,7 +153,7 @@ static int md2(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -170,7 +171,7 @@ static int md2(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -178,13 +179,13 @@ static int md2(
 
 #if defined(__USE_BLOB__)
 static int md2blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db=NULL;
-    Md2ContextPtr md2Context;
+    Md2BlobContextPtr md2BlobContext;
     
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -208,7 +209,7 @@ static int md2blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Md2Blob Called\r\n");
     if (argc != 4)
@@ -224,7 +225,7 @@ static int md2blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -236,8 +237,8 @@ static int md2blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                md2Context = Md2Initialize();
-                if (md2Context != NULL)
+                md2BlobContext = Md2Initialize();
+                if (md2BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -245,14 +246,14 @@ static int md2blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Md2Update(md2Context, buffer, length);
+                            Md2Update(md2BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Md2Finalize(md2Context);
+                        result = Md2Finalize(md2BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -262,7 +263,7 @@ static int md2blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -274,19 +275,19 @@ static int md2blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -297,7 +298,7 @@ static int md2blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -305,7 +306,7 @@ static int md2blob(
 #endif
 #if defined(__USE_MAC__)
 static int macmd2(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -384,7 +385,7 @@ static int macmd2(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -400,18 +401,242 @@ static int macmd2(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 #endif
+
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macmd2blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
+    Md2MacBlobContextPtr md2MacBlobContext;
+
+    const unsigned char* zIn;
+    unsigned char* zOut;
+    unsigned char* zToFree;
+    int nIn = 0;
+    int nBlobTextSize = 0;
+    unsigned int remainingSize = 0;
+    int position = 0;
+    int rc = 0;
+    int offset = 0;
+    int length = 0;
+    unsigned int index = 0;
+    unsigned int outputCount = 0;
+    unsigned int buffer_size = 0;
+    const char* result = NULL;
+    const char* database;
+    const char* table;
+    const char* column;
+    int64_t rowId = 0;
+    sqlite3_int64 rowid;
+    char* buffer = NULL;
+    sqlite3_blob* blob;
+    const unsigned char* zKey;
+    const char* fromHex;
+    int nLength = 0;
+    int resultLength = 0;
+    int keyIn = 0;
+
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("Md2MacBlob Called\r\n");
+    if (argc != 6)
+    {
+        DebugMessage("Test\r\n");
+        sqlite3_result_error(blobContext,"Invalid arguments",strlength("Invalid arguments"));
+        return SQLITE_ERROR;
+    }
+    if (
+        sqlite3_value_type(argv[0]) == SQLITE_TEXT && // database
+        sqlite3_value_type(argv[1]) == SQLITE_TEXT && // table 
+        sqlite3_value_type(argv[2]) == SQLITE_TEXT && // column
+        sqlite3_value_type(argv[3]) == SQLITE_INTEGER &&// rowid
+        sqlite3_value_type(argv[4]) == SQLITE_TEXT &&// key
+        sqlite3_value_type(argv[5]) == SQLITE_INTEGER // hex or not
+        )
+    {
+        database = sqlite3_value_text(argv[0]);
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
+        table = sqlite3_value_text(argv[1]);
+        column = sqlite3_value_text(argv[2]);
+        rowid = sqlite3_value_int64(argv[3]);
+        keyIn = sqlite3_value_bytes(argv[4]);
+        zKey = (const unsigned char*)sqlite3_value_text(argv[4]);
+        
+
+        rc = sqlite3_blob_open(db, database, table, column, rowid, 0, &blob);
+        if (rc == SQLITE_OK)
+        {
+            nBlobTextSize = sqlite3_blob_bytes(blob);
+            remainingSize = nBlobTextSize;
+            buffer = (char*)malloc(buffer_size);
+            if (buffer != NULL)
+            {
+                if (sqlite3_value_int(argv[5]) == 1)
+                {
+                    // do hconversion from hex
+                    fromHex = FromHexSZ(zKey, &resultLength);
+                    if (fromHex)
+                    {
+                        md2MacBlobContext = Md2MacInitialize(fromHex, resultLength);
+                        if (md2MacBlobContext != NULL)
+                        {
+                            while (rc == SQLITE_OK && remainingSize > 0)
+                            {
+                                length = MIN(buffer_size, remainingSize);
+                                rc = sqlite3_blob_read(blob, buffer, length, offset);
+                                if (rc == SQLITE_OK)
+                                {
+                                    Md2MacUpdate(md2MacBlobContext, buffer, length);
+                                    offset += length;
+                                    remainingSize -= length;
+                                }
+                            }
+                            if (rc == SQLITE_OK)
+                            {
+                                result = Md2MacFinalize(md2MacBlobContext);
+                                if (result != NULL)
+                                {
+                                    nIn = strlength(result);
+                                    zOut = zToFree = (unsigned char*)sqlite3_malloc64(nIn + 1);
+                                    if (zOut != 0)
+                                    {
+                                        DebugMessage("ZOut Not NULL\r\n");
+                                        strncpy_s(zOut, nIn + 1, result, strlength(result));
+                                        DebugMessage("After StrCpy\r\n");
+                                        sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                        sqlite3_free(zToFree);
+                                        rc = SQLITE_OK;
+                                    }
+                                    else
+                                    {
+                                        DebugMessage("ZOut  NULL\r\n");
+                                        rc = SQLITE_ERROR;
+                                    }
+                                }
+                                else
+                                {
+                                    sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                                    rc = SQLITE_ERROR;
+                                }
+                            }
+                            else
+                            {
+                                sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                                rc = SQLITE_ERROR;
+                            }
+                        }
+                        else
+                        {
+                            sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
+                            rc = SQLITE_ERROR;
+                        }
+                        FreeCryptoResult((void*)fromHex);
+                    }
+                    else
+                    {
+                        DebugMessage("FromHex Failed\r\n");
+                        return -1;
+                    }
+                }
+                else if (sqlite3_value_int(argv[5]) == 0)
+                {
+                    // dont do conversion from hex
+                    md2MacBlobContext = Md2MacInitialize(zKey, keyIn);
+                    if (md2MacBlobContext != NULL)
+                    {
+                        while (rc == SQLITE_OK && remainingSize > 0)
+                        {
+                            length = MIN(buffer_size, remainingSize);
+                            rc = sqlite3_blob_read(blob, buffer, length, offset);
+                            if (rc == SQLITE_OK)
+                            {
+                                Md2MacUpdate(md2MacBlobContext, buffer, length);
+                                offset += length;
+                                remainingSize -= length;
+                            }
+                        }
+                        if (rc == SQLITE_OK)
+                        {
+                            result = Md2MacFinalize(md2MacBlobContext);
+                            if (result != NULL)
+                            {
+                                nIn = strlength(result);
+                                zOut = zToFree = (unsigned char*)sqlite3_malloc64(nIn + 1);
+                                if (zOut != 0)
+                                {
+                                    DebugMessage("ZOut Not NULL\r\n");
+                                    strncpy_s(zOut, nIn + 1, result, strlength(result));
+                                    DebugMessage("After StrCpy\r\n");
+                                    sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                    sqlite3_free(zToFree);
+                                    rc = SQLITE_OK;
+                                }
+                                else
+                                {
+                                    DebugMessage("ZOut  NULL\r\n");
+                                    rc = SQLITE_ERROR;
+                                }
+                            }
+                            else
+                            {
+                                sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                                rc = SQLITE_ERROR;
+                            }
+                        }
+                        else
+                        {
+                            sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                            rc = SQLITE_ERROR;
+                        }
+                    }
+                    else
+                    {
+                        sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
+                        rc = SQLITE_ERROR;
+                    }
+                }
+                else
+                {
+                    // invalid
+                    DebugMessage("Invalid Parameter\r\n");
+                    return -1;
+                }
+                
+                free(buffer);
+            }
+            sqlite3_blob_close(blob);
+        
+        }
+        else
+        {
+            sqlite3_result_error(blobContext, "Failed to open the blob object\r\n",strlength("Failed to open the blob object\r\n"));
+        }
+        return rc;
+    }
+    else
+    {
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        return SQLITE_ERROR;
+    }
+    return SQLITE_OK;
+}
+#endif
+
 #endif
 
 #if defined(__MD4__)|| defined(__ALL__)
 
 static int md4(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -453,7 +678,7 @@ static int md4(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
               }
               else
@@ -470,7 +695,7 @@ static int md4(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -478,13 +703,13 @@ static int md4(
 
 #if defined(__USE_BLOB__)
 static int md4blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db=NULL;
-    Md4ContextPtr md4Context;
+    Md4BlobContextPtr md4BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -508,7 +733,7 @@ static int md4blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Md4Blob Called\r\n");
     if (argc != 4)
@@ -524,7 +749,7 @@ static int md4blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -536,8 +761,8 @@ static int md4blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                md4Context = Md4Initialize();
-                if (md4Context != NULL)
+                md4BlobContext = Md4Initialize();
+                if (md4BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -545,14 +770,14 @@ static int md4blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Md4Update(md4Context, buffer, length);
+                            Md4Update(md4BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Md4Finalize(md4Context);
+                        result = Md4Finalize(md4BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -562,7 +787,7 @@ static int md4blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -574,19 +799,19 @@ static int md4blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -597,7 +822,7 @@ static int md4blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -606,7 +831,7 @@ static int md4blob(
 
 #if defined(__USE_MAC__)
 static int macmd4(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -685,7 +910,7 @@ static int macmd4(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -701,7 +926,7 @@ static int macmd4(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
@@ -709,12 +934,30 @@ static int macmd4(
 
 #endif
 
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macmd4blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
+
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacMd2Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
+
 #endif
 
 #if defined(__MD5__)|| defined(__ALL__)
 
 static int md5(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -756,7 +999,7 @@ static int md5(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -774,7 +1017,7 @@ static int md5(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
@@ -782,13 +1025,13 @@ static int md5(
 
 #if defined(__USE_BLOB__)
 static int md5blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db=NULL;
-    Md5ContextPtr md5Context;
+    Md5BlobContextPtr md5BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -812,7 +1055,7 @@ static int md5blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
     
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Md5Blob Called\r\n");
     if (argc != 4)
@@ -828,7 +1071,7 @@ static int md5blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -840,8 +1083,8 @@ static int md5blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                md5Context = Md5Initialize();
-                if (md5Context != NULL)
+                md5BlobContext = Md5Initialize();
+                if (md5BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -849,14 +1092,14 @@ static int md5blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Md5Update(md5Context, buffer, length);
+                            Md5Update(md5BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Md5Finalize(md5Context);
+                        result = Md5Finalize(md5BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -866,7 +1109,7 @@ static int md5blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -878,19 +1121,19 @@ static int md5blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -901,7 +1144,7 @@ static int md5blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -909,7 +1152,7 @@ static int md5blob(
 #endif
 #if defined(__USE_MAC__)
 static int macmd5(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -988,7 +1231,7 @@ static int macmd5(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -1004,19 +1247,37 @@ static int macmd5(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macmd5blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
+
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacM5Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
+
 #endif
 
 #if defined(__SHA1__)|| defined(__ALL__)
 
 static int sha1(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -1058,7 +1319,7 @@ static int sha1(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -1076,20 +1337,20 @@ static int sha1(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int sha1blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Sha1ContextPtr sha1Context;
+    Sha1BlobContextPtr sha1BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -1113,7 +1374,7 @@ static int sha1blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Sha1Blob Called\r\n");
     if (argc != 4)
@@ -1129,7 +1390,7 @@ static int sha1blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -1141,8 +1402,8 @@ static int sha1blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                sha1Context = Sha1Initialize();
-                if (sha1Context != NULL)
+                sha1BlobContext = Sha1Initialize();
+                if (sha1BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -1150,14 +1411,14 @@ static int sha1blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Sha1Update(sha1Context, buffer, length);
+                            Sha1Update(sha1BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Sha1Finalize(sha1Context);
+                        result = Sha1Finalize(sha1BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -1167,7 +1428,7 @@ static int sha1blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -1179,19 +1440,19 @@ static int sha1blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -1202,7 +1463,7 @@ static int sha1blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -1212,7 +1473,7 @@ static int sha1blob(
 #if defined(__USE_MAC__)
 
 static int macsha1(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -1291,7 +1552,7 @@ static int macsha1(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -1307,20 +1568,36 @@ static int macsha1(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macsha1blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacSha1Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 
 #if defined(__SHA224__)|| defined(__ALL__)
 
 static int sha224(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -1362,7 +1639,7 @@ static int sha224(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -1380,20 +1657,20 @@ static int sha224(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int sha224blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Sha224ContextPtr sha224Context;
+    Sha224BlobContextPtr sha224BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -1417,12 +1694,12 @@ static int sha224blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Sha224Blob Called\r\n");
     if (argc != 4)
     {
-        sqlite3_result_error(context, "Invalid Arguments\r\n", strlength("Invalid Arguments\r\n"));
+        sqlite3_result_error(blobContext, "Invalid Arguments\r\n", strlength("Invalid Arguments\r\n"));
         return SQLITE_ERROR;
     }
     if (
@@ -1433,7 +1710,7 @@ static int sha224blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -1445,8 +1722,8 @@ static int sha224blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                sha224Context = Sha224Initialize();
-                if (sha224Context != NULL)
+                sha224BlobContext = Sha224Initialize();
+                if (sha224BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -1454,14 +1731,14 @@ static int sha224blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Sha224Update(sha224Context, buffer, length);
+                            Sha224Update(sha224BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Sha224Finalize(sha224Context);
+                        result = Sha224Finalize(sha224BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -1471,7 +1748,7 @@ static int sha224blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -1483,19 +1760,19 @@ static int sha224blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -1506,7 +1783,7 @@ static int sha224blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -1515,7 +1792,7 @@ static int sha224blob(
 
 #if (__USE_MAC__)
 static int macsha224(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -1594,7 +1871,7 @@ static int macsha224(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -1610,19 +1887,36 @@ static int macsha224(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macsha224blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
+
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("Macssh224Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 
 #if defined(__SHA256__)|| defined(__ALL__)
 
 static int sha256(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -1664,7 +1958,7 @@ static int sha256(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -1682,20 +1976,20 @@ static int sha256(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int sha256blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Sha256ContextPtr sha256Context;
+    Sha256BlobContextPtr sha256BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -1719,7 +2013,7 @@ static int sha256blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Sha256Blob Called\r\n");
     if (argc != 4)
@@ -1735,7 +2029,7 @@ static int sha256blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -1747,8 +2041,8 @@ static int sha256blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                sha256Context = Sha256Initialize();
-                if (sha256Context != NULL)
+                sha256BlobContext = Sha256Initialize();
+                if (sha256BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -1756,14 +2050,14 @@ static int sha256blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Sha256Update(sha256Context, buffer, length);
+                            Sha256Update(sha256BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Sha256Finalize(sha256Context);
+                        result = Sha256Finalize(sha256BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -1773,7 +2067,7 @@ static int sha256blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -1785,19 +2079,19 @@ static int sha256blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -1808,7 +2102,7 @@ static int sha256blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -1817,7 +2111,7 @@ static int sha256blob(
 
 #if defined(__USE_MAC__)
 static int macsha256(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -1896,7 +2190,7 @@ static int macsha256(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -1912,20 +2206,36 @@ static int macsha256(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macsha256blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("Macsha256Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 
 #if defined(__SHA384__)|| defined(__ALL__)
 
 static int sha384(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -1967,7 +2277,7 @@ static int sha384(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -1985,20 +2295,20 @@ static int sha384(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int sha384blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Sha384ContextPtr sha384Context;
+    Sha384BlobContextPtr sha384BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -2022,7 +2332,7 @@ static int sha384blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Sha384Blob Called\r\n");
     if (argc != 4)
@@ -2038,7 +2348,7 @@ static int sha384blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -2050,8 +2360,8 @@ static int sha384blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                sha384Context = Sha384Initialize();
-                if (sha384Context != NULL)
+                sha384BlobContext = Sha384Initialize();
+                if (sha384BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -2059,14 +2369,14 @@ static int sha384blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Sha384Update(sha384Context, buffer, length);
+                            Sha384Update(sha384BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Sha384Finalize(sha384Context);
+                        result = Sha384Finalize(sha384BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -2076,7 +2386,7 @@ static int sha384blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -2088,19 +2398,19 @@ static int sha384blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -2111,7 +2421,7 @@ static int sha384blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -2121,7 +2431,7 @@ static int sha384blob(
 #if defined(__USE_MAC__)
 
 static int macsha384(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -2200,7 +2510,7 @@ static int macsha384(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -2216,7 +2526,7 @@ static int macsha384(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
@@ -2224,13 +2534,29 @@ static int macsha384(
 
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macsha384blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("Macsha384Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 
 #if defined(__SHA512__)|| defined(__ALL__)
 
 static int sha512(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -2272,7 +2598,7 @@ static int sha512(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -2290,20 +2616,20 @@ static int sha512(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int sha512blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Sha512ContextPtr sha512Context;
+    Sha512BlobContextPtr sha512BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -2327,7 +2653,7 @@ static int sha512blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Sha512Blob Called\r\n");
     if (argc != 4)
@@ -2343,7 +2669,7 @@ static int sha512blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -2355,8 +2681,8 @@ static int sha512blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                sha512Context = Sha512Initialize();
-                if (sha512Context != NULL)
+                sha512BlobContext = Sha512Initialize();
+                if (sha512BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -2364,14 +2690,14 @@ static int sha512blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Sha512Update(sha512Context, buffer, length);
+                            Sha512Update(sha512BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Sha512Finalize(sha512Context);
+                        result = Sha512Finalize(sha512BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -2381,7 +2707,7 @@ static int sha512blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -2393,19 +2719,19 @@ static int sha512blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -2416,7 +2742,7 @@ static int sha512blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -2426,7 +2752,7 @@ static int sha512blob(
 #if defined(__USE_MAC__)
 
 static int macsha512(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -2505,7 +2831,7 @@ static int macsha512(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -2521,7 +2847,7 @@ static int macsha512(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
@@ -2529,13 +2855,31 @@ static int macsha512(
 
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macsha512blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
+
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("Macsha512Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
+
 
 #endif
 
 #if defined(__SHA3224__)|| defined(__ALL__)
 
 static int sha3224(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -2577,7 +2921,7 @@ static int sha3224(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -2595,20 +2939,20 @@ static int sha3224(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int sha3224blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Sha3224ContextPtr sha3224Context;
+    Sha3224BlobContextPtr sha3224BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -2632,7 +2976,7 @@ static int sha3224blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Sha3224Blob Called\r\n");
     if (argc != 4)
@@ -2648,7 +2992,7 @@ static int sha3224blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -2660,8 +3004,8 @@ static int sha3224blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                sha3224Context = Sha3224Initialize();
-                if (sha3224Context != NULL)
+                sha3224BlobContext = Sha3224Initialize();
+                if (sha3224BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -2669,14 +3013,14 @@ static int sha3224blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Sha3224Update(sha3224Context, buffer, length);
+                            Sha3224Update(sha3224BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Sha3224Finalize(sha3224Context);
+                        result = Sha3224Finalize(sha3224BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -2686,7 +3030,7 @@ static int sha3224blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -2698,19 +3042,19 @@ static int sha3224blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -2721,7 +3065,7 @@ static int sha3224blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -2729,7 +3073,7 @@ static int sha3224blob(
 #endif
 #if defined(__USE_MAC__)
 static int macsha3224(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -2808,7 +3152,7 @@ static int macsha3224(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -2824,18 +3168,35 @@ static int macsha3224(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macsha3224blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
+
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("Macsha3224blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 #if defined(__SHA3256__)|| defined(__ALL__)
 
 static int sha3_256(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -2877,7 +3238,7 @@ static int sha3_256(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -2895,20 +3256,20 @@ static int sha3_256(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int sha3256blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Sha3256ContextPtr sha3256Context;
+    Sha3256BlobContextPtr sha3256BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -2932,7 +3293,7 @@ static int sha3256blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Sha3256Blob Called\r\n");
     if (argc != 4)
@@ -2948,7 +3309,7 @@ static int sha3256blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -2960,8 +3321,8 @@ static int sha3256blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                sha3256Context = Sha3256Initialize();
-                if (sha3256Context != NULL)
+                sha3256BlobContext = Sha3256Initialize();
+                if (sha3256BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -2969,14 +3330,14 @@ static int sha3256blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Sha3256Update(sha3256Context, buffer, length);
+                            Sha3256Update(sha3256BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Sha3256Finalize(sha3256Context);
+                        result = Sha3256Finalize(sha3256BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -2986,7 +3347,7 @@ static int sha3256blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -2998,19 +3359,19 @@ static int sha3256blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -3021,7 +3382,7 @@ static int sha3256blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -3031,7 +3392,7 @@ static int sha3256blob(
 #if defined(__USE_MAC__)
 
 static int macsha3256(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -3110,7 +3471,7 @@ static int macsha3256(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -3126,19 +3487,34 @@ static int macsha3256(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macsha3256blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
 
+    DebugMessage("MacSha3256Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
 #endif
 #endif
 #if defined(__SHA3384__)|| defined(__ALL__)
 
 static int sha3_384(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -3180,7 +3556,7 @@ static int sha3_384(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -3198,20 +3574,20 @@ static int sha3_384(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int sha3384blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Sha3384ContextPtr sha3384Context;
+    Sha3384BlobContextPtr sha3384BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -3235,7 +3611,7 @@ static int sha3384blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Sha3384Blob Called\r\n");
     if (argc != 4)
@@ -3251,7 +3627,7 @@ static int sha3384blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -3263,8 +3639,8 @@ static int sha3384blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                sha3384Context = Sha3384Initialize();
-                if (sha3384Context != NULL)
+                sha3384BlobContext = Sha3384Initialize();
+                if (sha3384BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -3272,14 +3648,14 @@ static int sha3384blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Sha3384Update(sha3384Context, buffer, length);
+                            Sha3384Update(sha3384BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Sha3384Finalize(sha3384Context);
+                        result = Sha3384Finalize(sha3384BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -3289,7 +3665,7 @@ static int sha3384blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -3301,19 +3677,19 @@ static int sha3384blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -3324,7 +3700,7 @@ static int sha3384blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -3332,7 +3708,7 @@ static int sha3384blob(
 #endif
 #if defined(__USE_MAC__)
 static int macsha3384(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -3411,7 +3787,7 @@ static int macsha3384(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -3427,17 +3803,34 @@ static int macsha3384(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
+}
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macsha3384blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
+
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacSha3384Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
 }
 #endif
 #endif
 #if defined(__SHA3512__)|| defined(__ALL__)
 
 static int sha3_512(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -3479,7 +3872,7 @@ static int sha3_512(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -3497,20 +3890,20 @@ static int sha3_512(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int sha3512blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Sha3512ContextPtr sha3512Context;
+    Sha3512BlobContextPtr sha3512BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -3534,7 +3927,7 @@ static int sha3512blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Sha3512Blob Called\r\n");
     if (argc != 4)
@@ -3550,7 +3943,7 @@ static int sha3512blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -3562,8 +3955,8 @@ static int sha3512blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                sha3512Context = Sha3512Initialize();
-                if (sha3512Context != NULL)
+                sha3512BlobContext = Sha3512Initialize();
+                if (sha3512BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -3571,14 +3964,14 @@ static int sha3512blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Sha3512Update(sha3512Context, buffer, length);
+                            Sha3512Update(sha3512BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Sha3512Finalize(sha3512Context);
+                        result = Sha3512Finalize(sha3512BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -3588,7 +3981,7 @@ static int sha3512blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -3600,19 +3993,19 @@ static int sha3512blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -3623,7 +4016,7 @@ static int sha3512blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -3633,7 +4026,7 @@ static int sha3512blob(
 #if defined(__USE_MAC__)
 
 static int macsha3512(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -3712,7 +4105,7 @@ static int macsha3512(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -3728,19 +4121,35 @@ static int macsha3512(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macsha3512blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacSha3512Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 #if defined(__RIPEMD128__)|| defined(__ALL__)
 
 static int ripemd128(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -3782,7 +4191,7 @@ static int ripemd128(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -3800,20 +4209,20 @@ static int ripemd128(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int ripemd128blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    RipeMD128ContextPtr ripemd128Context;
+    RipeMD128BlobContextPtr ripemd128BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -3837,7 +4246,7 @@ static int ripemd128blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("RipeMD128Blob Called\r\n");
     if (argc != 4)
@@ -3853,7 +4262,7 @@ static int ripemd128blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -3865,8 +4274,8 @@ static int ripemd128blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                ripemd128Context = RipeMD128Initialize();
-                if (ripemd128Context != NULL)
+                ripemd128BlobContext = RipeMD128Initialize();
+                if (ripemd128BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -3874,14 +4283,14 @@ static int ripemd128blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            RipeMD128Update(ripemd128Context, buffer, length);
+                            RipeMD128Update(ripemd128BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = RipeMD128Finalize(ripemd128Context);
+                        result = RipeMD128Finalize(ripemd128BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -3891,7 +4300,7 @@ static int ripemd128blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -3903,19 +4312,19 @@ static int ripemd128blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -3926,7 +4335,7 @@ static int ripemd128blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -3934,7 +4343,7 @@ static int ripemd128blob(
 #endif
 #if defined(__USE_MAC__)
 static int macripemd128(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -4013,7 +4422,7 @@ static int macripemd128(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -4029,18 +4438,35 @@ static int macripemd128(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macripemd128blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
+
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacRipe128Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 #if defined(__RIPEMD160__)|| defined(__ALL__)
 
 static int ripemd160(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -4082,7 +4508,7 @@ static int ripemd160(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -4100,20 +4526,20 @@ static int ripemd160(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int ripemd160blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    RipeMD160ContextPtr ripemd160Context;
+    RipeMD160BlobContextPtr ripemd160BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -4137,7 +4563,7 @@ static int ripemd160blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("RipeMD160Blob Called\r\n");
     if (argc != 4)
@@ -4153,7 +4579,7 @@ static int ripemd160blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -4165,8 +4591,8 @@ static int ripemd160blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                ripemd160Context = RipeMD160Initialize();
-                if (ripemd160Context != NULL)
+                ripemd160BlobContext = RipeMD160Initialize();
+                if (ripemd160BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -4174,14 +4600,14 @@ static int ripemd160blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            RipeMD160Update(ripemd160Context, buffer, length);
+                            RipeMD160Update(ripemd160BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = RipeMD160Finalize(ripemd160Context);
+                        result = RipeMD160Finalize(ripemd160BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -4191,7 +4617,7 @@ static int ripemd160blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -4203,19 +4629,19 @@ static int ripemd160blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -4226,7 +4652,7 @@ static int ripemd160blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -4234,7 +4660,7 @@ static int ripemd160blob(
 #endif
 #if defined(__USE_MAC__)
 static int macripemd160(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -4313,7 +4739,7 @@ static int macripemd160(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -4329,18 +4755,35 @@ static int macripemd160(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macripemd160blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
+
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacRipeMD160blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 #if defined(__RIPEMD256__)|| defined(__ALL__)
 
 static int ripemd256(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -4382,7 +4825,7 @@ static int ripemd256(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -4400,20 +4843,20 @@ static int ripemd256(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int ripemd256blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    RipeMD256ContextPtr ripemd256Context;
+    RipeMD256BlobContextPtr ripemd256BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -4437,7 +4880,7 @@ static int ripemd256blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("RipeMD256Blob Called\r\n");
     if (argc != 4)
@@ -4453,7 +4896,7 @@ static int ripemd256blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -4465,8 +4908,8 @@ static int ripemd256blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                ripemd256Context = RipeMD256Initialize();
-                if (ripemd256Context != NULL)
+                ripemd256BlobContext = RipeMD256Initialize();
+                if (ripemd256BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -4474,14 +4917,14 @@ static int ripemd256blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            RipeMD256Update(ripemd256Context, buffer, length);
+                            RipeMD256Update(ripemd256BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = RipeMD256Finalize(ripemd256Context);
+                        result = RipeMD256Finalize(ripemd256BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -4491,7 +4934,7 @@ static int ripemd256blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -4503,19 +4946,19 @@ static int ripemd256blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -4526,7 +4969,7 @@ static int ripemd256blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -4534,7 +4977,7 @@ static int ripemd256blob(
 #endif
 #if defined(__USE_MAC__)
 static int macripemd256(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -4613,7 +5056,7 @@ static int macripemd256(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -4629,18 +5072,35 @@ static int macripemd256(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macripemd256blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
+
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacRipeMD256Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 #if defined(__RIPEMD320__)|| defined(__ALL__)
 
 static int ripemd320(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -4682,7 +5142,7 @@ static int ripemd320(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -4700,20 +5160,20 @@ static int ripemd320(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int ripemd320blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    RipeMD320ContextPtr ripemd320Context;
+    RipeMD320BlobContextPtr ripemd320BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -4737,7 +5197,7 @@ static int ripemd320blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("RipeMD320Blob Called\r\n");
     if (argc != 4)
@@ -4753,7 +5213,7 @@ static int ripemd320blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -4765,8 +5225,8 @@ static int ripemd320blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                ripemd320Context = RipeMD320Initialize();
-                if (ripemd320Context != NULL)
+                ripemd320BlobContext = RipeMD320Initialize();
+                if (ripemd320BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -4774,14 +5234,14 @@ static int ripemd320blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            RipeMD320Update(ripemd320Context, buffer, length);
+                            RipeMD320Update(ripemd320BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = RipeMD320Finalize(ripemd320Context);
+                        result = RipeMD320Finalize(ripemd320BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -4791,7 +5251,7 @@ static int ripemd320blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -4803,19 +5263,19 @@ static int ripemd320blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -4826,7 +5286,7 @@ static int ripemd320blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -4835,7 +5295,7 @@ static int ripemd320blob(
 
 #if defined(__USE_MAC__)
 static int macripemd320(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -4914,7 +5374,7 @@ static int macripemd320(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -4930,19 +5390,35 @@ static int macripemd320(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macripemd320blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacRipeMD320Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 #if defined(__BLAKE2B__)|| defined(__ALL__)
 
 static int blake2b(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -4984,7 +5460,7 @@ static int blake2b(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -5002,20 +5478,20 @@ static int blake2b(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int blake2bblob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Blake2BContextPtr blake2bContext;
+    Blake2BBlobContextPtr blake2bBlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -5039,7 +5515,7 @@ static int blake2bblob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Blake2BBlob Called\r\n");
     if (argc != 4)
@@ -5055,7 +5531,7 @@ static int blake2bblob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -5067,8 +5543,8 @@ static int blake2bblob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                blake2bContext = Blake2BInitialize();
-                if (blake2bContext != NULL)
+                blake2bBlobContext = Blake2BInitialize();
+                if (blake2bBlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -5076,14 +5552,14 @@ static int blake2bblob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Blake2BUpdate(blake2bContext, buffer, length);
+                            Blake2BUpdate(blake2bBlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Blake2BFinalize(blake2bContext);
+                        result = Blake2BFinalize(blake2bBlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -5093,7 +5569,7 @@ static int blake2bblob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -5105,19 +5581,19 @@ static int blake2bblob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -5128,7 +5604,7 @@ static int blake2bblob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -5136,7 +5612,7 @@ static int blake2bblob(
 #endif
 #if(__USE_MAC__)
 static int macblake2b(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -5211,7 +5687,7 @@ static int macblake2b(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -5227,12 +5703,29 @@ static int macblake2b(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macblake2bblob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
+
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacBlake2BBlob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
 #endif
 
 #endif
@@ -5240,7 +5733,7 @@ static int macblake2b(
 #if defined(__BLAKE2S__)|| defined(__ALL__)
 
 static int blake2s(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -5282,7 +5775,7 @@ static int blake2s(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -5300,20 +5793,20 @@ static int blake2s(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int blake2sblob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Blake2SContextPtr blake2sContext;
+    Blake2SBlobContextPtr blake2sBlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -5337,7 +5830,7 @@ static int blake2sblob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Blake2SBlob Called\r\n");
     if (argc != 4)
@@ -5353,7 +5846,7 @@ static int blake2sblob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -5365,8 +5858,8 @@ static int blake2sblob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                blake2sContext = Blake2SInitialize();
-                if (blake2sContext != NULL)
+                blake2sBlobContext = Blake2SInitialize();
+                if (blake2sBlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -5374,14 +5867,14 @@ static int blake2sblob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Blake2SUpdate(blake2sContext, buffer, length);
+                            Blake2SUpdate(blake2sBlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Blake2SFinalize(blake2sContext);
+                        result = Blake2SFinalize(blake2sBlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -5391,7 +5884,7 @@ static int blake2sblob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -5403,19 +5896,19 @@ static int blake2sblob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -5426,7 +5919,7 @@ static int blake2sblob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -5435,7 +5928,7 @@ static int blake2sblob(
 
 #if defined(__USE_MAC__)
 static int macblake2s(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -5510,7 +6003,7 @@ static int macblake2s(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -5526,19 +6019,35 @@ static int macblake2s(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macblake2sblob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacBlake2SBlob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 #if defined(__TIGER__)|| defined(__ALL__)
 
 static int tiger(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -5580,7 +6089,7 @@ static int tiger(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -5598,20 +6107,20 @@ static int tiger(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int tigerblob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    TigerContextPtr tigerContext;
+    TigerBlobContextPtr tigerBlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -5635,7 +6144,7 @@ static int tigerblob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("TigerBlob Called\r\n");
     if (argc != 4)
@@ -5651,7 +6160,7 @@ static int tigerblob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -5663,8 +6172,8 @@ static int tigerblob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                tigerContext = TigerInitialize();
-                if (tigerContext != NULL)
+                tigerBlobContext = TigerInitialize();
+                if (tigerBlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -5672,14 +6181,14 @@ static int tigerblob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            TigerUpdate(tigerContext, buffer, length);
+                            TigerUpdate(tigerBlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = TigerFinalize(tigerContext);
+                        result = TigerFinalize(tigerBlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -5689,7 +6198,7 @@ static int tigerblob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -5701,19 +6210,19 @@ static int tigerblob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -5724,7 +6233,7 @@ static int tigerblob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -5734,7 +6243,7 @@ static int tigerblob(
 #if defined(__USE_MAC__)
 
 static int mactiger(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -5809,7 +6318,7 @@ static int mactiger(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -5825,19 +6334,35 @@ static int mactiger(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int mactigerblob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacTigerBlob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 #if defined(__SHAKE128__)|| defined(__ALL__)
 
 static int shake128(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -5879,7 +6404,7 @@ static int shake128(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -5897,20 +6422,20 @@ static int shake128(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int shake128blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Shake128ContextPtr shake128Context;
+    Shake128BlobContextPtr shake128BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -5934,7 +6459,7 @@ static int shake128blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Shake128Blob Called\r\n");
     if (argc != 4)
@@ -5950,7 +6475,7 @@ static int shake128blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -5962,8 +6487,8 @@ static int shake128blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                shake128Context = Shake128Initialize();
-                if (shake128Context != NULL)
+                shake128BlobContext = Shake128Initialize();
+                if (shake128BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -5971,14 +6496,14 @@ static int shake128blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Shake128Update(shake128Context, buffer, length);
+                            Shake128Update(shake128BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Shake128Finalize(shake128Context);
+                        result = Shake128Finalize(shake128BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -5988,7 +6513,7 @@ static int shake128blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -6000,19 +6525,19 @@ static int shake128blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -6023,7 +6548,7 @@ static int shake128blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -6032,7 +6557,7 @@ static int shake128blob(
 
 #if defined(__USE_MAC__)
 static int macshake128(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -6107,7 +6632,7 @@ static int macshake128(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -6123,20 +6648,35 @@ static int macshake128(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
-
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macshake128blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacShake128Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 #if defined(__SHAKE256__)|| defined(__ALL__)
 
 static int shake256(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -6178,7 +6718,7 @@ static int shake256(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -6196,20 +6736,20 @@ static int shake256(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int shake256blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Shake256ContextPtr shake256Context;
+    Shake256BlobContextPtr shake256BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -6233,7 +6773,7 @@ static int shake256blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Shake256Blob Called\r\n");
     if (argc != 4)
@@ -6249,7 +6789,7 @@ static int shake256blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -6261,8 +6801,8 @@ static int shake256blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                shake256Context = Shake256Initialize();
-                if (shake256Context != NULL)
+                shake256BlobContext = Shake256Initialize();
+                if (shake256BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -6270,14 +6810,14 @@ static int shake256blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Shake256Update(shake256Context, buffer, length);
+                            Shake256Update(shake256BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Shake256Finalize(shake256Context);
+                        result = Shake256Finalize(shake256BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -6287,7 +6827,7 @@ static int shake256blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -6299,19 +6839,19 @@ static int shake256blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -6322,7 +6862,7 @@ static int shake256blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -6331,7 +6871,7 @@ static int shake256blob(
 
 #if defined(__USE_MAC__)
 static int macshake256(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -6405,7 +6945,7 @@ static int macshake256(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -6421,19 +6961,35 @@ static int macshake256(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macshake256blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacShake256Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 #if defined(__SIPHASH64__)|| defined(__ALL__)
 
 static int siphash64(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -6475,7 +7031,7 @@ static int siphash64(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -6493,20 +7049,20 @@ static int siphash64(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int siphash64blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Siphash64ContextPtr siphash64Context;
+    Siphash64BlobContextPtr siphash64BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -6530,7 +7086,7 @@ static int siphash64blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Siphash64Blob Called\r\n");
     if (argc != 4)
@@ -6546,7 +7102,7 @@ static int siphash64blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -6558,8 +7114,8 @@ static int siphash64blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                siphash64Context = Siphash64Initialize();
-                if (siphash64Context != NULL)
+                siphash64BlobContext = Siphash64Initialize();
+                if (siphash64BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -6567,14 +7123,14 @@ static int siphash64blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Siphash64Update(siphash64Context, buffer, length);
+                            Siphash64Update(siphash64BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Siphash64Finalize(siphash64Context);
+                        result = Siphash64Finalize(siphash64BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -6584,7 +7140,7 @@ static int siphash64blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -6596,19 +7152,19 @@ static int siphash64blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -6619,7 +7175,7 @@ static int siphash64blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -6628,7 +7184,7 @@ static int siphash64blob(
 
 #if defined(__USE_MAC__)
 static int macsiphash64(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -6702,7 +7258,7 @@ static int macsiphash64(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -6718,19 +7274,35 @@ static int macsiphash64(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macsiphash64blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacSipHash64Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 #if defined(__SIPHASH128__)|| defined(__ALL__)
 
 static int siphash128(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -6772,7 +7344,7 @@ static int siphash128(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -6790,20 +7362,20 @@ static int siphash128(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int siphash128blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Siphash128ContextPtr siphash128Context;
+    Siphash128BlobContextPtr siphash128BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -6827,7 +7399,7 @@ static int siphash128blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Siphash128Blob Called\r\n");
     if (argc != 4)
@@ -6843,7 +7415,7 @@ static int siphash128blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -6855,8 +7427,8 @@ static int siphash128blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                siphash128Context = Siphash128Initialize();
-                if (siphash128Context != NULL)
+                siphash128BlobContext = Siphash128Initialize();
+                if (siphash128BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -6864,14 +7436,14 @@ static int siphash128blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Siphash128Update(siphash128Context, buffer, length);
+                            Siphash128Update(siphash128BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Siphash128Finalize(siphash128Context);
+                        result = Siphash128Finalize(siphash128BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -6881,7 +7453,7 @@ static int siphash128blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -6893,19 +7465,19 @@ static int siphash128blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -6916,7 +7488,7 @@ static int siphash128blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -6925,7 +7497,7 @@ static int siphash128blob(
 
 #if defined(__USE_MAC__)
 static int macsiphash128(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -6999,7 +7571,7 @@ static int macsiphash128(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -7015,19 +7587,35 @@ static int macsiphash128(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macsiphash128blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacSipHash128Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 #if defined(__LSH224__)|| defined(__ALL__)
 
 static int lsh224(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -7069,7 +7657,7 @@ static int lsh224(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -7087,20 +7675,20 @@ static int lsh224(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int lsh224blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Lsh224ContextPtr lsh224Context;
+    Lsh224BlobContextPtr lsh224BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -7124,7 +7712,7 @@ static int lsh224blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Lsh224Blob Called\r\n");
     if (argc != 4)
@@ -7140,7 +7728,7 @@ static int lsh224blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -7152,8 +7740,8 @@ static int lsh224blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                lsh224Context = Lsh224Initialize();
-                if (lsh224Context != NULL)
+                lsh224BlobContext = Lsh224Initialize();
+                if (lsh224BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -7161,14 +7749,14 @@ static int lsh224blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Lsh224Update(lsh224Context, buffer, length);
+                            Lsh224Update(lsh224BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Lsh224Finalize(lsh224Context);
+                        result = Lsh224Finalize(lsh224BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -7178,7 +7766,7 @@ static int lsh224blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -7190,19 +7778,19 @@ static int lsh224blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -7213,7 +7801,7 @@ static int lsh224blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -7223,7 +7811,7 @@ static int lsh224blob(
 #if defined(__USE_MAC__)
 
 static int maclsh224(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -7298,7 +7886,7 @@ static int maclsh224(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -7314,7 +7902,7 @@ static int maclsh224(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
@@ -7322,11 +7910,28 @@ static int maclsh224(
 
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int maclsh224blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
+
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacLSH224Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 #if defined(__LSH256__)|| defined(__ALL__)
 
 static int lsh256(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -7368,7 +7973,7 @@ static int lsh256(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -7386,20 +7991,20 @@ static int lsh256(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int lsh256blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Lsh256ContextPtr lsh256Context;
+    Lsh256BlobContextPtr lsh256BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -7423,7 +8028,7 @@ static int lsh256blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Lsh256Blob Called\r\n");
     if (argc != 4)
@@ -7439,7 +8044,7 @@ static int lsh256blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -7451,8 +8056,8 @@ static int lsh256blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                lsh256Context = Lsh256Initialize();
-                if (lsh256Context != NULL)
+                lsh256BlobContext = Lsh256Initialize();
+                if (lsh256BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -7460,14 +8065,14 @@ static int lsh256blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Lsh256Update(lsh256Context, buffer, length);
+                            Lsh256Update(lsh256BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Lsh256Finalize(lsh256Context);
+                        result = Lsh256Finalize(lsh256BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -7477,7 +8082,7 @@ static int lsh256blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -7489,19 +8094,19 @@ static int lsh256blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -7512,7 +8117,7 @@ static int lsh256blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -7521,7 +8126,7 @@ static int lsh256blob(
 
 #if defined(__USE_MAC__)
 static int maclsh256(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -7596,7 +8201,7 @@ static int maclsh256(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -7612,19 +8217,35 @@ static int maclsh256(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int maclsh256blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacLSH256Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 #if defined(__LSH384__)|| defined(__ALL__)
 
 static int lsh384(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -7666,7 +8287,7 @@ static int lsh384(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -7684,20 +8305,20 @@ static int lsh384(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int lsh384blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Lsh384ContextPtr lsh384Context;
+    Lsh384BlobContextPtr lsh384BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -7721,7 +8342,7 @@ static int lsh384blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Lsh384Blob Called\r\n");
     if (argc != 4)
@@ -7737,7 +8358,7 @@ static int lsh384blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -7749,8 +8370,8 @@ static int lsh384blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                lsh384Context = Lsh384Initialize();
-                if (lsh384Context != NULL)
+                lsh384BlobContext = Lsh384Initialize();
+                if (lsh384BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -7758,14 +8379,14 @@ static int lsh384blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Lsh384Update(lsh384Context, buffer, length);
+                            Lsh384Update(lsh384BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Lsh384Finalize(lsh384Context);
+                        result = Lsh384Finalize(lsh384BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -7775,7 +8396,7 @@ static int lsh384blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -7787,19 +8408,19 @@ static int lsh384blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -7810,7 +8431,7 @@ static int lsh384blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -7819,7 +8440,7 @@ static int lsh384blob(
 
 #if defined(__USE_MAC__)
 static int maclsh384(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -7894,7 +8515,7 @@ static int maclsh384(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -7910,19 +8531,35 @@ static int maclsh384(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int maclsh384blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacLSH384Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 #if defined(__LSH512__)|| defined(__ALL__)
 
 static int lsh512(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -7964,7 +8601,7 @@ static int lsh512(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -7982,20 +8619,20 @@ static int lsh512(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int lsh512blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Lsh512ContextPtr lsh512Context;
+    Lsh512BlobContextPtr lsh512BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -8019,7 +8656,7 @@ static int lsh512blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Lsh512Blob Called\r\n");
     if (argc != 4)
@@ -8035,7 +8672,7 @@ static int lsh512blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -8047,8 +8684,8 @@ static int lsh512blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                lsh512Context = Lsh512Initialize();
-                if (lsh512Context != NULL)
+                lsh512BlobContext = Lsh512Initialize();
+                if (lsh512BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -8056,14 +8693,14 @@ static int lsh512blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Lsh512Update(lsh512Context, buffer, length);
+                            Lsh512Update(lsh512BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Lsh512Finalize(lsh512Context);
+                        result = Lsh512Finalize(lsh512BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -8073,7 +8710,7 @@ static int lsh512blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -8085,19 +8722,19 @@ static int lsh512blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -8108,7 +8745,7 @@ static int lsh512blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -8116,7 +8753,7 @@ static int lsh512blob(
 #endif
 #if defined(__USE_MAC__)
 static int maclsh512(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -8191,7 +8828,7 @@ static int maclsh512(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -8207,18 +8844,35 @@ static int maclsh512(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
 }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int maclsh512blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
+
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacLSH512Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 #if defined(__SM3__)|| defined(__ALL__)
 
 static int sm3(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -8260,7 +8914,7 @@ static int sm3(
                   DebugMessage("ZOut Not NULL\r\n");
                   strncpy_s(zOut,nIn+1,result,strlength(result));
                   DebugMessage("After StrCpy\r\n");
-                  sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                  sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                   sqlite3_free(zToFree);
                   
               }
@@ -8278,20 +8932,20 @@ static int sm3(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int sm3blob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    Sm3ContextPtr sm3Context;
+    Sm3BlobContextPtr sm3BlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -8315,7 +8969,7 @@ static int sm3blob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("Sm3Blob Called\r\n");
     if (argc != 4)
@@ -8331,7 +8985,7 @@ static int sm3blob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -8343,8 +8997,8 @@ static int sm3blob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                sm3Context = Sm3Initialize();
-                if (sm3Context != NULL)
+                sm3BlobContext = Sm3Initialize();
+                if (sm3BlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -8352,14 +9006,14 @@ static int sm3blob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            Sm3Update(sm3Context, buffer, length);
+                            Sm3Update(sm3BlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = Sm3Finalize(sm3Context);
+                        result = Sm3Finalize(sm3BlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -8369,7 +9023,7 @@ static int sm3blob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -8381,19 +9035,19 @@ static int sm3blob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -8404,7 +9058,7 @@ static int sm3blob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -8414,7 +9068,7 @@ static int sm3blob(
 #if defined(__USE_MAC__)
 
 static int macsm3(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -8489,7 +9143,7 @@ static int macsm3(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -8505,7 +9159,7 @@ static int macsm3(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
@@ -8513,12 +9167,28 @@ static int macsm3(
 
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macsm3blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacSM3Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 #if defined(__WHIRLPOOL__)|| defined(__ALL__)
 
 static int whirlpool(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -8558,7 +9228,7 @@ static int whirlpool(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut,nIn+1,result,strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
                 
             }
@@ -8576,20 +9246,20 @@ static int whirlpool(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
 #if defined(__USE_BLOB__)
 static int whirlpoolblob(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
 {
     sqlite3* db = NULL;
-    WhirlpoolContextPtr whirlpoolContext;
+    WhirlpoolBlobContextPtr whirlpoolBlobContext;
 
     const unsigned char* zIn;
     unsigned char* zOut;
@@ -8613,7 +9283,7 @@ static int whirlpoolblob(
     char* buffer = NULL;
     sqlite3_blob* blob;
 
-    db = sqlite3_context_db_handle(context);
+    db = sqlite3_context_db_handle(blobContext);
 
     DebugMessage("WhirlpoolBlob Called\r\n");
     if (argc != 4)
@@ -8629,7 +9299,7 @@ static int whirlpoolblob(
         )
     {
         database = sqlite3_value_text(argv[0]);
-        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        buffer_size = get_schema_page_size(blobContext, db, database, sqlite3_value_bytes(argv[0]));
         table = sqlite3_value_text(argv[1]);
         column = sqlite3_value_text(argv[2]);
         rowid = sqlite3_value_int64(argv[3]);
@@ -8641,8 +9311,8 @@ static int whirlpoolblob(
             buffer = (char*)malloc(buffer_size);
             if (buffer != NULL)
             {
-                whirlpoolContext = WhirlpoolInitialize();
-                if (whirlpoolContext != NULL)
+                whirlpoolBlobContext = WhirlpoolInitialize();
+                if (whirlpoolBlobContext != NULL)
                 {
                     while (rc == SQLITE_OK && remainingSize > 0)
                     {
@@ -8650,14 +9320,14 @@ static int whirlpoolblob(
                         rc = sqlite3_blob_read(blob, buffer, length, offset);
                         if (rc == SQLITE_OK)
                         {
-                            WhirlpoolUpdate(whirlpoolContext, buffer, length);
+                            WhirlpoolUpdate(whirlpoolBlobContext, buffer, length);
                             offset += length;
                             remainingSize -= length;
                         }
                     }
                     if (rc == SQLITE_OK)
                     {
-                        result = WhirlpoolFinalize(whirlpoolContext);
+                        result = WhirlpoolFinalize(whirlpoolBlobContext);
                         if (result != NULL)
                         {
                             nIn = strlength(result);
@@ -8667,7 +9337,7 @@ static int whirlpoolblob(
                                 DebugMessage("ZOut Not NULL\r\n");
                                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                                 DebugMessage("After StrCpy\r\n");
-                                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                                 sqlite3_free(zToFree);
                                 rc = SQLITE_OK;
                             }
@@ -8679,19 +9349,19 @@ static int whirlpoolblob(
                         }
                         else
                         {
-                            sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                            sqlite3_result_error(blobContext, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
                             rc = SQLITE_ERROR;
                         }
                     }
                     else
                     {
-                        sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                        sqlite3_result_error(blobContext, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
                         rc = SQLITE_ERROR;
                     }
                 }
                 else
                 {
-                    sqlite3_result_error(context, "Failed to allocate context\r\n", strlength("Failed to allocate context\r\n"));
+                    sqlite3_result_error(blobContext, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
                     rc = SQLITE_ERROR;
                 }
                 free(buffer);
@@ -8702,7 +9372,7 @@ static int whirlpoolblob(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return SQLITE_ERROR;
     }
     return SQLITE_OK;
@@ -8712,7 +9382,7 @@ static int whirlpoolblob(
 #if defined(__USE_MAC__)
 
 static int macwhirlpool(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -8787,7 +9457,7 @@ static int macwhirlpool(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, nIn + 1, result, strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -8803,7 +9473,7 @@ static int macwhirlpool(
     }
     else
     {
-        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        sqlite3_result_error(blobContext, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
         return -1;
     }
     return SQLITE_OK;
@@ -8811,13 +9481,29 @@ static int macwhirlpool(
 
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macwhirlpoolblob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacWhirlpoolBlob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 
 #if (defined(__CMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
 
 static int maccmac(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -8892,7 +9578,7 @@ static int maccmac(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, strlength(result) +1,result,strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -8908,18 +9594,34 @@ static int maccmac(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int maccmacblob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacCMacBlob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 
 #if (defined(__CBCCMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
 
 static int maccbccmac(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -8994,7 +9696,7 @@ static int maccbccmac(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, strlen(result) +1,result,strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -9010,18 +9712,34 @@ static int maccbccmac(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int maccbcmacblob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacCBCMacBlob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 
 #if (defined(__DMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
 
 static int macdmac(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -9096,7 +9814,7 @@ static int macdmac(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, strlength(result) +1,result,strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -9112,18 +9830,34 @@ static int macdmac(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macdmacblob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacDMacBlob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 
 #if (defined(__GMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
 
 static int macgmac(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -9198,7 +9932,7 @@ static int macgmac(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, strlength(result) +1,result,strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -9214,18 +9948,34 @@ static int macgmac(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macgmacblob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacGMacBlob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 
 #if (defined(__HMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
 // TODO: Verify HMAC
 static int machmac(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -9300,7 +10050,7 @@ static int machmac(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, strlength(result) +1,result,strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -9316,18 +10066,34 @@ static int machmac(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int machmacblob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacHMacBlob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 
 #if (defined(__POLY1305__)|| defined(__ALL__))&& defined(__USE_MAC__)
 
 static int macpoly1305(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -9402,7 +10168,7 @@ static int macpoly1305(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, strlength(result) +1,result,strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -9418,18 +10184,34 @@ static int macpoly1305(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macpoly1305blob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacPoly1305Blob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 
 #if (defined(__TWOTRACK__)|| defined(__ALL__))&& defined(__USE_MAC__)
 
 static int mactwotrack(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -9504,7 +10286,7 @@ static int mactwotrack(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, strlength(result) +1,result,strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -9520,18 +10302,34 @@ static int mactwotrack(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int mactwotrackblob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacTwoTrackBlob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 
 #if (defined(__VMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
 
 static int macvmac(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -9606,7 +10404,7 @@ static int macvmac(
                 DebugMessage("ZOut Not NULL\r\n");
                 strncpy_s(zOut, strlength(result) +1,result,strlength(result));
                 DebugMessage("After StrCpy\r\n");
-                sqlite3_result_text(context,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
+                sqlite3_result_text(blobContext,(char *)zOut, strlength(result),SQLITE_TRANSIENT);
                 sqlite3_free(zToFree);
             }
             else
@@ -9622,16 +10420,32 @@ static int macvmac(
     }
     else
     {
-      sqlite3_result_error(context,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
+      sqlite3_result_error(blobContext,"Type Not Supported for Hashing\r\n",strlength("Type Not Supported for Hashing\r\n"));
       return -1;
     }
     return SQLITE_OK;
 }
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+static int macvmavblob(
+    sqlite3_context* blobContext,
+    int argc,
+    sqlite3_value** argv
+)
+{
+    sqlite3* db = NULL;
 
+    db = sqlite3_context_db_handle(blobContext);
+
+    DebugMessage("MacVMacBlob Called\r\n");
+
+    sqlite3_result_error(blobContext, "Not Implemented", strlen("Not Implemented"));
+    return SQLITE_ERROR;
+}
+#endif
 #endif
 
 static int tohex(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -9667,7 +10481,7 @@ static int tohex(
                     DebugMessage("ZOut Not NULL\r\n");
                     strncpy_s(zOut,nIn+1,result,strlength(result));
                     DebugMessage("After StrCpy\r\n");
-                    sqlite3_result_text(context,(char *)zOut,nIn,SQLITE_TRANSIENT);
+                    sqlite3_result_text(blobContext,(char *)zOut,nIn,SQLITE_TRANSIENT);
                     sqlite3_free(zToFree);
                     
                 }
@@ -9693,7 +10507,7 @@ static int tohex(
 }
 
 static int fromhex(
-    sqlite3_context *context,
+    sqlite3_context *blobContext,
     int argc,
     sqlite3_value **argv
 )
@@ -9733,7 +10547,7 @@ static int fromhex(
                     DebugMessage("ZOut Not NULL\r\n");
                     strncpy_s(zOut,nIn+1,result,strlength(result));
                     DebugMessage("After StrCpy\r\n");
-                    sqlite3_result_blob(context,(char *)zOut,resultLength,SQLITE_TRANSIENT);
+                    sqlite3_result_blob(blobContext,(char *)zOut,resultLength,SQLITE_TRANSIENT);
                     sqlite3_free(zToFree);
                 }
                 else
@@ -9765,7 +10579,7 @@ static int fromhex(
 }
 
 static int tobase2(
-    sqlite3_context* context,
+    sqlite3_context* blobContext,
     int argc,
     sqlite3_value** argv
 )
@@ -9801,7 +10615,7 @@ static int tobase2(
                     DebugMessage("ZOut Not NULL\r\n");
                     strncpy_s(zOut, nIn + 1, result, strlength(result));
                     DebugMessage("After StrCpy\r\n");
-                    sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                    sqlite3_result_text(blobContext, (char*)zOut, nIn, SQLITE_TRANSIENT);
                     sqlite3_free(zToFree);
                 }
                 else
@@ -9855,6 +10669,10 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "macmd2", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macmd2, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macmd2blob", 6, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macmd2blob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if defined(__MD4__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"md4", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, md4, 0, 0);
@@ -9867,6 +10685,10 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "macmd4", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macmd4, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
+#if defined(__USE_MAC__)&& defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macmd4blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macmd4blob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if defined(__MD5__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"md5", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, md5, 0, 0);
@@ -9877,6 +10699,10 @@ extern int sqlite3_hashing_init(
 #endif
 #if defined(__USE_MAC__)
   rc = sqlite3_create_function(db, "macmd5", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macmd5, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
+#if defined(__USE_MAC__)&& defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macmd5blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macmd5blob, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
 
@@ -9892,6 +10718,10 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "macsha1", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha1, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
+#if defined(__USE_MAC__)&&defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macsha1blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha1blob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 
 #endif
 #if defined(__SHA224__)|| defined(__ALL__)
@@ -9903,6 +10733,10 @@ extern int sqlite3_hashing_init(
 #endif
 #if defined(__USE_MAC__)
   rc = sqlite3_create_function(db, "macsha224", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha224, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
+#if defined(__USE_MAC__)&&defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macsha224blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha224blob, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
 #endif
@@ -9917,6 +10751,10 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "macsha256", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha256, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macsha256blob",4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha256blob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if defined(__SHA384__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"sha384",1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, sha384, 0, 0);
@@ -9927,6 +10765,10 @@ extern int sqlite3_hashing_init(
 #endif
 #if defined(__USE_MAC__)
   rc = sqlite3_create_function(db, "macsha384", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha384, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macsha384blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha384blob, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
 #endif
@@ -9941,6 +10783,10 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "macsha512", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha512, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macsha512blob",4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha512blob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if defined(__SHA3224__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"sha3224",1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, sha3224, 0, 0);
@@ -9951,6 +10797,10 @@ extern int sqlite3_hashing_init(
 #endif
 #if defined(__USE_MAC__)
   rc = sqlite3_create_function(db, "macsha3224", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha3224, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
+#if defined(__USE_MAC__) &&  defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macsha3224blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha3224blob, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
 #endif
@@ -9965,6 +10815,10 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "macsha3256", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha3256, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macsha3256blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha3256blob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if defined(__SHA3384__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"sha3384",1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, sha3_384, 0, 0);
@@ -9975,6 +10829,10 @@ extern int sqlite3_hashing_init(
 #endif
 #if defined(__USE_MAC__)
   rc = sqlite3_create_function(db, "macsha3384", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha3384, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macsha3384blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha3384blob, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
 #endif
@@ -9989,6 +10847,10 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "macsha3512", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha3512, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macsha3512blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsha3512blob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if defined(__RIPEMD128__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"ripemd128", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, ripemd128, 0, 0);
@@ -10001,6 +10863,10 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "macripemd128", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macripemd128, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macripemd128blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macripemd128blob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if defined(__RIPEMD160__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"ripemd160", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, ripemd160, 0, 0);
@@ -10011,6 +10877,10 @@ extern int sqlite3_hashing_init(
 #endif
 #if defined(__USE_MAC__)
   rc = sqlite3_create_function(db, "macripemd160", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macripemd160, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macripemd160blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macripemd160blob, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
 #endif
@@ -10026,6 +10896,10 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "macripemd256", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macripemd256, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macripemd256blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macripemd256blob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if defined(__RIPEMD320__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"ripemd320", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, ripemd320, 0, 0);
@@ -10038,7 +10912,10 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "macripemd320", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macripemd320, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
-
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macripemd320blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macripemd320blob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if defined(__BLAKE2B__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"blake2b", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, blake2b, 0, 0);
@@ -10049,6 +10926,10 @@ extern int sqlite3_hashing_init(
 #endif
 #if defined(__USE_MAC__)
   rc = sqlite3_create_function(db, "macblake2b", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macblake2b, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macblake2bblob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macblake2bblob, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
 #endif
@@ -10063,7 +10944,10 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "macblake2s", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macblake2s, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
-
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macblake2sblob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macblake2sblob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if defined(__TIGER__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"tiger", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, tiger, 0, 0);
@@ -10074,6 +10958,10 @@ extern int sqlite3_hashing_init(
 #endif
 #if defined(__USE_MAC__)
   rc = sqlite3_create_function(db, "mactiger", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, mactiger, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "mactigerblob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, mactigerblob, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
 #endif
@@ -10088,6 +10976,10 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "macshake128", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macshake128, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macshake128blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macshake128blob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if defined(__SHAKE256__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"shake256", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, shake256, 0, 0);
@@ -10098,6 +10990,10 @@ extern int sqlite3_hashing_init(
 #endif
 #if defined(__USE_MAC__)
   rc = sqlite3_create_function(db, "macshake256", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macshake256, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macshake256blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macshake256blob, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
 #endif
@@ -10112,6 +11008,10 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "macsiphash64", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsiphash64, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macsiphash64blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsiphash64blob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if defined(__SIPHASH128__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"siphash128", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, siphash128, 0, 0);
@@ -10124,7 +11024,10 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "macsiphash128", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsiphash128, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
-
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macsiphash128blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsiphash128blob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if defined(__LSH224__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"lsh224", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, lsh224, 0, 0);
@@ -10135,6 +11038,10 @@ extern int sqlite3_hashing_init(
 #endif
  #if defined(__USE_MAC__)
       rc = sqlite3_create_function(db, "maclsh224", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, maclsh224, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
+#if defined(__USE_MAC__) && defined ( __USE_BLOB__ )
+  rc = sqlite3_create_function(db, "maclsh224blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, maclsh224blob, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
 #endif
@@ -10149,6 +11056,10 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "maclsh256", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, maclsh256, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "maclsh256blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, maclsh256blob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if defined(__LSH384__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"lsh384", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, lsh384, 0, 0);
@@ -10159,6 +11070,10 @@ extern int sqlite3_hashing_init(
 #endif
 #if defined(__USE_MAC__)
   rc = sqlite3_create_function(db, "maclsh384", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, maclsh384, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
+#if defined(__USE_MAC__)&& defined ( __USE_BLOB__ )
+  rc = sqlite3_create_function(db, "maclsh384blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, maclsh384blob, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
 #endif
@@ -10173,7 +11088,10 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "maclsh512", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, maclsh512, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
-
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "maclsh512blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, maclsh512blob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if defined(__SM3__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"sm3", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, sm3, 0, 0);
@@ -10186,7 +11104,10 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "macsm3", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsm3, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
-
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macsm3blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macsm3blob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if defined(__WHIRLPOOL__)|| defined(__ALL__)
   rc = sqlite3_create_function(db,"whirlpool", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, whirlpool, 0, 0);
@@ -10199,47 +11120,83 @@ extern int sqlite3_hashing_init(
   rc = sqlite3_create_function(db, "macwhirlpool", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macwhirlpool, 0, 0);
   if (rc != SQLITE_OK) return rc;
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  rc = sqlite3_create_function(db, "macwhirlpoolblob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macwhirlpoolblob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 
 #if (defined(__CMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
   rc = sqlite3_create_function(db,"maccmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, maccmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
+#if defined(__BLOB__)
+  rc = sqlite3_create_function(db, "maccmacblob", 1, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, maccmacblob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if (defined(__CBCCMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
   rc = sqlite3_create_function(db,"maccbccmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, maccbccmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
+#if defined(__BLOB__)
+  rc = sqlite3_create_function(db, "maccbccmacblob", 4 SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, maccbccmacblob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if (defined(__DMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
   rc = sqlite3_create_function(db,"macdmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macdmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
+#if defined(__BLOB__)
+  rc = sqlite3_create_function(db, "macdmacblob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macdmacblob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if (defined(__GMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
   rc = sqlite3_create_function(db,"macgmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macgmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
+#if defined(__BLOB__)
+  rc = sqlite3_create_function(db, "macgmacblob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macgmacblob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if (defined(__HMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
   rc = sqlite3_create_function(db,"machmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, machmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
+#if defined(__BLOB__)
+  rc = sqlite3_create_function(db, "machmacblob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, machmacblob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if (defined(__POLY1305__)|| defined(__ALL__))&& defined(__USE_MAC__)
   rc = sqlite3_create_function(db,"macpoly1305", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macpoly1305, 0, 0);
   if ( rc != SQLITE_OK) return rc;
+#if defined(__BLOB__)
+  rc = sqlite3_create_function(db, "macpoly1305blob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macpoly1305blob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if (defined(__TWOTRACK__)|| defined(__ALL__))&& defined(__USE_MAC__)
   rc = sqlite3_create_function(db,"mactwotrack", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, mactwotrack, 0, 0);
   if ( rc != SQLITE_OK) return rc;
+#if defined(__BLOB__)
+  rc = sqlite3_create_function(db, "mactwotrackblob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, mactwotrackblob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
+#endif
 #endif
 #if (defined(__VMAC__)|| defined(__ALL__))&& defined(__USE_MAC__)
   rc = sqlite3_create_function(db,"macvmac", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, macvmac, 0, 0);
   if ( rc != SQLITE_OK) return rc;
+#if defined(__BLOB__)
+  rc = sqlite3_create_function(db, "macvmacblob", 4, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, macvmacblob, 0, 0);
+  if (rc != SQLITE_OK) return rc;
 #endif
-  rc = sqlite3_create_function(db,"fromhex", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, fromhex, 0, 0);
+#endif
+  rc = sqlite3_create_function(db,"fromhex", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, fromhex, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 
-  rc = sqlite3_create_function(db,"tohex", 1,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, tohex, 0, 0);
+  rc = sqlite3_create_function(db,"tohex", 3,SQLITE_UTF8|SQLITE_INNOCUOUS|SQLITE_DETERMINISTIC,0, tohex, 0, 0);
   if ( rc != SQLITE_OK) return rc;
 
-  rc = sqlite3_create_function(db, "tobase2", 1, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, tobase2, 0, 0);
+  rc = sqlite3_create_function(db, "tobase2", 3, SQLITE_UTF8 | SQLITE_INNOCUOUS | SQLITE_DETERMINISTIC, 0, tobase2, 0, 0);
   if (rc != SQLITE_OK) return rc;
 
   rc = sqlite3_create_module(db,"hash_info", &hash_info_Module, 0);

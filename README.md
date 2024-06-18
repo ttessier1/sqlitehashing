@@ -7,9 +7,12 @@ Sqlite Hashing version 2024.06.15.1
 #TODO: Add hash_info records for mac and blob functions
 #TODO: Add hash_size records for mac and blob functions
 TODO: Add blob specific functions for mac hashing algorithms
+TODO: Add method to use windows bcrypt
 TODO: Add test functions to batch build.bat file for mac functions
 TODO: Add test functions to batch build.bat file for mac and macblob functions
-TODO: Verify mac functions adn macblob functions
+TODO: Verify mac functions and macblob functions
+TODO: Add build.bat functions to check for hashinfo record and validate it
+TODO: Add build.bat functions to check for hashsize record and validate it
 TODO: Complete encryption functions
 TODO: Add Compression
 TODO: Add Base64Encoding

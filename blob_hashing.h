@@ -63,8 +63,8 @@ int get_schema_page_size(sqlite3_context* context, sqlite3* db, const char* sche
     }
 }
 
-
-//#if defined(__MD2__)|| defined(__ALL__)
+/*
+#if defined(__MD2__)|| defined(__ALL__)
 
 static int blobmd2(
     sqlite3_context* context,
@@ -91,10 +91,10 @@ static int blobmd2(
     char* buffer = NULL;
     sqlite_int64 rowid = 0;
     sqlite3_blob* blob;
-    Md2ContextPtr contextPtr = NULL;
+    Md2BlobContextPtr contextPtr = NULL;
     if (context == NULL)
     {
-        printf("Invalid Sqlite Context\r\n");
+        printf("Invalid Sqlite BlobContext\r\n");
         return -1;
     }
     if (argc != 4)
@@ -155,14 +155,12 @@ static int blobmd2(
                             DebugMessage("After StrCpy\r\n");
                             sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
                             sqlite3_free(zToFree);
-
                         }
                         else
                         {
                             DebugMessage("ZOut  NULL\r\n");
                         }
                         FreeCryptoResult(result);
-
                     }
                     else
                     {
@@ -175,4 +173,5 @@ static int blobmd2(
     return SQLITE_OK;
 }
 
-//#endif
+#endif
+*/

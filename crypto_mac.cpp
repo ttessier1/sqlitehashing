@@ -25,7 +25,6 @@
 #include <cbcmac.h>
 #include <dmac.h>
 #include <gcm.h>
-#include <hmac.h>
 #include <poly1305.h>
 #include <ttmac.h>
 #include <vmac.h>
