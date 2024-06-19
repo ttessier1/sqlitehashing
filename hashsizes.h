@@ -61,6 +61,9 @@ enum hash_sizes
 #if defined(__USE_MAC__)
     hash_size_sha1mac, // mdsha1mac enabled
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    hash_size_sha1macblob, // mdsha1mac enabled
+#endif
 #endif
 
 #if defined(__SHA224__) || defined (__ALL__)
@@ -391,6 +394,9 @@ enum hash_sizes
 #endif
 #if defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_SHA1MAC "macsha1"
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_SHA1MACBLOB "macsha1blob"
 #endif
 #endif
 
@@ -1015,6 +1021,22 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         case HASH_SIZE_COLUMN_FUNCTION_NAME:
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SHA1MAC), strlength(HASH_SIZE_FUNCTION_NAME_SHA1MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sha1));
+            break;
+        }
+        }
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_sha1macblob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SHA1MACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_SHA1MACBLOB), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
             sqlite3_result_int(ctx, GetDigestSize(algo_sha1));
