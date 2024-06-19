@@ -228,6 +228,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #if defined(__USE_MAC__)
         hash_size_blake2bmac,
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+        hash_size_blake2bmacblob,
+#endif
 #endif
 
 #if defined(__BLAKE2S__) || defined (__ALL__)
@@ -236,7 +239,10 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
     hash_size_blake2sblob,
 #endif
 #if defined(__USE_MAC__)
-        hash_size_blake2smac,
+    hash_size_blake2smac,
+#endif
+#if defined(__USE_MAC__) &&  defined(__USE_BLOB__)
+    hash_size_blake2smacblob,
 #endif
 #endif
 
@@ -615,6 +621,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #if defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_BLAKE2BMAC "macblake2b" 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_BLAKE2BMACBLOB "macblake2bblob" 
+#endif
 #endif
 
 
@@ -625,6 +634,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #endif
 #if defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_BLAKE2SMAC "macblake2s"
+#endif
+#if defined(__USE_MAC__) &&  defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_BLAKE2SMACBLOB "macblake2sblob"
 #endif
 #endif
 
@@ -1971,6 +1983,22 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_blake2bmacblob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_BLAKE2BMACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_BLAKE2BMACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_blake2b));
+            break;
+        }
+        }
+#endif
 #endif
 
 
@@ -2022,7 +2050,22 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
-
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_blake2smacblob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_BLAKE2SMACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_BLAKE2SMACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_blake2s));
+            break;
+        }
+        }
+#endif
 #endif
     
 #if defined(__TIGER__) || defined (__ALL__)

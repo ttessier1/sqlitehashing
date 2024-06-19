@@ -866,7 +866,7 @@ extern "C" const char * DoMacBlake2s(const char * key, unsigned int length,  con
         {
             DebugMessage("DoMacBlake2s buffer is good\r\n");
             hmac.Final(( CryptoPP::byte *)lpBuffer);
-            result = ToHex(lpBuffer,HMAC<BLAKE2s>::DIGESTSIZE,algo_blake2b );
+            result = ToHex(lpBuffer,HMAC<BLAKE2s>::DIGESTSIZE,algo_blake2s );
             if(result)
             {
                 DebugMessage("DoMacBlake2s tohex is good\r\n");

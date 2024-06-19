@@ -1634,7 +1634,26 @@ extern "C" {
 #if (defined(__BLAKE2B__) || defined (__ALL__)) && defined(__USE_BLOB__)
     Blake2BMacBlobContextPtr Blake2BMacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        Blake2BMacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (Blake2BMacBlobContextPtr)malloc(sizeof(Blake2BMacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)Blake2BMacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<BLAKE2b>*)malloc(sizeof(HMAC<BLAKE2b>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<BLAKE2b>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void Blake2BMacUpdate(Blake2BMacBlobContextPtr macBlobContext, const char* message, unsigned int length)
@@ -1647,13 +1666,68 @@ extern "C" {
 
     const char* Blake2BMacFinalize(Blake2BMacBlobContextPtr macBlobContext)
     {
-        return NULL;
+
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(BLAKE2b::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, BLAKE2b::DIGESTSIZE, algo_blake2b);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (BLAKE2b::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (BLAKE2b::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 #if (defined(__BLAKE2S__) || defined (__ALL__)) && defined(__USE_BLOB__)
     Blake2SMacBlobContextPtr Blake2SMacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        Blake2SMacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (Blake2SMacBlobContextPtr)malloc(sizeof(Blake2SMacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)Blake2SMacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<BLAKE2s>*)malloc(sizeof(HMAC<BLAKE2s>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<BLAKE2s>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void Blake2SMacUpdate(Blake2SMacBlobContextPtr macBlobContext, const char* message, unsigned int length)
@@ -1666,7 +1740,42 @@ extern "C" {
 
     const char* Blake2SMacFinalize(Blake2SMacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(BLAKE2s::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, BLAKE2s::DIGESTSIZE, algo_blake2s);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (BLAKE2s::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (BLAKE2s::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 #if (defined(__TIGER__) || defined (__ALL__)) && defined(__USE_BLOB__)
