@@ -122,16 +122,16 @@ typedef struct whirlpoolMacBlobContext WhirlpoolMacBlobContext, * WhirlpoolMacBl
 #if (defined(__MD2__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
 extern "C" Md2MacBlobContextPtr Md2MacInitialize(const char* key, unsigned int length);
-extern "C" void Md2MacUpdate(Md2MacBlobContextPtr blobContext, const char* message, unsigned int length);
-extern "C" const char* Md2MacFinalize(Md2MacBlobContextPtr blobContext);
+extern "C" void Md2MacUpdate(Md2MacBlobContextPtr macBlobContext, const char* message, unsigned int length);
+extern "C" const char* Md2MacFinalize(Md2MacBlobContextPtr macBlobContext);
 
 #endif
 
 #if (defined(__MD4__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Md4MacBlobContextPtr Md4MacInitialize();
-extern "C" void Md4UMacpdate(Md4MacBlobContextPtr blobContext, const char* message, unsigned int length);
-extern "C" const char* Md4MacFinalize(Md4MacBlobContextPtr blobContext);
+extern "C" Md4MacBlobContextPtr Md4MacInitialize(const char* key, unsigned int length);
+extern "C" void Md4UMacpdate(Md4MacBlobContextPtr macBlobContext, const char* message, unsigned int length);
+extern "C" const char* Md4MacFinalize(Md4MacBlobContextPtr macBlobContext);
 
 #endif
 
@@ -354,7 +354,7 @@ const char* Md2MacFinalize(Md2MacBlobContextPtr blobContext);
 
 #if (defined(__MD4__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Md4MacBlobContextPtr Md4MacInitialize();
+Md4MacBlobContextPtr Md4MacInitialize(const char* key, unsigned int length);
 void Md4MacUpdate(Md4MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Md4MacFinalize(Md4MacBlobContextPtr blobContext);
 

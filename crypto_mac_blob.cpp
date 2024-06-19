@@ -274,7 +274,7 @@ struct md2MacBlobContext
 #if (defined(__MD4__) || defined(__ALL__))&& defined(__USE_BLOB__)
 typedef struct md4MacBlobContext
 {
-    CryptoPP::Weak1::MD4* macBlobContext;
+    HMAC<MD4>* macBlobContext;
 } Md4BlobMacBlobContext, * Md4BlobMacBlobContextPtr;
 #endif
 
@@ -519,19 +519,76 @@ extern "C" {
 
 #if (defined(__MD4__) || defined(__ALL__))&& defined(__USE_BLOB__)
 
-    Md4MacBlobContextPtr Md4MacInitialize()
+    Md4MacBlobContextPtr Md4MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        Md4MacBlobContextPtr macbBobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macbBobContext = (Md4MacBlobContextPtr)malloc(sizeof(Md4MacBlobContext));
+            if (macbBobContext != NULL)
+            {
+                new(macbBobContext)Md4MacBlobContextPtr();
+                macbBobContext->macBlobContext = (HMAC<MD4>*)malloc(sizeof(MD2));
+                if (macbBobContext->macBlobContext)
+                {
+                    new(macbBobContext->macBlobContext) HMAC<MD4>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macbBobContext);
+                    macbBobContext = NULL;
+                }
+            }
+        }
+        return macbBobContext;
     }
 
-    void Md4UMacpdate(Md4MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Md4MacUpdate(Md4MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
-    const char* Md4MacFinalize(Md4MacBlobContextPtr blobContext)
+    const char* Md4MacFinalize(Md4MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(MD4::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, MD4::DIGESTSIZE, algo_md4);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (MD4::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (MD4::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 
