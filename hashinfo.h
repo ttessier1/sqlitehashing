@@ -362,11 +362,11 @@ enum hash_functions
 
 #if defined(__USE_MAC__) && defined(__USE_BLOB__)
 
-#define HASH_INFO_FUNCTION_NAME_MD2MAC "macmd2blob"
-#define HASH_INFO_COLUMN_TYPE_MD2MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_MD2MAC "select macmd2blob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
-#define HASH_INFO_FUNCTION_VERSION_MD2MAC "0.0.0.1"
-#define HASH_INFO_FUNCTION_DATE_MD2MAC "2024-06-10-01:01:01"
+#define HASH_INFO_FUNCTION_NAME_MD2MACBLOB "macmd2blob"
+#define HASH_INFO_COLUMN_TYPE_MD2MACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_MD2MACBLOB "select macmd2blob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_MD2MACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_MD2MACBLOB "2024-06-10-01:01:01"
 
 #endif
 
@@ -400,6 +400,16 @@ enum hash_functions
 
 #endif
 
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_MD4MACBLOB "macmd4blob"
+#define HASH_INFO_COLUMN_TYPE_MD4MACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_MD4MACBLOB "select macmd4blob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_MD4MACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_MD4MACBLOB "2024-06-10-01:01:01"
+
+#endif
+
 #endif
 
 #if defined(__MD5__) || defined (__ALL__)
@@ -427,6 +437,16 @@ enum hash_functions
 #define HASH_INFO_COLUMN_SIGNATURE_MD5MAC "select macmd5([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_MD5MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_MD5MAC "2024-06-10-01:01:01"
+
+#endif
+
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_MD5MACBLOB "macmd5blob"
+#define HASH_INFO_COLUMN_TYPE_MD5MACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_MD5MACBLOB "select macmd5blob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_MD5MACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_MD5MACBLOB "2024-06-10-01:01:01"
 
 #endif
 
@@ -1559,6 +1579,31 @@ static int hash_info_Column(
       }
   }
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_md2macblob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_MD2MACBLOB), strlength(HASH_INFO_FUNCTION_NAME_MD2MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_MD2MACBLOB), strlength(HASH_INFO_COLUMN_TYPE_MD2MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_MD2MACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_MD2MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_MD2MACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_MD2MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_MD2MACBLOB), strlength(HASH_INFO_FUNCTION_DATE_MD2MACBLOB), free);
+          break;
+      }
+      }
+#endif
 #if defined(__USE_MAC__)
   else if (pCur->iRowid == hash_function_md2mac)
   {
@@ -1660,6 +1705,31 @@ static int hash_info_Column(
       }
       }
 #endif
+#if  defined(__USE_MAC__) && defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_md4macblob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_MD4MACBLOB), strlength(HASH_INFO_FUNCTION_NAME_MD4MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_MD4MACBLOB), strlength(HASH_INFO_COLUMN_TYPE_MD4MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_MD4MACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_MD4MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_MD4MACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_MD4MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_MD4MACBLOB), strlength(HASH_INFO_FUNCTION_DATE_MD4MACBLOB), free);
+          break;
+      }
+      }
+#endif
 
 #endif
 #if defined(__MD5__) || defined (__ALL__)
@@ -1732,6 +1802,31 @@ static int hash_info_Column(
           break;
       case HASH_INFO_COLUMN_DATE_CREATED:
           sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_MD5MAC), strlength(HASH_INFO_FUNCTION_DATE_MD5MAC), free);
+          break;
+      }
+      }
+#endif
+#if  defined(__USE_MAC__) && defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_md5macblob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_MD5MACBLOB), strlength(HASH_INFO_FUNCTION_NAME_MD5MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_MD5MACBLOB), strlength(HASH_INFO_COLUMN_TYPE_MD5MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_MD5MACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_MD5MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_MD5MACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_MD5MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_MD5MACBLOB), strlength(HASH_INFO_FUNCTION_DATE_MD5MACBLOB), free);
           break;
       }
       }
