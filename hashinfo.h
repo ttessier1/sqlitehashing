@@ -19,6 +19,9 @@ enum hash_functions
 #if (defined(__MD2__) || defined (__ALL__)) && defined(__USE_MAC__)
     hash_function_md2mac, // md2mac enabled
 #endif
+#if (defined(__MD2__) || defined (__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+    hash_function_md2macblob, // md2mac enabled
+#endif
 #if defined(__MD4__) || defined (__ALL__)
     hash_function_md4, // md4 enabled
 #endif
@@ -28,6 +31,9 @@ enum hash_functions
 #if (defined(__MD4__) || defined (__ALL__)) && defined(__USE_MAC__)
     hash_function_md4mac, // md4mac enabled
 #endif
+#if (defined(__MD4__) || defined (__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+    hash_function_md4macblob, // md4mac enabled
+#endif
 #if defined(__MD5__) || defined (__ALL__)
     hash_function_md5, // md5 enabled
 #endif
@@ -36,6 +42,9 @@ enum hash_functions
 #endif
 #if (defined(__MD5__) || defined (__ALL__)) && defined(__USE_MAC__)
     hash_function_md5mac, // md5mac enabled
+#endif
+#if (defined(__MD5__) || defined (__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+    hash_function_md5macblob, // md5mac enabled
 #endif
 #if defined(__SHA1__) || defined (__ALL__)
     hash_function_sha1, // sha1 enabled
@@ -345,7 +354,17 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_MD2MAC "macmd2"
 #define HASH_INFO_COLUMN_TYPE_MD2MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_MD2MAC "select macmd2([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_MD2MAC "select macmd2([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_MD2MAC "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_MD2MAC "2024-06-10-01:01:01"
+
+#endif
+
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_MD2MAC "macmd2blob"
+#define HASH_INFO_COLUMN_TYPE_MD2MAC "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_MD2MAC "select macmd2blob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_MD2MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_MD2MAC "2024-06-10-01:01:01"
 
@@ -375,7 +394,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_MD4MAC "macmd4"
 #define HASH_INFO_COLUMN_TYPE_MD4MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_MD4MAC "select macmd4([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_MD4MAC "select macmd4([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_MD4MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_MD4MAC "2024-06-10-01:01:01"
 
@@ -405,7 +424,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_MD5MAC "macmd5"
 #define HASH_INFO_COLUMN_TYPE_MD5MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_MD5MAC "select macmd5([stringtohash);"
+#define HASH_INFO_COLUMN_SIGNATURE_MD5MAC "select macmd5([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_MD5MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_MD5MAC "2024-06-10-01:01:01"
 
@@ -436,7 +455,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA1MAC "macsha1"
 #define HASH_INFO_COLUMN_TYPE_SHA1MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA1MAC "select macsha1([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA1MAC "select macsha1([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA1MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA1MAC "2024-06-10-01:01:01"
 
@@ -466,7 +485,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA224MAC "macsha224"
 #define HASH_INFO_COLUMN_TYPE_SHA224MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA224MAC "select macsha224([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA224MAC "select macsha224([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA224MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA224MAC "2024-06-10-01:01:01"
 
@@ -496,7 +515,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA256MAC "macsha256"
 #define HASH_INFO_COLUMN_TYPE_SHA256MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA256MAC "select macsha256([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA256MAC "select macsha256([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA256MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA256MAC "2024-06-10-01:01:01"
 
@@ -527,7 +546,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA384MAC "macsha384"
 #define HASH_INFO_COLUMN_TYPE_SHA384MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA384MAC "select macsha384([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA384MAC "select macsha384([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA384MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA384MAC "2024-06-10-01:01:01"
 
@@ -557,7 +576,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA512MAC "macsha512"
 #define HASH_INFO_COLUMN_TYPE_SHA512MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA512MAC "select macsha512([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA512MAC "select macsha512([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA512MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA512MAC "2024-06-10-01:01:01"
 
@@ -588,7 +607,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA3224MAC "macsha3224"
 #define HASH_INFO_COLUMN_TYPE_SHA3224MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA3224MAC "select macsha3224([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA3224MAC "select macsha3224([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA3224MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA3224MAC "2024-06-10-01:01:01"
 
@@ -619,7 +638,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA3256MAC "macsha3256"
 #define HASH_INFO_COLUMN_TYPE_SHA3256MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA3256MAC "select macsha3256([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA3256MAC "select macsha3256([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA3256MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA3256MAC "2024-06-10-01:01:01"
 
@@ -651,7 +670,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA3384MAC "macsha3384"
 #define HASH_INFO_COLUMN_TYPE_SHA3384MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA3384MAC "select macsha3384([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA3384MAC "select macsha3384([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA3384MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA3384MAC "2024-06-10-01:01:01"
 
@@ -684,7 +703,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHA3512MAC "macsha3512"
 #define HASH_INFO_COLUMN_TYPE_SHA3512MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHA3512MAC "select macsha3512([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHA3512MAC "select macsha3512([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_SHA3512MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHA3512MAC "2024-06-10-01:01:01"
 
@@ -714,7 +733,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_RIPEMD128MAC "macripemd128"
 #define HASH_INFO_COLUMN_TYPE_RIPEMD128MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD128MAC "select macripemd128([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD128MAC "select macripemd128([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_RIPEMD128MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_RIPEMD128MAC "2024-06-10-01:01:01"
 
@@ -745,7 +764,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_RIPEMD160MAC "macripemd160"
 #define HASH_INFO_COLUMN_TYPE_RIPEMD160MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD160MAC "select macripemd160();"
+#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD160MAC "select macripemd160([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_RIPEMD160MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_RIPEMD160MAC "2024-06-10-01:01:01"
 
@@ -777,7 +796,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_RIPEMD256MAC "macripemd256"
 #define HASH_INFO_COLUMN_TYPE_RIPEMD256MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD256MAC "select macripemd256([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD256MAC "select macripemd256([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_RIPEMD256MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_RIPEMD256MAC "2024-06-10-01:01:01"
 
@@ -809,7 +828,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_RIPEMD320MAC "macripemd320"
 #define HASH_INFO_COLUMN_TYPE_RIPEMD320MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD320MAC "select macripemd320([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD320MAC "select macripemd320([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_RIPEMD320MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_RIPEMD320MAC "2024-06-10-01:01:01"
 
@@ -839,7 +858,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_BLAKE2BMAC "macblake2b"
 #define HASH_INFO_COLUMN_TYPE_BLAKE2BMAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_BLAKE2BMAC "select macblake2b([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_BLAKE2BMAC "select macblake2b([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_BLAKE2BMAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_BLAKE2BMAC "2024-06-10-01:01:01"
 
@@ -869,7 +888,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_BLAKE2SMAC "macblake2s"
 #define HASH_INFO_COLUMN_TYPE_BLAKE2SMAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_BLAKE2SMAC "select macblake2s([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_BLAKE2SMAC "select macblake2s([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_BLAKE2SMAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_BLAKE2SMAC "2024-06-10-01:01:01"
 
@@ -899,7 +918,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_TIGERMAC "mactiger"
 #define HASH_INFO_COLUMN_TYPE_TIGERMAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_TIGERMAC "select mactiger([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_TIGERMAC "select mactiger([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_TIGERMAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_TIGERMAC "2024-06-10-01:01:01"
 
@@ -929,7 +948,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHAKE128MAC "macshake128"
 #define HASH_INFO_COLUMN_TYPE_SHAKE128MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHAKE128MAC "select macshake128([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHAKE128MAC "select macshake128([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_SHAKE128MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHAKE128MAC "2024-06-10-01:01:01"
 
@@ -959,7 +978,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SHAKE256MAC "macshake256"
 #define HASH_INFO_COLUMN_TYPE_SHAKE256MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SHAKE256MAC "select macshake256([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SHAKE256MAC "select macshake256([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_SHAKE256MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SHAKE256MAC "2024-06-10-01:01:01"
 
@@ -991,7 +1010,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SIPHASH64MAC "macsiphash64"
 #define HASH_INFO_COLUMN_TYPE_SIPHASH64MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SIPHASH64MAC "select macsiphash64([database],[table],[column],[rowid]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SIPHASH64MAC "select macsiphash64([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_SIPHASH64MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SIPHASH64MAC "2024-06-10-01:01:01"
 
@@ -1022,7 +1041,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SIPHASH128MAC "macsiphash128"
 #define HASH_INFO_COLUMN_TYPE_SIPHASH128MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SIPHASH128MAC "select macsiphash128([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SIPHASH128MAC "select macsiphash128([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_SIPHASH128MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SIPHASH128MAC "2024-06-10-01:01:01"
 
@@ -1052,7 +1071,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_LSH224MAC "maclsh224"
 #define HASH_INFO_COLUMN_TYPE_LSH224MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_LSH224MAC "select maclsh224([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_LSH224MAC "select maclsh224([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_LSH224MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_LSH224MAC "2024-06-10-01:01:01"
 
@@ -1082,7 +1101,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_LSH256MAC "maclsh256"
 #define HASH_INFO_COLUMN_TYPE_LSH256MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_LSH256MAC "select maclsh256([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_LSH256MAC "select maclsh256([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_LSH256MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_LSH256MAC "2024-06-10-01:01:01"
 
@@ -1114,7 +1133,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_LSH384MAC "lsh384MAC"
 #define HASH_INFO_COLUMN_TYPE_LSH384MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_LSH384MAC "select lsh384MAC([database],[table],[column],[rowid]);"
+#define HASH_INFO_COLUMN_SIGNATURE_LSH384MAC "select lsh384MAC([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_LSH384MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_LSH384MAC "2024-06-10-01:01:01"
 
@@ -1146,7 +1165,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_LSH512MAC "maclsh512"
 #define HASH_INFO_COLUMN_TYPE_LSH512MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_LSH512MAC "select maclsh512([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_LSH512MAC "select maclsh512([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_LSH512MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_LSH512MAC "2024-06-10-01:01:01"
 
@@ -1176,7 +1195,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_SM3MAC "macsm3"
 #define HASH_INFO_COLUMN_TYPE_SM3MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_SM3MAC "select macsm3([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_SM3MAC "select macsm3([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_SM3MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SM3MAC "2024-06-10-01:01:01"
 
@@ -1207,7 +1226,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_WHIRLPOOLMAC "macwhirlpool"
 #define HASH_INFO_COLUMN_TYPE_WHIRLPOOLMAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_WHIRLPOOLMAC "select macwhirlpool([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_WHIRLPOOLMAC "select macwhirlpool([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_WHIRLPOOLMAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_WHIRLPOOLMAC "2024-06-10-01:01:01"
 
@@ -1219,7 +1238,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_CMACMAC "maccmac"
 #define HASH_INFO_COLUMN_TYPE_CMACMAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_CMACMAC "select maccmac([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_CMACMAC "select maccmac([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_CMACMAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_CMACMAC "2024-06-10-01:01:01"
 
@@ -1230,7 +1249,7 @@ enum hash_functions
 #define HASH_INFO_FUNCTION_NAME_CBCMACMAC "maccbcmac"
 #define HASH_INFO_COLUMN_TYPE_CBCMACMAC "hash"
 
-#define HASH_INFO_COLUMN_SIGNATURE_CBCMACMAC "select maccbcmac([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_CBCMACMAC "select maccbcmac([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_CBCMACMAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_CBCMACMAC "2024-06-10-01:01:01"
 
@@ -1239,7 +1258,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_DMACMAC "macdmac"
 #define HASH_INFO_COLUMN_TYPE_DMACMAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_DMACMAC "select macdmac([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_DMACMAC "select macdmac([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_DMACMAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_DMACMAC "2024-06-10-01:01:01"
 
@@ -1248,7 +1267,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_GMACMAC "macgmac"
 #define HASH_INFO_COLUMN_TYPE_GMACMAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_GMACMAC "select macgmac([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_GMACMAC "select macgmac([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_GMACMAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_GMACMAC "2024-06-10-01:01:01"
 
@@ -1257,7 +1276,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_HMACMAC "machmac"
 #define HASH_INFO_COLUMN_TYPE_HMACMAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_HMACMAC "select machmac([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_HMACMAC "select machmac([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_HMACMAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_HMACMAC "2024-06-10-01:01:01"
 
@@ -1266,7 +1285,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_POLY1305MAC "macpoly1305"
 #define HASH_INFO_COLUMN_TYPE_POLY1305MAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_POLY1305MAC "select macpoly1305([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_POLY1305MAC "select macpoly1305([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_POLY1305MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_POLY1305MAC "2024-06-10-01:01:01"
 
@@ -1275,7 +1294,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_TWOTRACKMAC "mactwotrack"
 #define HASH_INFO_COLUMN_TYPE_TWOTRACKMAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_TWOTRACKMAC "select mactwotrack([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_TWOTRACKMAC "select mactwotrack([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_TWOTRACKMAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_TWOTRACKMAC "2024-06-10-01:01:01"
 
@@ -1284,7 +1303,7 @@ enum hash_functions
 
 #define HASH_INFO_FUNCTION_NAME_VMACMAC "macvmac"
 #define HASH_INFO_COLUMN_TYPE_VMACMAC "hash"
-#define HASH_INFO_COLUMN_SIGNATURE_VMACMAC "select macvmac([stringtohash]);"
+#define HASH_INFO_COLUMN_SIGNATURE_VMACMAC "select macvmac([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_VMACMAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_VMACMAC "2024-06-10-01:01:01"
 
