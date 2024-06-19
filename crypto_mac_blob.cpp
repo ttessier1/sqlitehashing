@@ -1044,17 +1044,74 @@ extern "C" {
 #if (defined(__SHA3224__)||defined(__ALL__)) && defined(__USE_BLOB__)
     Sha3224MacBlobContextPtr Sha3224MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        Sha3224MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (Sha3224MacBlobContextPtr)malloc(sizeof(Sha3224MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)Sha3224MacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<SHA3_224>*)malloc(sizeof(HMAC<SHA3_224>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<SHA3_224>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void Sha3224MacUpdate(Sha3224MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* Sha3224MacFinalize(Sha3224MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(SHA3_224::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SHA3_224::DIGESTSIZE, algo_sha3_224);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SHA3_224::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SHA3_224::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 
 #endif
@@ -1062,17 +1119,74 @@ extern "C" {
 #if (defined(__SHA3256__)||defined(__ALL__)) && defined(__USE_BLOB__)
     Sha3256MacBlobContextPtr Sha3256MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        Sha3256MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (Sha3256MacBlobContextPtr)malloc(sizeof(Sha3256MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)Sha3256MacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<SHA3_256>*)malloc(sizeof(HMAC<SHA3_256>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<SHA3_256>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void Sha3256MacUpdate(Sha3256MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* Sha3256MacFinalize(Sha3256MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(SHA3_256::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SHA3_256::DIGESTSIZE, algo_sha3_256);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SHA3_256::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SHA3_256::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 
 #endif
@@ -1080,34 +1194,148 @@ extern "C" {
 #if (defined(__SHA3384__)||defined(__ALL__)) && defined(__USE_BLOB__)
     Sha3384MacBlobContextPtr Sha3384MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        Sha3384MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (Sha3384MacBlobContextPtr)malloc(sizeof(Sha3384MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)Sha3384MacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<SHA3_384>*)malloc(sizeof(HMAC<SHA3_384>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<SHA3_384>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void Sha3384MacUpdate(Sha3384MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* Sha3384MacFinalize(Sha3384MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(SHA3_384::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SHA3_384::DIGESTSIZE, algo_sha3_384);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SHA3_384::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SHA3_384::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 
 #if (defined(__SHA3512__)||defined(__ALL__)) && defined(__USE_BLOB__)
     Sha3512MacBlobContextPtr Sha3512MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        Sha3512MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (Sha3512MacBlobContextPtr)malloc(sizeof(Sha3512MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)Sha3512MacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<SHA3_512>*)malloc(sizeof(HMAC<SHA3_512>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<SHA3_512>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void Sha3512MacUpdate(Sha3512MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* Sha3512MacFinalize(Sha3512MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(SHA3_512::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SHA3_512::DIGESTSIZE, algo_sha3_512);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SHA3_512::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SHA3_512::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 
