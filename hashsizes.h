@@ -20,6 +20,9 @@ enum hash_sizes
 #if defined(__USE_MAC__)
     hash_size_md2mac, // md2 enabled
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    hash_size_md2macblob, // md2 enabled
+#endif
 
 #endif
 
@@ -31,6 +34,9 @@ enum hash_sizes
 #if defined(__USE_MAC__)
     hash_size_md4mac, // md4 enabled
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    hash_size_md4macblob, // md4 enabled
+#endif
 #endif
 
 #if defined(__MD5__) || defined (__ALL__)
@@ -40,6 +46,9 @@ enum hash_sizes
 #endif
 #if defined(__USE_MAC__)
     hash_size_md5mac, // md5 mac enabled
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    hash_size_md5macblob, // md5 mac enabled
 #endif
 
 #endif
@@ -344,6 +353,9 @@ enum hash_sizes
 #if defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_MD2MAC "macmd2"
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_MD2MACBLOB "macmd2blob"
+#endif
 #endif
 
 #if defined(__MD4__) || defined (__ALL__)
@@ -354,6 +366,9 @@ enum hash_sizes
 #if defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_MD4MAC "macmd4"
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_MD4MACBLOB "macmd4blob"
+#endif
 #endif
 
 #if defined(__MD5__) || defined (__ALL__)
@@ -363,6 +378,9 @@ enum hash_sizes
 #endif
 #if defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_MD5MAC "macmd5"
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_MD5MACBLOB "macmd5blob"
 #endif
 #endif
 
@@ -808,6 +826,22 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
     }
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_md2macblob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_MD2MACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_MD2MACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_md2));
+            break;
+        }
+    }
+#endif
 #endif
 
 #if defined(__MD4__) || defined (__ALL__)
@@ -850,6 +884,22 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         case HASH_SIZE_COLUMN_FUNCTION_NAME:
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_MD4MAC), strlength(HASH_SIZE_FUNCTION_NAME_MD4MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_md4));
+            break;
+        }
+        }
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_md4macblob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_MD4MACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_MD4MACBLOB), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
             sqlite3_result_int(ctx, GetDigestSize(algo_md4));
@@ -900,6 +950,22 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         case HASH_SIZE_COLUMN_FUNCTION_NAME:
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_MD5MAC), strlength(HASH_SIZE_FUNCTION_NAME_MD5MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_md5));
+            break;
+        }
+        }
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_md5macblob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_MD5MACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_MD5MACBLOB), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
             sqlite3_result_int(ctx, GetDigestSize(algo_md5));
