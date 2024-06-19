@@ -672,7 +672,7 @@ extern "C" {
         return NULL;
     }
 
-    void Sha1UMacUpdate(Sha1MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Sha1MacUpdate(Sha1MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -690,7 +690,7 @@ extern "C" {
         return NULL;
     }
 
-    void Sha224UMacUpdate(Sha224MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Sha224MacUpdate(Sha224MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -709,7 +709,7 @@ extern "C" {
         return NULL;
     }
 
-    void Sha256UMacUpdate(Sha256MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Sha256MacUpdate(Sha256MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -726,7 +726,7 @@ extern "C" {
         return NULL;
     }
 
-    void Sha384UMacUpdate(Sha384MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Sha384MacUpdate(Sha384MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -745,7 +745,7 @@ extern "C" {
         return NULL;
     }
 
-    void Sha512UMacUpdate(Sha512MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Sha512MacUpdate(Sha512MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -762,7 +762,7 @@ extern "C" {
         return NULL;
     }
 
-    void Sha3224UMacUpdate(Sha3224MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Sha3224MacUpdate(Sha3224MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -780,7 +780,7 @@ extern "C" {
         return NULL;
     }
 
-    void Sha3256UMacUpdate(Sha3256MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Sha3256MacUpdate(Sha3256MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -798,7 +798,7 @@ extern "C" {
         return NULL;
     }
 
-    void Sha3384UMacUpdate(Sha3384MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Sha3384MacUpdate(Sha3384MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -815,7 +815,7 @@ extern "C" {
         return NULL;
     }
 
-    void Sha3512UMacUpdate(Sha3512MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Sha3512MacUpdate(Sha3512MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -832,7 +832,7 @@ extern "C" {
         return NULL;
     }
 
-    void RipeMD128UMacUpdate(RipeMD128MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void RipeMD128MacUpdate(RipeMD128MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -848,7 +848,7 @@ extern "C" {
         return NULL;
     }
 
-    void RipeMD160UMacUpdate(RipeMD160MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void RipeMD160MacUpdate(RipeMD160MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -864,7 +864,7 @@ extern "C" {
         return NULL;
     }
 
-    void RipeMD256UMacUpdate(RipeMD256MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void RipeMD256MacUpdate(RipeMD256MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -880,7 +880,7 @@ extern "C" {
         return NULL;
     }
 
-    void RipeMD320UMacUpdate(RipeMD320MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void RipeMD320MacUpdate(RipeMD320MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -896,7 +896,7 @@ extern "C" {
         return NULL;
     }
 
-    void Blake2BUMacUpdate(Blake2BMacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Blake2BMacUpdate(Blake2BMacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -912,7 +912,7 @@ extern "C" {
         return NULL;
     }
 
-    void Blake2SUMacUpdate(Blake2SMacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Blake2SMacUpdate(Blake2SMacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -928,7 +928,7 @@ extern "C" {
         return NULL;
     }
 
-    void TigerUMacUpdate(TigerMacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void TigerMacUpdate(TigerMacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -944,7 +944,7 @@ extern "C" {
         return NULL;
     }
 
-    void Shake128UMacUpdate(Shake128MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Shake128MacUpdate(Shake128MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -960,7 +960,7 @@ extern "C" {
         return NULL;
     }
 
-    void Shake256UMacUpdate(Shake256MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Shake256MacUpdate(Shake256MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -976,7 +976,7 @@ extern "C" {
         return NULL;
     }
 
-    void Siphash64UMacUpdate(Siphash64MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Siphash64MacUpdate(Siphash64MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -992,7 +992,7 @@ extern "C" {
         return NULL;
     }
 
-    void Siphash128UMacUpdate(Siphash128MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Siphash128MacUpdate(Siphash128MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -1008,7 +1008,7 @@ extern "C" {
         return NULL;
     }
 
-    void Lsh224UMacUpdate(Lsh224MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Lsh224MacUpdate(Lsh224MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -1024,7 +1024,7 @@ extern "C" {
         return NULL;
     }
 
-    void Lsh256UMacUpdate(Lsh256MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Lsh256MacUpdate(Lsh256MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -1040,7 +1040,7 @@ extern "C" {
         return NULL;
     }
 
-    void Lsh384UMacUpdate(Lsh384MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Lsh384MacUpdate(Lsh384MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -1056,7 +1056,7 @@ extern "C" {
         return NULL;
     }
 
-    void Lsh512UMacUpdate(Lsh512MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Lsh512MacUpdate(Lsh512MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -1072,7 +1072,7 @@ extern "C" {
         return NULL;
     }
 
-    void Sm3UMacUpdate(Sm3MacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void Sm3MacUpdate(Sm3MacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
@@ -1088,7 +1088,7 @@ extern "C" {
         return NULL;
     }
 
-    void WhirlpoolUMacUpdate(WhirlpoolMacBlobContextPtr blobContext, const char* message, unsigned int length)
+    void WhirlpoolMacUpdate(WhirlpoolMacBlobContextPtr blobContext, const char* message, unsigned int length)
     {
 
     }
