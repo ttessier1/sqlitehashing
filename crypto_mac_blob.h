@@ -130,14 +130,14 @@ extern "C" const char* Md2MacFinalize(Md2MacBlobContextPtr macBlobContext);
 #if (defined(__MD4__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
 extern "C" Md4MacBlobContextPtr Md4MacInitialize(const char* key, unsigned int length);
-extern "C" void Md4UMacpdate(Md4MacBlobContextPtr macBlobContext, const char* message, unsigned int length);
+extern "C" void Md4MacUpdate(Md4MacBlobContextPtr macBlobContext, const char* message, unsigned int length);
 extern "C" const char* Md4MacFinalize(Md4MacBlobContextPtr macBlobContext);
 
 #endif
 
 #if (defined(__MD5__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Md5MacBlobContextPtr Md5MacInitialize();
+extern "C" Md5MacBlobContextPtr Md5MacInitialize(const char* key, unsigned int length);
 extern "C" void Md5MacUpdate(Md5MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Md5MacFinalize(Md5MacBlobContextPtr blobContext);
 
@@ -145,7 +145,7 @@ extern "C" const char* Md5MacFinalize(Md5MacBlobContextPtr blobContext);
 
 #if (defined(__SHA1__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Sha1MacBlobContextPtr Sha1MacInitialize();
+extern "C" Sha1MacBlobContextPtr Sha1MacInitialize(const char* key, unsigned int length);
 extern "C" void Sha1MacUpdate(Sha1MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Sha1MacFinalize(Sha1MacBlobContextPtr blobContext);
 
@@ -153,7 +153,7 @@ extern "C" const char* Sha1MacFinalize(Sha1MacBlobContextPtr blobContext);
 
 #if (defined(__SHA224__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Sha224MacBlobContextPtr Sha224MacInitialize();
+extern "C" Sha224MacBlobContextPtr Sha224MacInitialize(const char* key, unsigned int length);
 extern "C" void Sha224MacUpdate(Sha224MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Sha224MacFinalize(Sha224MacBlobContextPtr blobContext);
 
@@ -161,7 +161,7 @@ extern "C" const char* Sha224MacFinalize(Sha224MacBlobContextPtr blobContext);
 
 #if (defined(__SHA256__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Sha256MacBlobContextPtr Sha256MacInitialize();
+extern "C" Sha256MacBlobContextPtr Sha256MacInitialize(const char* key, unsigned int length);
 extern "C" void Sha256MacUpdate(Sha256MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Sha256MacFinalize(Sha256MacBlobContextPtr blobContext);
 
@@ -169,7 +169,7 @@ extern "C" const char* Sha256MacFinalize(Sha256MacBlobContextPtr blobContext);
 
 #if (defined(__SHA384__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Sha384MacBlobContextPtr Sha384MacInitialize();
+extern "C" Sha384MacBlobContextPtr Sha384MacInitialize(const char* key, unsigned int length);
 extern "C" void Sha384MacUpdate(Sha384MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Sha384MacFinalize(Sha384MacBlobContextPtr blobContext);
 
@@ -177,7 +177,7 @@ extern "C" const char* Sha384MacFinalize(Sha384MacBlobContextPtr blobContext);
 
 #if (defined(__SHA512__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Sha512MacBlobContextPtr Sha512MacInitialize();
+extern "C" Sha512MacBlobContextPtr Sha512MacInitialize(const char* key, unsigned int length);
 extern "C" void Sha512MacUpdate(Sha512MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Sha512MacFinalize(Sha512MacBlobContextPtr blobContext);
 
@@ -186,7 +186,7 @@ extern "C" const char* Sha512MacFinalize(Sha512MacBlobContextPtr blobContext);
 
 #if (defined(__SHA3224__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Sha3224MacBlobContextPtr Sha3224MacInitialize();
+extern "C" Sha3224MacBlobContextPtr Sha3224MacInitialize(const char* key, unsigned int length);
 extern "C" void Sha3224MacUpdate(Sha3224MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Sha3224MacFinalize(Sha3224MacBlobContextPtr blobContext);
 
@@ -194,21 +194,21 @@ extern "C" const char* Sha3224MacFinalize(Sha3224MacBlobContextPtr blobContext);
 
 #if (defined(__SHA3256__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Sha3256MacBlobContextPtr Sha3256MacInitialize();
+extern "C" Sha3256MacBlobContextPtr Sha3256MacInitialize(const char* key, unsigned int length);
 extern "C" void Sha3256MacUpdate(Sha3256MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Sha3256MacFinalize(Sha3256MacBlobContextPtr blobContext);
 
 #endif
 #if (defined(__SHA3384__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Sha3384MacBlobContextPtr Sha3384MacInitialize();
+extern "C" Sha3384MacBlobContextPtr Sha3384MacInitialize(const char* key, unsigned int length);
 extern "C" void Sha3384MacUpdate(Sha3384MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Sha3384MacFinalize(Sha3384MacBlobContextPtr blobContext);
 
 #endif
 #if (defined(__SHA3512__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Sha3512MacBlobContextPtr Sha3512MacInitialize();
+extern "C" Sha3512MacBlobContextPtr Sha3512MacInitialize(const char* key, unsigned int length);
 extern "C" void Sha3512MacUpdate(Sha3512MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Sha3512MacFinalize(Sha3512MacBlobContextPtr blobContext);
 
@@ -217,28 +217,28 @@ extern "C" const char* Sha3512MacFinalize(Sha3512MacBlobContextPtr blobContext);
 
 #if (defined(__RIPEMD128__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" RipeMD128MacBlobContextPtr RipeMD128MacInitialize();
+extern "C" RipeMD128MacBlobContextPtr RipeMD128MacInitialize(const char* key, unsigned int length);
 extern "C" void RipeMD128MacUpdate(RipeMD128MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* RipeMD128MacFinalize(RipeMD128MacBlobContextPtr blobContext);
 
 #endif
 #if (defined(__RIPEMD160__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" RipeMD160MacBlobContextPtr RipeMD160MacInitialize();
+extern "C" RipeMD160MacBlobContextPtr RipeMD160MacInitialize(const char* key, unsigned int length);
 extern "C" void RipeMD160MacUpdate(RipeMD160MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* RipeMD160MacFinalize(RipeMD160MacBlobContextPtr blobContext);
 
 #endif
 #if (defined(__RIPEMD256__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" RipeMD256MacBlobContextPtr RipeMD256MacInitialize();
+extern "C" RipeMD256MacBlobContextPtr RipeMD256MacInitialize(const char* key, unsigned int length);
 extern "C" void RipeMD256MacUpdate(RipeMD256MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* RipeMD256MacFinalize(RipeMD256MacBlobContextPtr blobContext);
 
 #endif
 #if (defined(__RIPEMD320__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" RipeMD320MacBlobContextPtr RipeMD320MacInitialize();
+extern "C" RipeMD320MacBlobContextPtr RipeMD320MacInitialize(const char* key, unsigned int length);
 extern "C" void RipeMD320MacUpdate(RipeMD320MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* RipeMD320MacFinalize(RipeMD320MacBlobContextPtr blobContext);
 
@@ -247,14 +247,14 @@ extern "C" const char* RipeMD320MacFinalize(RipeMD320MacBlobContextPtr blobConte
 
 #if (defined(__BLAKE2B__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Blake2BMacBlobContextPtr Blake2BMacInitialize();
+extern "C" Blake2BMacBlobContextPtr Blake2BMacInitialize(const char* key, unsigned int length);
 extern "C" void Blake2BMacUpdate(Blake2BMacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Blake2BMacFinalize(Blake2BMacBlobContextPtr blobContext);
 
 #endif
 #if (defined(__BLAKE2S__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Blake2SMacBlobContextPtr Blake2SMacInitialize();
+extern "C" Blake2SMacBlobContextPtr Blake2SMacInitialize(const char* key, unsigned int length);
 extern "C" void Blake2SMacUpdate(Blake2SMacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Blake2SMacFinalize(Blake2SMacBlobContextPtr blobContext);
 
@@ -262,7 +262,7 @@ extern "C" const char* Blake2SMacFinalize(Blake2SMacBlobContextPtr blobContext);
 
 #if (defined(__TIGER__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" TigerMacBlobContextPtr TigerMacInitialize();
+extern "C" TigerMacBlobContextPtr TigerMacInitialize(const char* key, unsigned int length);
 extern "C" void TigerMacUpdate(TigerMacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* TigerMacFinalize(TigerMacBlobContextPtr blobContext);
 
@@ -270,14 +270,14 @@ extern "C" const char* TigerMacFinalize(TigerMacBlobContextPtr blobContext);
 
 #if (defined(__SHAKE128__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Shake128MacBlobContextPtr Shake128MacInitialize();
+extern "C" Shake128MacBlobContextPtr Shake128MacInitialize(const char* key, unsigned int length);
 extern "C" void Shake128MacUpdate(Shake128MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Shake128MacFinalize(Shake128MacBlobContextPtr blobContext);
 
 #endif
 #if (defined(__SHAKE256__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Shake256MacBlobContextPtr Shake256MacInitialize();
+extern "C" Shake256MacBlobContextPtr Shake256MacInitialize(const char* key, unsigned int length);
 extern "C" void Shake256MacUpdate(Shake256MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Shake256MacFinalize(Shake256MacBlobContextPtr blobContext);
 
@@ -286,14 +286,14 @@ extern "C" const char* Shake256MacFinalize(Shake256MacBlobContextPtr blobContext
 
 #if (defined(__SIPHASH64__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Siphash64MacBlobContextPtr Siphash64MacInitialize();
+extern "C" Siphash64MacBlobContextPtr Siphash64MacInitialize(const char* key, unsigned int length);
 extern "C" void Siphash64MacUpdate(Siphash64MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Siphash64MacFinalize(Siphash64MacBlobContextPtr blobContext);
 
 #endif
 #if (defined(__SIPHASH128__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Siphash128MacBlobContextPtr Siphash128MacInitialize();
+extern "C" Siphash128MacBlobContextPtr Siphash128MacInitialize(const char* key, unsigned int length);
 extern "C" void Siphash128MacUpdate(Siphash128MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Siphash128MacFinalize(Siphash128MacBlobContextPtr blobContext);
 
@@ -301,28 +301,28 @@ extern "C" const char* Siphash128MacFinalize(Siphash128MacBlobContextPtr blobCon
 
 #if (defined(__LSH224__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Lsh224MacBlobContextPtr Lsh224MacInitialize();
+extern "C" Lsh224MacBlobContextPtr Lsh224MacInitialize(const char* key, unsigned int length);
 extern "C" void Lsh224MacUpdate(Lsh224MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Lsh224MacFinalize(Lsh224MacBlobContextPtr blobContext);
 
 #endif
 #if (defined(__LSH256__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Lsh256MacBlobContextPtr Lsh256MacInitialize();
+extern "C" Lsh256MacBlobContextPtr Lsh256MacInitialize(const char* key, unsigned int length);
 extern "C" void Lsh256MacUpdate(Lsh256MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Lsh256MacFinalize(Lsh256MacBlobContextPtr blobContext);
 
 #endif
 #if (defined(__LSH384__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Lsh384MacBlobContextPtr Lsh384MacInitialize();
+extern "C" Lsh384MacBlobContextPtr Lsh384MacInitialize(const char* key, unsigned int length);
 extern "C" void Lsh384MacUpdate(Lsh384MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Lsh384MacFinalize(Lsh384MacBlobContextPtr blobContext);
 
 #endif
 #if (defined(__LSH512__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Lsh512MacBlobContextPtr Lsh512MacInitialize();
+extern "C" Lsh512MacBlobContextPtr Lsh512MacInitialize(const char* key, unsigned int length);
 extern "C" void Lsh512MacUpdate(Lsh512MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Lsh512MacFinalize(Lsh512MacBlobContextPtr blobContext);
 
@@ -330,14 +330,14 @@ extern "C" const char* Lsh512MacFinalize(Lsh512MacBlobContextPtr blobContext);
 
 #if (defined(__SM3__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" Sm3MacBlobContextPtr Sm3MacInitialize();
+extern "C" Sm3MacBlobContextPtr Sm3MacInitialize(const char* key, unsigned int length);
 extern "C" void Sm3MacUpdate(Sm3MacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* Sm3MacFinalize(Sm3MacBlobContextPtr blobContext);
 
 #endif
 #if (defined(__WHIRLPOOL__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-extern "C" WhirlpoolMacBlobContextPtr WhirlpoolMacInitialize();
+extern "C" WhirlpoolMacBlobContextPtr WhirlpoolMacInitialize(const char* key, unsigned int length);
 extern "C" void WhirlpoolMacUpdate(WhirlpoolMacBlobContextPtr blobContext, const char* message, unsigned int length);
 extern "C" const char* WhirlpoolMacFinalize(WhirlpoolMacBlobContextPtr blobContext);
 
@@ -362,7 +362,7 @@ const char* Md4MacFinalize(Md4MacBlobContextPtr blobContext);
 
 #if (defined(__MD5__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Md5MacBlobContextPtr Md5MacInitialize();
+Md5MacBlobContextPtr Md5MacInitialize(const char* key, unsigned int length);
 void Md5MacUpdate(Md5MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Md5MacFinalize(Md5MacBlobContextPtr blobContext);
 
@@ -370,7 +370,7 @@ const char* Md5MacFinalize(Md5MacBlobContextPtr blobContext);
 
 #if (defined(__SHA1__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Sha1MacBlobContextPtr Sha1MacInitialize();
+Sha1MacBlobContextPtr Sha1MacInitialize(const char* key, unsigned int length);
 void Sha1MacUpdate(Sha1MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Sha1MacFinalize(Sha1MacBlobContextPtr blobContext);
 
@@ -378,7 +378,7 @@ const char* Sha1MacFinalize(Sha1MacBlobContextPtr blobContext);
 
 #if (defined(__SHA224__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Sha224MacBlobContextPtr Sha224MacInitialize();
+Sha224MacBlobContextPtr Sha224MacInitialize(const char* key, unsigned int length);
 void Sha224MacUpdate(Sha224MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Sha224MacFinalize(Sha224MacBlobContextPtr blobContext);
 
@@ -386,7 +386,7 @@ const char* Sha224MacFinalize(Sha224MacBlobContextPtr blobContext);
 
 #if (defined(__SHA256__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Sha256MacBlobContextPtr Sha256MacInitialize();
+Sha256MacBlobContextPtr Sha256MacInitialize(const char* key, unsigned int length);
 void Sha256MacUpdate(Sha256MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Sha256MacFinalize(Sha256MacBlobContextPtr blobContext);
 
@@ -394,7 +394,7 @@ const char* Sha256MacFinalize(Sha256MacBlobContextPtr blobContext);
 
 #if (defined(__SHA384__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Sha384MacBlobContextPtr Sha384MacInitialize();
+Sha384MacBlobContextPtr Sha384MacInitialize(const char* key, unsigned int length);
 void Sha384MacUpdate(Sha384MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Sha384MacFinalize(Sha384MacBlobContextPtr blobContext);
 
@@ -402,7 +402,7 @@ const char* Sha384MacFinalize(Sha384MacBlobContextPtr blobContext);
 
 #if (defined(__SHA512__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Sha512MacBlobContextPtr Sha512MacInitialize();
+Sha512MacBlobContextPtr Sha512MacInitialize(const char* key, unsigned int length);
 void Sha512MacUpdate(Sha512MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Sha512MacFinalize(Sha512MacBlobContextPtr blobContext);
 
@@ -410,7 +410,7 @@ const char* Sha512MacFinalize(Sha512MacBlobContextPtr blobContext);
 
 #if (defined(__SHA3224__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Sha3224MacBlobContextPtr Sha3224MacInitialize();
+Sha3224MacBlobContextPtr Sha3224MacInitialize(const char* key, unsigned int length);
 void Sha3224MacUpdate(Sha3224MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Sha3224MacFinalize(Sha3224MacBlobContextPtr blobContext);
 
@@ -418,7 +418,7 @@ const char* Sha3224MacFinalize(Sha3224MacBlobContextPtr blobContext);
 
 #if (defined(__SHA3256__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Sha3256MacBlobContextPtr Sha3256MacInitialize();
+Sha3256MacBlobContextPtr Sha3256MacInitialize(const char* key, unsigned int length);
 void Sha3256MacUpdate(Sha3256MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Sha3256MacFinalize(Sha3256MacBlobContextPtr blobContext);
 
@@ -426,7 +426,7 @@ const char* Sha3256MacFinalize(Sha3256MacBlobContextPtr blobContext);
 
 #if (defined(__SHA3384__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Sha3384MacBlobContextPtr Sha3384MacInitialize();
+Sha3384MacBlobContextPtr Sha3384MacInitialize(const char* key, unsigned int length);
 void Sha3384MacUpdate(Sha3384MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Sha3384MacFinalize(Sha3384MacBlobContextPtr blobContext);
 
@@ -434,7 +434,7 @@ const char* Sha3384MacFinalize(Sha3384MacBlobContextPtr blobContext);
 
 #if (defined(__SHA3512__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Sha3512MacBlobContextPtr Sha3512MacInitialize();
+Sha3512MacBlobContextPtr Sha3512MacInitialize(const char* key, unsigned int length);
 void Sha3512MacUpdate(Sha3512MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Sha3512MacFinalize(Sha3512MacBlobContextPtr blobContext);
 
@@ -442,7 +442,7 @@ const char* Sha3512MacFinalize(Sha3512MacBlobContextPtr blobContext);
 
 #if (defined(__RIPEMD128__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-RipeMD128MacBlobContextPtr RipeMD128MacInitialize();
+RipeMD128MacBlobContextPtr RipeMD128MacInitialize(const char* key, unsigned int length);
 void RipeMD128MacUpdate(RipeMD128MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* RipeMD128MacFinalize(RipeMD128MacBlobContextPtr blobContext);
 
@@ -450,7 +450,7 @@ const char* RipeMD128MacFinalize(RipeMD128MacBlobContextPtr blobContext);
 
 #if (defined(__RIPEMD160__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-RipeMD160MacBlobContextPtr RipeMD160MacInitialize();
+RipeMD160MacBlobContextPtr RipeMD160MacInitialize(const char* key, unsigned int length);
 void RipeMD160MacUpdate(RipeMD160MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* RipeMD160MacFinalize(RipeMD160MacBlobContextPtr blobContext);
 
@@ -458,7 +458,7 @@ const char* RipeMD160MacFinalize(RipeMD160MacBlobContextPtr blobContext);
 
 #if (defined(__RIPEMD256__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-RipeMD256MacBlobContextPtr RipeMD256MacInitialize();
+RipeMD256MacBlobContextPtr RipeMD256MacInitialize(const char* key, unsigned int length);
 void RipeMD256MacUpdate(RipeMD256MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* RipeMD256MacFinalize(RipeMD256MacBlobContextPtr blobContext);
 
@@ -466,7 +466,7 @@ const char* RipeMD256MacFinalize(RipeMD256MacBlobContextPtr blobContext);
 
 #if (defined(__RIPEMD320__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-RipeMD320MacBlobContextPtr RipeMD320MacInitialize();
+RipeMD320MacBlobContextPtr RipeMD320MacInitialize(const char* key, unsigned int length);
 void RipeMD320MacUpdate(RipeMD320MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* RipeMD320MacFinalize(RipeMD320MacBlobContextPtr blobContext);
 
@@ -474,7 +474,7 @@ const char* RipeMD320MacFinalize(RipeMD320MacBlobContextPtr blobContext);
 
 #if (defined(__BLAKE2B__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Blake2BMacBlobContextPtr Blake2BMacInitialize();
+Blake2BMacBlobContextPtr Blake2BMacInitialize(const char* key, unsigned int length);
 void Blake2BMacUpdate(Blake2BMacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Blake2BMacFinalize(Blake2BMacBlobContextPtr blobContext);
 
@@ -482,7 +482,7 @@ const char* Blake2BMacFinalize(Blake2BMacBlobContextPtr blobContext);
 
 #if (defined(__BLAKE2S__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Blake2SMacBlobContextPtr Blake2SMacInitialize();
+Blake2SMacBlobContextPtr Blake2SMacInitialize(const char* key, unsigned int length);
 void Blake2SMacUpdate(Blake2SMacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Blake2SMacFinalize(Blake2SMacBlobContextPtr blobContext);
 
@@ -490,7 +490,7 @@ const char* Blake2SMacFinalize(Blake2SMacBlobContextPtr blobContext);
 
 #if (defined(__TIGER__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-TigerMacBlobContextPtr TigerMacInitialize();
+TigerMacBlobContextPtr TigerMacInitialize(const char* key, unsigned int length);
 void TigerMacUpdate(TigerMacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* TigerMacFinalize(TigerMacBlobContextPtr blobContext);
 
@@ -498,7 +498,7 @@ const char* TigerMacFinalize(TigerMacBlobContextPtr blobContext);
 
 #if (defined(__SHAKE128__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Shake128MacBlobContextPtr Shake128MacInitialize();
+Shake128MacBlobContextPtr Shake128MacInitialize(const char* key, unsigned int length);
 void Shake128MacUpdate(Shake128MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Shake128MacFinalize(Shake128MacBlobContextPtr blobContext);
 
@@ -506,7 +506,7 @@ const char* Shake128MacFinalize(Shake128MacBlobContextPtr blobContext);
 
 #if (defined(__SHAKE256__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Shake256MacBlobContextPtr Shake256MacInitialize();
+Shake256MacBlobContextPtr Shake256MacInitialize(const char* key, unsigned int length);
 void Shake256MacUpdate(Shake256MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Shake256MacFinalize(Shake256MacBlobContextPtr blobContext);
 
@@ -514,14 +514,14 @@ const char* Shake256MacFinalize(Shake256MacBlobContextPtr blobContext);
 
 #if (defined(__SIPHASH64__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Siphash64MacBlobContextPtr Siphash64MacInitialize();
+Siphash64MacBlobContextPtr Siphash64MacInitialize(const char* key, unsigned int length);
 void Siphash64MacUpdate(Siphash64MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Siphash64MacFinalize(Siphash64MacBlobContextPtr blobContext);
 
 #endif
 #if (defined(__SIPHASH128__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Siphash128MacBlobContextPtr Siphash128MacInitialize();
+Siphash128MacBlobContextPtr Siphash128MacInitialize(const char* key, unsigned int length);
 void Siphash128MacUpdate(Siphash128MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Siphash128MacFinalize(Siphash128MacBlobContextPtr blobContext);
 
@@ -529,7 +529,7 @@ const char* Siphash128MacFinalize(Siphash128MacBlobContextPtr blobContext);
 
 #if (defined(__LSH224__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Lsh224MacBlobContextPtr Lsh224MacInitialize();
+Lsh224MacBlobContextPtr Lsh224MacInitialize(const char* key, unsigned int length);
 void Lsh224MacUpdate(Lsh224MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Lsh224MacFinalize(Lsh224MacBlobContextPtr blobContext);
 
@@ -537,21 +537,21 @@ const char* Lsh224MacFinalize(Lsh224MacBlobContextPtr blobContext);
 
 #if (defined(__LSH256__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Lsh256MacBlobContextPtr Lsh256MacInitialize();
+Lsh256MacBlobContextPtr Lsh256MacInitialize(const char* key, unsigned int length);
 void Lsh256MacUpdate(Lsh256MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Lsh256MacFinalize(Lsh256MacBlobContextPtr blobContext);
 
 #endif
 #if (defined(__LSH384__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Lsh384MacBlobContextPtr Lsh384MacInitialize();
+Lsh384MacBlobContextPtr Lsh384MacInitialize(const char* key, unsigned int length);
 void Lsh384MacUpdate(Lsh384MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Lsh384MacFinalize(Lsh384MacBlobContextPtr blobContext);
 
 #endif
 #if (defined(__LSH512__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Lsh512MacBlobContextPtr Lsh512MacInitialize();
+Lsh512MacBlobContextPtr Lsh512MacInitialize(const char* key, unsigned int length);
 void Lsh512MacUpdate(Lsh512MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Lsh512MacFinalize(Lsh512MacBlobContextPtr blobContext);
 
@@ -559,14 +559,14 @@ const char* Lsh512MacFinalize(Lsh512MacBlobContextPtr blobContext);
 
 #if (defined(__SM3__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-Sm3MacBlobContextPtr Sm3MacInitialize();
+Sm3MacBlobContextPtr Sm3MacInitialize(const char* key, unsigned int length);
 void Sm3MacUpdate(Sm3MacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* Sm3MacFinalize(Sm3MacBlobContextPtr blobContext);
 
 #endif
 #if (defined(__WHIRLPOOL__) || defined (__ALL__)) &&(  defined(__USE_BLOB__) && defined(__USE_MAC__) )
 
-WhirlpoolMacBlobContextPtr WhirlpoolMacInitialize();
+WhirlpoolMacBlobContextPtr WhirlpoolMacInitialize(const char* key, unsigned int length);
 void WhirlpoolMacUpdate(WhirlpoolMacBlobContextPtr blobContext, const char* message, unsigned int length);
 const char* WhirlpoolMacFinalize(WhirlpoolMacBlobContextPtr blobContext);
 

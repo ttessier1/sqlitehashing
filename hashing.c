@@ -59,13 +59,13 @@ static int hash_ping(
     nIn = strlength(PING_MESSAGE);
     if(argc!=0)
     {
-        return-1;
+        return SQLITE_ERROR;
     }
     zOut = zToFree = (unsigned char * ) sqlite3_malloc64(nIn+1);
     if(zOut == 0 )
     {
         sqlite3_result_error_nomem(context);
-        return-1;
+        return SQLITE_ERROR;
     }
     strcpy_s(zOut,nIn+1,PING_MESSAGE);
     
@@ -87,7 +87,7 @@ static int rot13(
     int index=0;
     if(argc!=1)
     {
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL) return SQLITE_ERROR;
     zIn = (const unsigned char *)sqlite3_value_text(argv[0]);
@@ -127,7 +127,7 @@ static int md2(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -652,7 +652,7 @@ static int md4(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -852,7 +852,7 @@ static int macmd4(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -1179,7 +1179,7 @@ static int md5(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -1379,7 +1379,7 @@ static int macmd5(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -1468,14 +1468,220 @@ static int macmd5blob(
 )
 {
     sqlite3* db = NULL;
+    Md5MacBlobContextPtr md5MacBlobContext;
+
+    const unsigned char* zIn;
+    unsigned char* zOut;
+    unsigned char* zToFree;
+    int nIn = 0;
+    int nBlobTextSize = 0;
+    unsigned int remainingSize = 0;
+    int position = 0;
+    int rc = 0;
+    int offset = 0;
+    int length = 0;
+    unsigned int index = 0;
+    unsigned int outputCount = 0;
+    unsigned int buffer_size = 0;
+    const char* result = NULL;
+    const char* database;
+    const char* table;
+    const char* column;
+    int64_t rowId = 0;
+    sqlite3_int64 rowid;
+    char* buffer = NULL;
+    sqlite3_blob* blob;
+    const unsigned char* zKey;
+    const char* fromHex;
+    int nLength = 0;
+    int resultLength = 0;
+    int keyIn = 0;
 
     db = sqlite3_context_db_handle(context);
 
-    DebugMessage("MacM5Blob Called\r\n");
+    DebugMessage("Md2MacBlob Called\r\n");
+    if (argc != 6)
+    {
+        DebugMessage("Test\r\n");
+        sqlite3_result_error(context, "Invalid arguments", strlength("Invalid arguments"));
+        return SQLITE_ERROR;
+    }
+    if (
+        sqlite3_value_type(argv[0]) == SQLITE_TEXT && // database
+        sqlite3_value_type(argv[1]) == SQLITE_TEXT && // table 
+        sqlite3_value_type(argv[2]) == SQLITE_TEXT && // column
+        sqlite3_value_type(argv[3]) == SQLITE_INTEGER &&// rowid
+        sqlite3_value_type(argv[4]) == SQLITE_TEXT &&// key
+        sqlite3_value_type(argv[5]) == SQLITE_INTEGER // hex or not
+        )
+    {
+        database = sqlite3_value_text(argv[0]);
+        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        table = sqlite3_value_text(argv[1]);
+        column = sqlite3_value_text(argv[2]);
+        rowid = sqlite3_value_int64(argv[3]);
+        keyIn = sqlite3_value_bytes(argv[4]);
+        zKey = (const unsigned char*)sqlite3_value_text(argv[4]);
 
-    sqlite3_result_error(context, "Not Implemented", strlen("Not Implemented"));
-    return SQLITE_ERROR;
+
+        rc = sqlite3_blob_open(db, database, table, column, rowid, 0, &blob);
+        if (rc == SQLITE_OK)
+        {
+            nBlobTextSize = sqlite3_blob_bytes(blob);
+            remainingSize = nBlobTextSize;
+            buffer = (char*)malloc(buffer_size);
+            if (buffer != NULL)
+            {
+                if (sqlite3_value_int(argv[5]) == 1)
+                {
+                    // do hconversion from hex
+                    fromHex = FromHexSZ(zKey, &resultLength);
+                    if (fromHex)
+                    {
+                        md5MacBlobContext = Md5MacInitialize(fromHex, resultLength);
+                        if (md5MacBlobContext != NULL)
+                        {
+                            while (rc == SQLITE_OK && remainingSize > 0)
+                            {
+                                length = MIN(buffer_size, remainingSize);
+                                rc = sqlite3_blob_read(blob, buffer, length, offset);
+                                if (rc == SQLITE_OK)
+                                {
+                                    Md5MacUpdate(md5MacBlobContext, buffer, length);
+                                    offset += length;
+                                    remainingSize -= length;
+                                }
+                            }
+                            if (rc == SQLITE_OK)
+                            {
+                                result = Md5MacFinalize(md5MacBlobContext);
+                                if (result != NULL)
+                                {
+                                    nIn = strlength(result);
+                                    zOut = zToFree = (unsigned char*)sqlite3_malloc64(nIn + 1);
+                                    if (zOut != 0)
+                                    {
+                                        DebugMessage("ZOut Not NULL\r\n");
+                                        strncpy_s(zOut, nIn + 1, result, strlength(result));
+                                        DebugMessage("After StrCpy\r\n");
+                                        sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                        sqlite3_free(zToFree);
+                                        rc = SQLITE_OK;
+                                    }
+                                    else
+                                    {
+                                        DebugMessage("ZOut  NULL\r\n");
+                                        rc = SQLITE_ERROR;
+                                    }
+                                }
+                                else
+                                {
+                                    sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                                    rc = SQLITE_ERROR;
+                                }
+                            }
+                            else
+                            {
+                                sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                                rc = SQLITE_ERROR;
+                            }
+                        }
+                        else
+                        {
+                            sqlite3_result_error(context, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
+                            rc = SQLITE_ERROR;
+                        }
+                        FreeCryptoResult((void*)fromHex);
+                    }
+                    else
+                    {
+                        DebugMessage("FromHex Failed\r\n");
+                        return SQLITE_ERROR;
+                    }
+                }
+                else if (sqlite3_value_int(argv[5]) == 0)
+                {
+                    // dont do conversion from hex
+                    md5MacBlobContext = Md5MacInitialize(zKey, keyIn);
+                    if (md5MacBlobContext != NULL)
+                    {
+                        while (rc == SQLITE_OK && remainingSize > 0)
+                        {
+                            length = MIN(buffer_size, remainingSize);
+                            rc = sqlite3_blob_read(blob, buffer, length, offset);
+                            if (rc == SQLITE_OK)
+                            {
+                                Md5MacUpdate(md5MacBlobContext, buffer, length);
+                                offset += length;
+                                remainingSize -= length;
+                            }
+                        }
+                        if (rc == SQLITE_OK)
+                        {
+                            result = Md5MacFinalize(md5MacBlobContext);
+                            if (result != NULL)
+                            {
+                                nIn = strlength(result);
+                                zOut = zToFree = (unsigned char*)sqlite3_malloc64(nIn + 1);
+                                if (zOut != 0)
+                                {
+                                    DebugMessage("ZOut Not NULL\r\n");
+                                    strncpy_s(zOut, nIn + 1, result, strlength(result));
+                                    DebugMessage("After StrCpy\r\n");
+                                    sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                    sqlite3_free(zToFree);
+                                    rc = SQLITE_OK;
+                                }
+                                else
+                                {
+                                    DebugMessage("ZOut  NULL\r\n");
+                                    rc = SQLITE_ERROR;
+                                }
+                            }
+                            else
+                            {
+                                sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                                rc = SQLITE_ERROR;
+                            }
+                        }
+                        else
+                        {
+                            sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                            rc = SQLITE_ERROR;
+                        }
+                    }
+                    else
+                    {
+                        sqlite3_result_error(context, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
+                        rc = SQLITE_ERROR;
+                    }
+                }
+                else
+                {
+                    // invalid
+                    DebugMessage("Invalid Parameter\r\n");
+                    return SQLITE_ERROR;
+                }
+
+                free(buffer);
+            }
+            sqlite3_blob_close(blob);
+
+        }
+        else
+        {
+            sqlite3_result_error(context, "Failed to open the blob object\r\n", strlength("Failed to open the blob object\r\n"));
+        }
+        return rc;
+    }
+    else
+    {
+        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        return SQLITE_ERROR;
+    }
+    return SQLITE_OK;
 }
+
 #endif
 
 #endif
@@ -1499,7 +1705,7 @@ static int sha1(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -1700,7 +1906,7 @@ static int macsha1(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -1819,7 +2025,7 @@ static int sha224(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -2019,7 +2225,7 @@ static int macsha224(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -2138,7 +2344,7 @@ static int sha256(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -2338,7 +2544,7 @@ static int macsha256(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -2457,7 +2663,7 @@ static int sha384(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -2658,7 +2864,7 @@ static int macsha384(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -2778,7 +2984,7 @@ static int sha512(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -2979,7 +3185,7 @@ static int macsha512(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -3101,7 +3307,7 @@ static int sha3224(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -3300,7 +3506,7 @@ static int macsha3224(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -3418,7 +3624,7 @@ static int sha3_256(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -3619,7 +3825,7 @@ static int macsha3256(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -3736,7 +3942,7 @@ static int sha3_384(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -3935,7 +4141,7 @@ static int macsha3384(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -4052,7 +4258,7 @@ static int sha3_512(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -4254,7 +4460,7 @@ static int macsha3512(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -4372,7 +4578,7 @@ static int ripemd128(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -4571,7 +4777,7 @@ static int macripemd128(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -4689,7 +4895,7 @@ static int ripemd160(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -4888,7 +5094,7 @@ static int macripemd160(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -5006,7 +5212,7 @@ static int ripemd256(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -5205,7 +5411,7 @@ static int macripemd256(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -5323,7 +5529,7 @@ static int ripemd320(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -5523,7 +5729,7 @@ static int macripemd320(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -5641,7 +5847,7 @@ static int blake2b(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -5840,7 +6046,7 @@ static int macblake2b(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -5956,7 +6162,7 @@ static int blake2s(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -6156,7 +6362,7 @@ static int macblake2s(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -6270,7 +6476,7 @@ static int tiger(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -6471,7 +6677,7 @@ static int mactiger(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -6585,7 +6791,7 @@ static int shake128(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -6785,7 +6991,7 @@ static int macshake128(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -6899,7 +7105,7 @@ static int shake256(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -7098,7 +7304,7 @@ static int macshake256(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -7212,7 +7418,7 @@ static int siphash64(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -7411,7 +7617,7 @@ static int macsiphash64(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -7525,7 +7731,7 @@ static int siphash128(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -7724,7 +7930,7 @@ static int macsiphash128(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -7838,7 +8044,7 @@ static int lsh224(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -8039,7 +8245,7 @@ static int maclsh224(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -8154,7 +8360,7 @@ static int lsh256(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -8354,7 +8560,7 @@ static int maclsh256(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -8468,7 +8674,7 @@ static int lsh384(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -8668,7 +8874,7 @@ static int maclsh384(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -8782,7 +8988,7 @@ static int lsh512(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -8981,7 +9187,7 @@ static int maclsh512(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -9095,7 +9301,7 @@ static int sm3(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -9296,7 +9502,7 @@ static int macsm3(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -9411,7 +9617,7 @@ static int whirlpool(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -9610,7 +9816,7 @@ static int macwhirlpool(
     if (argc != 3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
@@ -9731,7 +9937,7 @@ static int maccmac(
     if(argc!=3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -9849,7 +10055,7 @@ static int maccbccmac(
     if(argc!=3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -9967,7 +10173,7 @@ static int macdmac(
     if(argc!=3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -10085,7 +10291,7 @@ static int macgmac(
     if(argc!=3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -10203,7 +10409,7 @@ static int machmac(
     if(argc!=3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -10321,7 +10527,7 @@ static int macpoly1305(
     if(argc!=3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -10439,7 +10645,7 @@ static int mactwotrack(
     if(argc!=3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -10557,7 +10763,7 @@ static int macvmac(
     if(argc!=3)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -10665,7 +10871,7 @@ static int tohex(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -10728,7 +10934,7 @@ static int fromhex(
     if(argc!=1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if(sqlite3_value_type(argv[0])==SQLITE_NULL)
     {
@@ -10799,7 +11005,7 @@ static int tobase2(
     if (argc != 1)
     {
         DebugMessage("Test\r\n");
-        return-1;
+        return SQLITE_ERROR;
     }
     if (sqlite3_value_type(argv[0]) == SQLITE_NULL)
     {
