@@ -164,6 +164,9 @@ enum hash_functions
 #if (defined(__RIPEMD128__) || defined (__ALL__)) && defined(__USE_MAC__)
         hash_function_ripemd128mac,
 #endif
+#if (defined(__RIPEMD128__) || defined (__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+        hash_function_ripemd128macblob,
+#endif
 #if defined(__RIPEMD160__) || defined (__ALL__)
     hash_function_ripemd160,
 #endif
@@ -172,6 +175,9 @@ enum hash_functions
 #endif
 #if (defined(__RIPEMD160__) || defined (__ALL__)) && defined(__USE_MAC__)
         hash_function_ripemd160mac,
+#endif
+#if (defined(__RIPEMD160__) || defined (__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+        hash_function_ripemd160macblob,
 #endif
 #if defined(__RIPEMD256__) || defined (__ALL__)
     hash_function_ripemd256,
@@ -182,6 +188,9 @@ enum hash_functions
 #if (defined(__RIPEMD256__) || defined (__ALL__)) && defined(__USE_MAC__)
         hash_function_ripemd256mac,
 #endif
+#if (defined(__RIPEMD256__) || defined (__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+        hash_function_ripemd256macblob,
+#endif
 #if defined(__RIPEMD320__) || defined (__ALL__)
     hash_function_ripemd320,
 #endif
@@ -190,6 +199,9 @@ enum hash_functions
 #endif
 #if (defined(__RIPEMD320__) || defined (__ALL__)) && defined(__USE_MAC__)
         hash_function_ripemd320mac,
+#endif
+#if (defined(__RIPEMD320__) || defined (__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+        hash_function_ripemd320macblob,
 #endif
 #if defined(__BLAKE2B__) || defined (__ALL__)
     hash_function_blake2b,
@@ -875,6 +887,16 @@ enum hash_functions
 
 #endif
 
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_RIPEMD128MACBLOB "macripemd128blob"
+#define HASH_INFO_COLUMN_TYPE_RIPEMD128MACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD128MACBLOB "select macripemd128blob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_RIPEMD128MACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_RIPEMD128MACBLOB "2024-06-10-01:01:01"
+
+#endif
+
 
 #endif
 
@@ -903,6 +925,16 @@ enum hash_functions
 #define HASH_INFO_COLUMN_SIGNATURE_RIPEMD160MAC "select macripemd160([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_RIPEMD160MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_RIPEMD160MAC "2024-06-10-01:01:01"
+
+#endif
+
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_RIPEMD160MACBLOB "macripemd160blob"
+#define HASH_INFO_COLUMN_TYPE_RIPEMD160MACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD160MACBLOB "select macripemd160blob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_RIPEMD160MACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_RIPEMD160MACBLOB "2024-06-10-01:01:01"
 
 #endif
 
@@ -938,6 +970,15 @@ enum hash_functions
 
 #endif
 
+#if defined(__USE_MAC__) &&  defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_RIPEMD256MACBLOB "macripemd256blob"
+#define HASH_INFO_COLUMN_TYPE_RIPEMD256MACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD256MACBLOB "select macripemd256blob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_RIPEMD256MACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_RIPEMD256MACBLOB "2024-06-10-01:01:01"
+
+#endif
 
 #endif
 
@@ -967,6 +1008,16 @@ enum hash_functions
 #define HASH_INFO_COLUMN_SIGNATURE_RIPEMD320MAC "select macripemd320([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_RIPEMD320MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_RIPEMD320MAC "2024-06-10-01:01:01"
+
+#endif
+
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_RIPEMD320MACBLOB "macripemd320blob"
+#define HASH_INFO_COLUMN_TYPE_RIPEMD320MACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_RIPEMD320MACBLOB "select macripemd320blob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_RIPEMD320MACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_RIPEMD320MACBLOB "2024-06-10-01:01:01"
 
 #endif
 
@@ -2933,7 +2984,31 @@ static int hash_info_Column(
       }
       }
 #endif
-
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_ripemd128macblob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_RIPEMD128MACBLOB), strlength(HASH_INFO_FUNCTION_NAME_RIPEMD128MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_RIPEMD128MACBLOB), strlength(HASH_INFO_COLUMN_TYPE_RIPEMD128MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_RIPEMD128MACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_RIPEMD128MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_RIPEMD128MACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_RIPEMD128MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_RIPEMD128MACBLOB), strlength(HASH_INFO_FUNCTION_DATE_RIPEMD128MACBLOB), free);
+          break;
+      }
+      }
+#endif
 #endif
 
 
@@ -3008,6 +3083,32 @@ static int hash_info_Column(
           break;
       case HASH_INFO_COLUMN_DATE_CREATED:
           sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_RIPEMD160MAC), strlength(HASH_INFO_FUNCTION_DATE_RIPEMD160MAC), free);
+          break;
+      }
+      }
+#endif
+
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_ripemd160macblob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_RIPEMD160MACBLOB), strlength(HASH_INFO_FUNCTION_NAME_RIPEMD160MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_RIPEMD160MACBLOB), strlength(HASH_INFO_COLUMN_TYPE_RIPEMD160MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_RIPEMD160MACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_RIPEMD160MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_RIPEMD160MACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_RIPEMD160MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_RIPEMD160MACBLOB), strlength(HASH_INFO_FUNCTION_DATE_RIPEMD160MACBLOB), free);
           break;
       }
       }
@@ -3089,6 +3190,31 @@ static int hash_info_Column(
       }
       }
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_ripemd256macblob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_RIPEMD256MACBLOB), strlength(HASH_INFO_FUNCTION_NAME_RIPEMD256MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_RIPEMD256MACBLOB), strlength(HASH_INFO_COLUMN_TYPE_RIPEMD256MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_RIPEMD256MACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_RIPEMD256MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_RIPEMD256MACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_RIPEMD256MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_RIPEMD256MACBLOB), strlength(HASH_INFO_FUNCTION_DATE_RIPEMD256MACBLOB), free);
+          break;
+      }
+      }
+#endif
 
 #endif
 #if defined(__RIPEMD320__) || defined (__ALL__)
@@ -3161,6 +3287,31 @@ static int hash_info_Column(
           break;
       case HASH_INFO_COLUMN_DATE_CREATED:
           sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_RIPEMD320MAC), strlength(HASH_INFO_FUNCTION_DATE_RIPEMD320MAC), free);
+          break;
+      }
+      }
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_ripemd320macblob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_RIPEMD320MACBLOB), strlength(HASH_INFO_FUNCTION_NAME_RIPEMD320MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_RIPEMD320MACBLOB), strlength(HASH_INFO_COLUMN_TYPE_RIPEMD320MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_RIPEMD320MACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_RIPEMD320MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_RIPEMD320MACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_RIPEMD320MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_RIPEMD320MACBLOB), strlength(HASH_INFO_FUNCTION_DATE_RIPEMD320MACBLOB), free);
           break;
       }
       }

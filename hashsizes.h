@@ -177,6 +177,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #if defined(__USE_MAC__)
         hash_size_ripemd128mac,
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+        hash_size_ripemd128macblob,
+#endif
 #endif
 #if defined(__RIPEMD160__) || defined (__ALL__)
     hash_size_ripemd160,
@@ -185,6 +188,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #endif
 #if defined(__USE_MAC__)
         hash_size_ripemd160mac,
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+        hash_size_ripemd160macblob,
 #endif
 #endif
 
@@ -196,6 +202,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #if defined(__USE_MAC__)
         hash_size_ripemd256mac,
 #endif
+#if defined(__USE_MAC__) &&  defined(__USE_BLOB__)
+        hash_size_ripemd256macblob,
+#endif
 #endif
 
 #if defined(__RIPEMD320__) || defined (__ALL__)
@@ -204,7 +213,10 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
     hash_size_ripemd320blob,
 #endif
 #if defined(__USE_MAC__)
-        hash_size_ripemd320mac,
+    hash_size_ripemd320mac,
+#endif
+#if defined(__USE_MAC__)
+    hash_size_ripemd320macblob,
 #endif
 #endif
 
@@ -547,6 +559,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #if defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_RIPEMD128MAC "macripemd128"
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_RIPEMD128MACBLOB "macripemd128blob"
+#endif
 #endif
 
 #if defined(__RIPEMD160__) || defined (__ALL__)
@@ -556,6 +571,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #endif
 #if defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_RIPEMD160MAC "macripenmd160"
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_RIPEMD160MACBLOB "macripenmd160blob"
 #endif
 #endif
 
@@ -569,6 +587,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #if defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_RIPEMD256MAC "macripemd256"
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_RIPEMD256MACBLOB "macripemd256blob"
+#endif
 #endif
 
 
@@ -580,6 +601,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #endif
 #if defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_RIPEMD320MAC "macripemd320"
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_RIPEMD320MACBLOB "macripemd320blob"
 #endif
 #endif
 
@@ -1675,6 +1699,22 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_ripemd128macblob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_RIPEMD128MACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_RIPEMD128MACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_ripemd_128));
+            break;
+        }
+        }
+#endif
 
 #endif
 
@@ -1720,6 +1760,22 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         case HASH_SIZE_COLUMN_FUNCTION_NAME:
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_RIPEMD160MAC), strlength(HASH_SIZE_FUNCTION_NAME_RIPEMD160MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_ripemd_160));
+            break;
+        }
+        }
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_ripemd160macblob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_RIPEMD160MACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_RIPEMD160MACBLOB), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
             sqlite3_result_int(ctx, GetDigestSize(algo_ripemd_160));
@@ -1780,6 +1836,23 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
 
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_ripemd256macblob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_RIPEMD256MACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_RIPEMD256MACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_ripemd_256));
+            break;
+        }
+        }
+
+#endif
 #endif
 
 
@@ -1824,6 +1897,22 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         case HASH_SIZE_COLUMN_FUNCTION_NAME:
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_RIPEMD320MAC), strlength(HASH_SIZE_FUNCTION_NAME_RIPEMD320MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_ripemd_320));
+            break;
+        }
+        }
+#endif 
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_ripemd320macblob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_RIPEMD320MACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_RIPEMD320MACBLOB), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
             sqlite3_result_int(ctx, GetDigestSize(algo_ripemd_320));

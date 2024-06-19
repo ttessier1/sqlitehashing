@@ -1342,65 +1342,293 @@ extern "C" {
 #if (defined(__RIPEMD128__) || defined (__ALL__)) && defined(__USE_BLOB__)
     RipeMD128MacBlobContextPtr RipeMD128MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        RipeMD128MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (RipeMD128MacBlobContextPtr)malloc(sizeof(RipeMD128MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)RipeMD128MacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<RIPEMD128>*)malloc(sizeof(HMAC<RIPEMD128>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<RIPEMD128>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void RipeMD128MacUpdate(RipeMD128MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* RipeMD128MacFinalize(RipeMD128MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(RIPEMD128::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, RIPEMD128::DIGESTSIZE, algo_ripemd_128);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (RIPEMD128::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (RIPEMD128::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 #if (defined(__RIPEMD160__) || defined (__ALL__)) && defined(__USE_BLOB__)
     RipeMD160MacBlobContextPtr RipeMD160MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        RipeMD160MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (RipeMD160MacBlobContextPtr)malloc(sizeof(RipeMD160MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)RipeMD160MacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<RIPEMD160>*)malloc(sizeof(HMAC<RIPEMD160>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<RIPEMD160>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void RipeMD160MacUpdate(RipeMD160MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* RipeMD160MacFinalize(RipeMD160MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(RIPEMD160::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, RIPEMD160::DIGESTSIZE, algo_ripemd_160);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (RIPEMD160::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (RIPEMD160::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 #if (defined(__RIPEMD256__) || defined (__ALL__)) && defined(__USE_BLOB__)
     RipeMD256MacBlobContextPtr RipeMD256MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        RipeMD256MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (RipeMD256MacBlobContextPtr)malloc(sizeof(RipeMD256MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)RipeMD256MacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<RIPEMD256>*)malloc(sizeof(HMAC<RIPEMD256>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<RIPEMD256>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void RipeMD256MacUpdate(RipeMD256MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* RipeMD256MacFinalize(RipeMD256MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(RIPEMD256::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, RIPEMD256::DIGESTSIZE, algo_ripemd_256);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (RIPEMD256::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (RIPEMD256::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 #if (defined(__RIPEMD320__) || defined (__ALL__)) && defined(__USE_BLOB__)
     RipeMD320MacBlobContextPtr RipeMD320MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        RipeMD320MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (RipeMD320MacBlobContextPtr)malloc(sizeof(RipeMD320MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)RipeMD320MacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<RIPEMD320>*)malloc(sizeof(HMAC<RIPEMD320>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<RIPEMD320>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void RipeMD320MacUpdate(RipeMD320MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* RipeMD320MacFinalize(RipeMD320MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(RIPEMD320::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, RIPEMD320::DIGESTSIZE, algo_ripemd_320);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (RIPEMD320::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (RIPEMD320::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 #if (defined(__BLAKE2B__) || defined (__ALL__)) && defined(__USE_BLOB__)
@@ -1411,7 +1639,10 @@ extern "C" {
 
     void Blake2BMacUpdate(Blake2BMacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* Blake2BMacFinalize(Blake2BMacBlobContextPtr macBlobContext)
@@ -1427,7 +1658,10 @@ extern "C" {
 
     void Blake2SMacUpdate(Blake2SMacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* Blake2SMacFinalize(Blake2SMacBlobContextPtr macBlobContext)
@@ -1443,7 +1677,10 @@ extern "C" {
 
     void TigerMacUpdate(TigerMacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* TigerMacFinalize(TigerMacBlobContextPtr macBlobContext)
@@ -1459,7 +1696,10 @@ extern "C" {
 
     void Shake128MacUpdate(Shake128MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* Shake128MacFinalize(Shake128MacBlobContextPtr macBlobContext)
@@ -1475,7 +1715,10 @@ extern "C" {
 
     void Shake256MacUpdate(Shake256MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* Shake256MacFinalize(Shake256MacBlobContextPtr macBlobContext)
@@ -1491,7 +1734,10 @@ extern "C" {
 
     void Siphash64MacUpdate(Siphash64MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            //macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* Siphash64MacFinalize(Siphash64MacBlobContextPtr macBlobContext)
@@ -1507,7 +1753,10 @@ extern "C" {
 
     void Siphash128MacUpdate(Siphash128MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            //macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* Siphash128MacFinalize(Siphash128MacBlobContextPtr macBlobContext)
@@ -1523,7 +1772,10 @@ extern "C" {
 
     void Lsh224MacUpdate(Lsh224MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* Lsh224MacFinalize(Lsh224MacBlobContextPtr macBlobContext)
@@ -1539,7 +1791,10 @@ extern "C" {
 
     void Lsh256MacUpdate(Lsh256MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* Lsh256MacFinalize(Lsh256MacBlobContextPtr macBlobContext)
@@ -1555,7 +1810,10 @@ extern "C" {
 
     void Lsh384MacUpdate(Lsh384MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* Lsh384MacFinalize(Lsh384MacBlobContextPtr macBlobContext)
@@ -1571,7 +1829,10 @@ extern "C" {
 
     void Lsh512MacUpdate(Lsh512MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* Lsh512MacFinalize(Lsh512MacBlobContextPtr macBlobContext)
@@ -1587,7 +1848,10 @@ extern "C" {
 
     void Sm3MacUpdate(Sm3MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* Sm3MacFinalize(Sm3MacBlobContextPtr macBlobContext)
@@ -1603,7 +1867,10 @@ extern "C" {
 
     void WhirlpoolMacUpdate(WhirlpoolMacBlobContextPtr macBlobContext, const char* message, unsigned int length)
     {
-
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
     }
 
     const char* WhirlpoolMacFinalize(WhirlpoolMacBlobContextPtr macBlobContext)
