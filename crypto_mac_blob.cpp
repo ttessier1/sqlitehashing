@@ -399,12 +399,12 @@ typedef struct shake256MacBlobContext {
 #endif
 #if (defined(__SIPHASH64__) || defined (__ALL__)) && defined(__USE_BLOB__)
 typedef struct siphash64MacBlobContext {
-    HMAC<SipHash<2, 4, false>>* macBlobContext;
+    SipHash<2, 4, false>* macBlobContext;
 }Siphash64MacBlobContext, * Siphash64MacBlobContextPtr;
 #endif
 #if (defined(__SIPHASH128__) || defined (__ALL__)) && defined(__USE_BLOB__)
 typedef struct siphash128MacBlobContext {
-    HMAC<SipHash<4, 8, true>>* macBlobContext;
+    SipHash<4, 8, true>* macBlobContext;
 }Siphash128MacBlobContext, * Siphash128MacBlobContextPtr;
 #endif
 #if (defined(__LSH224__) || defined (__ALL__)) && defined(__USE_BLOB__)
@@ -2000,7 +2000,26 @@ extern "C" {
 #if (defined(__SIPHASH64__) || defined (__ALL__)) && defined(__USE_BLOB__)
     Siphash64MacBlobContextPtr Siphash64MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        Siphash64MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (Siphash64MacBlobContextPtr)malloc(sizeof(Siphash64MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)Siphash64MacBlobContextPtr();
+                macBlobContext->macBlobContext = (SipHash<2,4,false>*)malloc(sizeof(SipHash<2, 4, false>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) SipHash<2, 4, false>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void Siphash64MacUpdate(Siphash64MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
@@ -2013,13 +2032,67 @@ extern "C" {
 
     const char* Siphash64MacFinalize(Siphash64MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(SipHash<2,4,false>::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SipHash<2, 4, false>::DIGESTSIZE, algo_sip_hash64);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SipHash<2, 4, false>::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SipHash<2, 4, false>::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 #if (defined(__SIPHASH128__) || defined (__ALL__)) && defined(__USE_BLOB__)
     Siphash128MacBlobContextPtr Siphash128MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        Siphash128MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (Siphash128MacBlobContextPtr)malloc(sizeof(Siphash128MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)Siphash128MacBlobContextPtr();
+                macBlobContext->macBlobContext = (SipHash<4, 8, true>*)malloc(sizeof(SipHash<4, 8, true>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) SipHash<4, 8, true>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void Siphash128MacUpdate(Siphash128MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
@@ -2032,7 +2105,42 @@ extern "C" {
 
     const char* Siphash128MacFinalize(Siphash128MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(SipHash<4, 8, true>::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SipHash<4, 8, true>::DIGESTSIZE, algo_sip_hash128);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SipHash<4, 8, true>::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SipHash<4, 8, true>::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 #if (defined(__LSH224__) || defined (__ALL__)) && defined(__USE_BLOB__)

@@ -267,10 +267,13 @@ enum hash_functions
         hash_function_siphash64,
 #endif
 #if (defined(__SIPHASH64__) || defined (__ALL__)) && defined(__USE_BLOB__)
-        hash_function_siphash64blob,
+    hash_function_siphash64blob,
 #endif
 #if (defined(__SIPHASH64__) || defined (__ALL__)) && defined(__USE_MAC__)
-            hash_function_siphash64mac,
+    hash_function_siphash64mac,
+#endif
+#if (defined(__SIPHASH64__) || defined (__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+    hash_function_siphash64macblob,
 #endif
 #if defined(__SIPHASH128__) || defined (__ALL__)
         hash_function_siphash128,
@@ -280,6 +283,9 @@ enum hash_functions
 #endif
 #if (defined(__SIPHASH128__) || defined (__ALL__)) && defined(__USE_MAC__)
             hash_function_siphash128mac,
+#endif
+#if (defined(__SIPHASH128__) || defined (__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+            hash_function_siphash128macblob,
 #endif
 #if defined(__LSH224__) || defined (__ALL__)
         hash_function_lsh224,
@@ -1267,6 +1273,15 @@ enum hash_functions
 
 #endif
 
+#if  defined(__USE_MAC__)&& defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_SIPHASH64MACBLOB "macsiphash64blob"
+#define HASH_INFO_COLUMN_TYPE_SIPHASH64MACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_SIPHASH64MACBLOB "select macsiphash64blob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_SIPHASH64MACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_SIPHASH64MACBLOB "2024-06-10-01:01:01"
+
+#endif
 
 #endif
 
@@ -1295,6 +1310,16 @@ enum hash_functions
 #define HASH_INFO_COLUMN_SIGNATURE_SIPHASH128MAC "select macsiphash128([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_SIPHASH128MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_SIPHASH128MAC "2024-06-10-01:01:01"
+
+#endif
+
+#if defined(__USE_MAC__)&& defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_SIPHASH128MACBLOB "macsiphash128blob"
+#define HASH_INFO_COLUMN_TYPE_SIPHASH128MACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_SIPHASH128MACBLOB "select macsiphash128blob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_SIPHASH128MACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_SIPHASH128MACBLOB "2024-06-10-01:01:01"
 
 #endif
 
@@ -3967,6 +3992,32 @@ static int hash_info_Column(
       }
       }
 #endif
+
+#if  defined(__USE_MAC__) && defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_siphash64macblob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_SIPHASH64MACBLOB), strlength(HASH_INFO_FUNCTION_NAME_SIPHASH64MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_SIPHASH64MACBLOB), strlength(HASH_INFO_COLUMN_TYPE_SIPHASH64MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_SIPHASH64MACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_SIPHASH64MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_SIPHASH64MACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_SIPHASH64MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_SIPHASH64MACBLOB), strlength(HASH_INFO_FUNCTION_DATE_SIPHASH64MACBLOB), free);
+          break;
+      }
+      }
+#endif
 #endif
 
 
@@ -4045,7 +4096,31 @@ static int hash_info_Column(
       }
       }
 #endif
-
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_siphash128macblob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_SIPHASH128MACBLOB), strlength(HASH_INFO_FUNCTION_NAME_SIPHASH128MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_SIPHASH128MACBLOB), strlength(HASH_INFO_COLUMN_TYPE_SIPHASH128MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_SIPHASH128MACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_SIPHASH128MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_SIPHASH128MACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_SIPHASH128MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_SIPHASH128MACBLOB), strlength(HASH_INFO_FUNCTION_DATE_SIPHASH128MACBLOB), free);
+          break;
+      }
+      }
+#endif
 #endif
 
 

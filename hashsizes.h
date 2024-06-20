@@ -293,6 +293,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #if defined(__USE_MAC__)
             hash_size_siphash64mac,
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+        hash_size_siphash64macblob,
+#endif
 #endif
 
 #if defined(__SIPHASH128__) || defined (__ALL__)
@@ -302,6 +305,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #endif
 #if defined(__USE_MAC__)
     hash_size_siphash128mac,
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+        hash_size_siphash128macblob,
 #endif
 #endif
 
@@ -696,6 +702,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #if defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_SIPHASH64MAC "macsiphash64"
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_SIPHASH64MACBLOB "macsiphash64blob"
+#endif
 #endif
 
 
@@ -706,6 +715,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #endif
 #if defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_SIPHASH128MAC "macsiphash128"
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_SIPHASH128MACBLOB "macsiphash128blob"
 #endif
 #endif
 
@@ -2334,6 +2346,22 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_siphash64macblob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SIPHASH64MACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_SIPHASH64MACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_shake_256));
+            break;
+        }
+        }
+#endif
 #endif
 
 
@@ -2385,9 +2413,23 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_siphash128macblob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SIPHASH128MACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_SIPHASH128MACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash128));
+            break;
+        }
+        }
 #endif
-
-
+#endif
     
 #if defined(__LSH224__) || defined (__ALL__)
     else if (pCur->iRowid == hash_size_lsh224)
