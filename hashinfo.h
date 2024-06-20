@@ -2843,7 +2843,7 @@ static int hash_info_Column(
       }
       }
 #endif
-#if defined(__USE_MAC__)
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
   else if (pCur->iRowid == hash_function_sha3224macblob)
   {
       switch (i) {
@@ -4775,6 +4775,31 @@ static int hash_info_Column(
       }
       }
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_sm3macblob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_SM3MACBLOB), strlength(HASH_INFO_FUNCTION_NAME_SM3MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_SM3MACBLOB), strlength(HASH_INFO_COLUMN_TYPE_SM3MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_SM3MACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_SM3MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_SM3MACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_SM3MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_SM3MACBLOB), strlength(HASH_INFO_FUNCTION_DATE_SM3MACBLOB), free);
+          break;
+      }
+      }
+#endif
 
 #endif
 
@@ -4851,6 +4876,31 @@ static int hash_info_Column(
               break;
           }
       }
+#endif
+#if  defined(__USE_MAC__) && defined(__USE_BLOB__)
+      else if (pCur->iRowid == hash_function_whirlpoolmacblob)
+      {
+          switch (i) {
+          case HASH_INFO_COLUMN_MODULE_NAME:
+              sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+              break;
+          case HASH_INFO_COLUMN_FUNCTION_NAME:
+              sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_WHIRLPOOLMACBLOB), strlength(HASH_INFO_FUNCTION_NAME_WHIRLPOOLMACBLOB), free);
+              break;
+          case HASH_INFO_COLUMN_TYPE:
+              sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_WHIRLPOOLMACBLOB), strlength(HASH_INFO_COLUMN_TYPE_WHIRLPOOLMACBLOB), free);
+              break;
+          case HASH_INFO_COLUMN_SIGNATURE:
+              sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_WHIRLPOOLMACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_WHIRLPOOLMACBLOB), free);
+              break;
+          case HASH_INFO_COLUMN_VERSION:
+              sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_WHIRLPOOLMACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_WHIRLPOOLMACBLOB), free);
+              break;
+          case HASH_INFO_COLUMN_DATE_CREATED:
+              sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_WHIRLPOOLMACBLOB), strlength(HASH_INFO_FUNCTION_DATE_WHIRLPOOLMACBLOB), free);
+              break;
+          }
+          }
 #endif
 #endif
 
@@ -5256,9 +5306,8 @@ static int hash_info_Column(
 #endif
   else
   {
-      char buffer[1024];
-      sprintf_s(buffer, 1024, "Invalid Cursor Position:[%lld]", pCur->iRowid);
-    sqlite3_result_error(ctx,buffer, strlength(buffer));
+      char* buffer = sqlite3_mprintf("Invalid Cursor Position:[%lld] Max Row[%d]", pCur->iRowid, hash_function_hash_max);
+    sqlite3_result_error(ctx, buffer, strlength(buffer));
     return SQLITE_ERROR;
   }
   return SQLITE_OK;
