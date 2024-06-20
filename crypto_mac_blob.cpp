@@ -2146,7 +2146,26 @@ extern "C" {
 #if (defined(__LSH224__) || defined (__ALL__)) && defined(__USE_BLOB__)
     Lsh224MacBlobContextPtr Lsh224MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        Lsh224MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (Lsh224MacBlobContextPtr)malloc(sizeof(Lsh224MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)Lsh224MacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<LSH224>*)malloc(sizeof(HMAC<LSH224>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<LSH224>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void Lsh224MacUpdate(Lsh224MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
@@ -2159,13 +2178,67 @@ extern "C" {
 
     const char* Lsh224MacFinalize(Lsh224MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(LSH224::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, LSH224::DIGESTSIZE, algo_lsh_224);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (LSH224::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (LSH224::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 #if (defined(__LSH256__) || defined (__ALL__)) && defined(__USE_BLOB__)
     Lsh256MacBlobContextPtr Lsh256MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        Lsh256MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (Lsh256MacBlobContextPtr)malloc(sizeof(Lsh256MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)Lsh256MacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<LSH256>*)malloc(sizeof(HMAC<LSH256>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<LSH256>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void Lsh256MacUpdate(Lsh256MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
@@ -2178,13 +2251,67 @@ extern "C" {
 
     const char* Lsh256MacFinalize(Lsh256MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(LSH256::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, LSH256::DIGESTSIZE, algo_lsh_256);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (LSH256::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (LSH256::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 #if (defined(__LSH384__) || defined (__ALL__)) && defined(__USE_BLOB__)
     Lsh384MacBlobContextPtr Lsh384MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        Lsh384MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (Lsh384MacBlobContextPtr)malloc(sizeof(Lsh384MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)Lsh384MacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<LSH384>*)malloc(sizeof(HMAC<LSH384>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<LSH384>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void Lsh384MacUpdate(Lsh384MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
@@ -2197,13 +2324,67 @@ extern "C" {
 
     const char* Lsh384MacFinalize(Lsh384MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(LSH384::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, LSH384::DIGESTSIZE, algo_lsh_384);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (LSH384::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (LSH384::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 #if (defined(__LSH512__) || defined (__ALL__)) && defined(__USE_BLOB__)
     Lsh512MacBlobContextPtr Lsh512MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        Lsh512MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (Lsh512MacBlobContextPtr)malloc(sizeof(Lsh512MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)Lsh512MacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<LSH512>*)malloc(sizeof(HMAC<LSH512>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<LSH512>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void Lsh512MacUpdate(Lsh512MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
@@ -2216,7 +2397,42 @@ extern "C" {
 
     const char* Lsh512MacFinalize(Lsh512MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(LSH512::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, LSH512::DIGESTSIZE, algo_lsh_512);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (LSH512::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (LSH512::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 #if (defined(__SM3__) || defined (__ALL__)) && defined(__USE_BLOB__)
