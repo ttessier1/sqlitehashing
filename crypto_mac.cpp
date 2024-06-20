@@ -1408,7 +1408,7 @@ const char * DoMacCMac(const char * key, unsigned int length, const char * messa
             DebugMessage("DoMacCMac buffer is good\r\n");
             
             hmac.Final(( CryptoPP::byte *)lpBuffer);
-            result = ToHex(lpBuffer,hmac.DigestSize(),algo_hmac_cmac );
+            result = ToHex(lpBuffer,hmac.DigestSize(),algo_cmac );
             if(result)
             {
                 DebugMessage("DoMacCMac tohex is good\r\n");
@@ -1433,7 +1433,7 @@ const char * DoMacCMac(const char * key, unsigned int length, const char * messa
 
 #endif
 
-#if (defined(__CBCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
 
 const char * DoMacCbcCMac(const char * key, unsigned int length, const char * message)
 {
@@ -1455,7 +1455,7 @@ const char * DoMacCbcCMac(const char * key, unsigned int length, const char * me
             DebugMessage("DoMacCbcCMac buffer is good\r\n");
 
             hmac.Final((CryptoPP::byte*)lpBuffer);
-            result = ToHex(lpBuffer, hmac.DigestSize(), algo_hmac_cbc_mac);
+            result = ToHex(lpBuffer, hmac.DigestSize(), algo_cbc_mac);
             if (result)
             {
                 DebugMessage("DoMacCbcCMac tohex is good\r\n");
@@ -1502,7 +1502,7 @@ const char * DoMacDMac(const char * key, unsigned int length, const char * messa
             DebugMessage("DoMacDMac buffer is good\r\n");
 
             hmac.Final((CryptoPP::byte*)lpBuffer);
-            result = ToHex(lpBuffer, hmac.DigestSize(), algo_hmac_dmac);
+            result = ToHex(lpBuffer, hmac.DigestSize(), algo_dmac);
             if (result)
             {
                 DebugMessage("DoMacDMac tohex is good\r\n");
@@ -1555,7 +1555,7 @@ const char * DoMacGMac(const char * key, unsigned int length, const char * messa
             DebugMessage("DoMacGMac buffer is good\r\n");
 
             hmac.Final((CryptoPP::byte*)lpBuffer);
-            result = ToHex(lpBuffer, hmac.DigestSize(), algo_hmac_gmac);
+            result = ToHex(lpBuffer, hmac.DigestSize(), algo_gmac);
             if (result)
             {
                 DebugMessage("DoMacGMac tohex is good\r\n");
@@ -1602,7 +1602,7 @@ const char * DoMacHMac(const char * key, unsigned int length, const char * messa
             DebugMessage("DoMacHMac buffer is good\r\n");
 
             hmac.Final((CryptoPP::byte*)lpBuffer);
-            result = ToHex(lpBuffer, hmac.DigestSize(), algo_hmac_hmac);
+            result = ToHex(lpBuffer, hmac.DigestSize(), algo_hmac);
             if (result)
             {
                 DebugMessage("DoMacHMac tohex is good\r\n");
@@ -1649,7 +1649,7 @@ const char * DoMacPoly1305(const char * key, unsigned int length, const char * m
             DebugMessage("DoMacPoly1305 buffer is good\r\n");
 
             hmac.Final((CryptoPP::byte*)lpBuffer);
-            result = ToHex(lpBuffer, hmac.DigestSize(), algo_hmac_poly_1305);
+            result = ToHex(lpBuffer, hmac.DigestSize(), algo_poly_1305);
             if (result)
             {
                 DebugMessage("DoMacPoly1305 tohex is good\r\n");
@@ -1696,7 +1696,7 @@ const char * DoMacTwoTrack(const char * key, unsigned int length, const char * m
             DebugMessage("DoMacTwoTrack buffer is good\r\n");
 
             hmac.Final((CryptoPP::byte*)lpBuffer);
-            result = ToHex(lpBuffer, hmac.DigestSize(), algo_hmac_two_track);
+            result = ToHex(lpBuffer, hmac.DigestSize(), algo_two_track);
             if (result)
             {
                 DebugMessage("DoMacTwoTrack tohex is good\r\n");
@@ -1745,7 +1745,7 @@ const char * DoMacVMac(const char * key, unsigned int length, const char * messa
             DebugMessage("DoMacVMac buffer is good\r\n");
 
             vmac.Final((CryptoPP::byte*)lpBuffer);
-            result = ToHex(lpBuffer, vmac.DigestSize(), algo_hmac_vmac);
+            result = ToHex(lpBuffer, vmac.DigestSize(), algo_vmac);
             if (result)
             {
                 DebugMessage("DoMacVMac tohex is good\r\n");

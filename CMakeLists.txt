@@ -44,7 +44,7 @@ endif()
  add_definitions(-D__WHIRLPOOL__=1 )
 
  add_definitions(-D__CMAC__=1 )
- add_definitions(-D__CBCMAC__=1 )
+ add_definitions(-D__CBCCMAC__=1 )
  add_definitions(-D__DMAC__=1 )
  add_definitions(-D__GMAC__=1 )
  add_definitions(-D__HMAC__=1 )

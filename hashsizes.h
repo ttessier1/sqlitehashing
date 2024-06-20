@@ -391,28 +391,51 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
          hash_size_cmac,
 #endif
-#if (defined(__CBCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+#if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+         hash_size_cmac_blob,
+#endif
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
          hash_size_cbcmac,
 #endif
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+        hash_size_cbcmac_blob,
+#endif
 #if (defined(__DMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
-         hash_size_dmac,
+    hash_size_dmac,
+#endif
+#if (defined(__DMAC__)||defined(__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+    hash_size_dmac_blob,
 #endif
 #if (defined(__GMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
-         hash_size_gmac,
+    hash_size_gmac,
+#endif
+#if (defined(__GMAC__)||defined(__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+    hash_size_gmac_blob,
 #endif
 #if (defined(__HMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
-         hash_size_hmac,
+    hash_size_hmac,
+#endif
+#if (defined(__HMAC__)||defined(__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+    hash_size_hmac_blob,
 #endif
 #if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__)
     hash_size_poly1305mac,
 #endif
+#if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+    hash_size_poly1305mac_blob,
+#endif
 #if (defined(__TWOTRACK__)|| defined(__ALL__)) && defined(__USE_MAC__)
-         hash_size_twotrackmac,
+    hash_size_twotrackmac,
+#endif
+#if (defined(__TWOTRACK__)|| defined(__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+    hash_size_twotrackmac_blob,
 #endif
 #if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
-         hash_size_vmacmac,
+    hash_size_vmacmac,
 #endif
-
+#if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+    hash_size_vmacmac_blob,
+#endif
     hash_size_hash_max
 };
 
@@ -824,28 +847,51 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_CMACMAC "maccmac"
 #endif
-#if (defined(__CBCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+#if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_CMACMACBLOB "maccmacblob"
+#endif
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_CBCMACMAC "maccbcmac"
+#endif
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_CBCMACMACBLOB "maccbcmacblob"
 #endif
 #if (defined(__DMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_DMACMAC "macdmac"
 #endif
+#if (defined(__DMAC__)||defined(__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_DMACMACBLOB "macdmacblob"
+#endif
 #if (defined(__GMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_GMACMAC "macgmac"
+#endif
+#if (defined(__GMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_GMACMACBLOB "macgmacblob"
 #endif
 #if (defined(__HMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_HMACMAC "machmac"
 #endif
+#if (defined(__HMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_HMACMACBLOB "machmacblob"
+#endif
 #if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_POLY1305MACMAC "macpoly1305"
+#endif
+#if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_POLY1305MACMACBLOB "macpoly1305blob"
 #endif
 #if (defined(__TWOTRACK__)|| defined(__ALL__)) && defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_TWOTRACKMAC "mactwotrack"
 #endif
+#if (defined(__TWOTRACK__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_TWOTRACKMACBLOB "mactwotrackblob"
+#endif
 #if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_VMACMAC "macvmac"
 #endif
-
+#if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_VMACMACBLOB "macvmacblob"
+#endif
 
 #define HASH_SIZE_MAX hash_size_hash_max
 
@@ -2873,12 +2919,28 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_CMACMAC), strlength(HASH_SIZE_FUNCTION_NAME_CMACMAC), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_hmac_cmac));
+            sqlite3_result_int(ctx, GetDigestSize(algo_cmac));
             break;
         }
         }
 #endif
-#if (defined(__CBCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+#if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_cmac_blob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_CMACMACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_CMACMACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_cmac));
+            break;
+        }
+        }
+#endif
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
     else if (pCur->iRowid == hash_size_cbcmac)
     {
         switch (i) {
@@ -2889,7 +2951,23 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_CBCMACMAC), strlength(HASH_SIZE_FUNCTION_NAME_CBCMACMAC), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_hmac_cbc_mac));
+            sqlite3_result_int(ctx, GetDigestSize(algo_cbc_mac));
+            break;
+        }
+        }
+#endif
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_cbcmac_blob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_CBCMACMACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_CBCMACMACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_cbc_mac));
             break;
         }
         }
@@ -2905,9 +2983,26 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_DMACMAC), strlength(HASH_SIZE_FUNCTION_NAME_DMACMAC), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_hmac_dmac));
+            sqlite3_result_int(ctx, GetDigestSize(algo_dmac));
             break;
             }
+        }
+
+#endif
+#if (defined(__DMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_dmac_blob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_DMACMACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_DMACMACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_dmac));
+            break;
+        }
         }
 
 #endif
@@ -2922,9 +3017,26 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_GMACMAC), strlength(HASH_SIZE_FUNCTION_NAME_GMACMAC), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_hmac_gmac));
+            sqlite3_result_int(ctx, GetDigestSize(algo_gmac));
             break;
             }
+        }
+
+#endif
+#if (defined(__GMAC__)||defined(__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_gmac_blob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_GMACMACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_GMACMACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_gmac));
+            break;
+        }
         }
 
 #endif
@@ -2939,9 +3051,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_HMACMAC), strlength(HASH_SIZE_FUNCTION_NAME_HMACMAC), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_hmac_hmac));
+            sqlite3_result_int(ctx, GetDigestSize(algo_hmac));
             break;
             }
+        }
+#endif
+#if (defined(__HMAC__)||defined(__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_hmac_blob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_HMACMACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_HMACMACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_hmac));
+            break;
+        }
         }
 #endif
 #if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__)
@@ -2955,9 +3083,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_POLY1305MACMAC), strlength(HASH_SIZE_FUNCTION_NAME_POLY1305MACMAC), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_hmac_poly_1305));
+            sqlite3_result_int(ctx, GetDigestSize(algo_poly_1305));
             break;
             }
+        }
+#endif
+#if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_poly1305mac_blob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_POLY1305MACMACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_POLY1305MACMACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_poly_1305));
+            break;
+        }
         }
 #endif
 #if (defined(__TWOTRACK__)|| defined(__ALL__)) && defined(__USE_MAC__)
@@ -2971,9 +3115,25 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_TWOTRACKMAC), strlength(HASH_SIZE_FUNCTION_NAME_TWOTRACKMAC), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_hmac_two_track));
+            sqlite3_result_int(ctx, GetDigestSize(algo_two_track));
             break;
             }
+        }
+#endif
+#if (defined(__TWOTRACK__)|| defined(__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_twotrackmac_blob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_TWOTRACKMACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_TWOTRACKMACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_two_track));
+            break;
+        }
         }
 #endif
 #if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
@@ -2987,7 +3147,23 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_VMACMAC), strlength(HASH_SIZE_FUNCTION_NAME_VMACMAC), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_hmac_vmac));
+            sqlite3_result_int(ctx, GetDigestSize(algo_vmac));
+            break;
+        }
+        }
+#endif
+#if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+    else if (pCur->iRowid == hash_size_vmacmac_blob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_VMACMACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_VMACMACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_vmac));
             break;
         }
         }

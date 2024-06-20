@@ -263,43 +263,43 @@ unsigned int GetDigestSize(unsigned int algorithms)
             break;
 #endif
 #if defined(__CMAC__)|| defined(__ALL__)
-            case algo_hmac_cmac:
+            case algo_cmac:
                 return AES::BLOCKSIZE;
             break;
 #endif
-#if defined(__CBCMAC__)|| defined(__ALL__)
-            case algo_hmac_cbc_mac:
+#if defined(__CBCCMAC__)|| defined(__ALL__)
+            case algo_cbc_mac:
                 return AES::BLOCKSIZE;
                 break;
 #endif
 #if defined(__DMAC__)|| defined(__ALL__)
-            case algo_hmac_dmac:
+            case algo_dmac:
                 return AES::BLOCKSIZE;
                 break;
 #endif
 #if defined(__GMAC__)|| defined(__ALL__)
-            case algo_hmac_gmac:
+            case algo_gmac:
                 return AES::BLOCKSIZE;
                 break;
 #endif
 #if defined(__HMAC__)|| defined(__ALL__)
-            case algo_hmac_hmac:
+            case algo_hmac:
                 return SHA256::DIGESTSIZE;
                 break;
 
 #endif
 #if defined(__POLY1305__)|| defined(__ALL__)
-            case algo_hmac_poly_1305:
+            case algo_poly_1305:
                 return AES::BLOCKSIZE;
                 break;
 #endif
 #if defined(__TWOTRACK__)|| defined(__ALL__)
-            case algo_hmac_two_track:
+            case algo_two_track:
                 return TTMAC::DIGESTSIZE;
                     break;
 #endif
 #if defined(__VMAC__)|| defined(__ALL__)
-            case algo_hmac_vmac:
+            case algo_vmac:
                 return AES::BLOCKSIZE;
                 break;
 #endif
@@ -702,7 +702,7 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
             break;
 #endif
 #if defined(__CMAC__)|| defined(__ALL__)
-            case algo_hmac_cmac:
+            case algo_cmac:
                 if(length!=AES::BLOCKSIZE)
                 {
                     DebugFormat("AES Algorithm Length does not match actual length: [%i] [%i]\r\n,",length,AES::BLOCKSIZE);
@@ -711,8 +711,8 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 maxLength = AES::BLOCKSIZE*2 ;
             break;
 #endif
-#if defined(__CBCMAC__)|| defined(__ALL__)
-            case algo_hmac_cbc_mac:
+#if defined(__CBCCMAC__)|| defined(__ALL__)
+            case algo_cbc_mac:
                 if (length != AES::BLOCKSIZE)
                 {
                     DebugFormat("AES Algorithm Length does not match actual length: [%i] [%i]\r\n,", length, AES::BLOCKSIZE);
@@ -722,7 +722,7 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 break;
 #endif
 #if defined(__DMAC__)|| defined(__ALL__)
-            case algo_hmac_dmac:
+            case algo_dmac:
                 if (length != AES::BLOCKSIZE)
                 {
                     DebugFormat("AES Algorithm Length does not match actual length: [%i] [%i]\r\n,", length, AES::BLOCKSIZE);
@@ -732,7 +732,7 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 break;
 #endif
 #if defined(__GMAC__)|| defined(__ALL__)
-            case algo_hmac_gmac:
+            case algo_gmac:
                 if (length != AES::BLOCKSIZE)
                 {
                     DebugFormat("AES Algorithm Length does not match actual length: [%i] [%i]\r\n,", length, AES::BLOCKSIZE);
@@ -742,7 +742,7 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 break;
 #endif
 #if defined(__HMAC__)|| defined(__ALL__)
-            case algo_hmac_hmac:
+            case algo_hmac:
                 if (length != SHA256::DIGESTSIZE)
                 {
                     DebugFormat("AES Algorithm Length does not match actual length: [%i] [%i]\r\n,", length, SHA256::DIGESTSIZE);
@@ -752,7 +752,7 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 break;
 #endif
 #if defined(__POLY1305__)|| defined(__ALL__)
-            case algo_hmac_poly_1305:
+            case algo_poly_1305:
                 if (length != AES::BLOCKSIZE)
                 {
                     DebugFormat("SHA256 Algorithm Length does not match actual length: [%i] [%i]\r\n,", length, AES::BLOCKSIZE);
@@ -762,7 +762,7 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 break;
 #endif
 #if defined(__TWOTRACK__)|| defined(__ALL__)
-            case algo_hmac_two_track:
+            case algo_two_track:
                 if (length != TTMAC::DIGESTSIZE)
                 {
                     DebugFormat("TwoTrack Algorithm Length does not match actual length: [%i] [%i]\r\n,", length, TTMAC::DIGESTSIZE);
@@ -772,7 +772,7 @@ const char * ToHex(const char * value, unsigned int length, unsigned int algorit
                 break;
 #endif
 #if defined(__VMAC__)|| defined(__ALL__)
-            case algo_hmac_vmac:
+            case algo_vmac:
                 if (length != AES::BLOCKSIZE)
                 {
                     DebugFormat("Vmac Algorithm Length does not match actual length: [%i] [%i]\r\n,", length, AES::BLOCKSIZE);
@@ -1197,7 +1197,7 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
             break;
 #endif
 #if defined(__CMAC__)|| defined(__ALL__)
-            case algo_hmac_cmac:
+            case algo_cmac:
                 if(length!=AES::BLOCKSIZE*2)
                 {
                     DebugFormat("SelfCheck CMAC Algorithm Length does not match actual length: [%i] [%i]\r\n",length,AES::BLOCKSIZE*2);
@@ -1206,8 +1206,8 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 maxLength = AES::BLOCKSIZE*2 ;
             break;
 #endif
-#if defined(__CBCMAC__)|| defined(__ALL__)
-            case algo_hmac_cbc_mac:
+#if defined(__CBCCMAC__)|| defined(__ALL__)
+            case algo_cbc_mac:
                 if (length != AES::BLOCKSIZE * 2)
                 {
                     DebugFormat("SelfCheck CMAC_CBC Algorithm Length does not match actual length: [%i] [%i]\r\n", length, AES::BLOCKSIZE * 2);
@@ -1217,7 +1217,7 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 break;
 #endif
 #if defined(__DMAC__)|| defined(__ALL__)
-            case algo_hmac_dmac:
+            case algo_dmac:
                 if (length != AES::BLOCKSIZE * 2)
                 {
                     DebugFormat("SelfCheck DMAC Algorithm Length does not match actual length: [%i] [%i]\r\n", length, AES::BLOCKSIZE * 2);
@@ -1227,7 +1227,7 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 break;
 #endif
 #if defined(__GMAC__)|| defined(__ALL__)
-            case algo_hmac_gmac:
+            case algo_gmac:
                 if (length != AES::BLOCKSIZE * 2)
                 {
                     DebugFormat("SelfCheck GMAC Algorithm Length does not match actual length: [%i] [%i]\r\n", length, AES::BLOCKSIZE * 2);
@@ -1237,7 +1237,7 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 break;
 #endif
 #if defined(__HMAC__)|| defined(__ALL__)
-            case algo_hmac_hmac:
+            case algo_hmac:
                 if (length != SHA256::DIGESTSIZE * 2)
                 {
                     DebugFormat("SelfCheck HMAC Algorithm Length does not match actual length: [%i] [%i]\r\n", length, SHA256::DIGESTSIZE * 2);
@@ -1247,7 +1247,7 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 break;
 #endif
 #if defined(__POLY1305__)|| defined(__ALL__)
-            case algo_hmac_poly_1305:
+            case algo_poly_1305:
                 if (length != AES::BLOCKSIZE * 2)
                 {
                     DebugFormat("SelfCheck Poly1305 Algorithm Length does not match actual length: [%i] [%i]\r\n", length, AES::BLOCKSIZE * 2);
@@ -1257,7 +1257,7 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 break;
 #endif
 #if defined(__TWOTRACK__)|| defined(__ALL__)
-            case algo_hmac_two_track:
+            case algo_two_track:
                 if (length != TTMAC::DIGESTSIZE* 2)
                 {
                     DebugFormat("SelfCheck TTMac Algorithm Length does not match actual length: [%i] [%i]\r\n", length, TTMAC::DIGESTSIZE * 2);
@@ -1267,7 +1267,7 @@ unsigned int SelfCheckToHex ( const char * value, unsigned int length, unsigned 
                 break;
 #endif
 #if defined(__VMAC__)|| defined(__ALL__)
-            case algo_hmac_vmac:
+            case algo_vmac:
                 if (length != AES::BLOCKSIZE * 2)
                 {
                     DebugFormat("SelfCheck VMAC Algorithm Length does not match actual length: [%i] [%i]\r\n", length, AES::BLOCKSIZE * 2);

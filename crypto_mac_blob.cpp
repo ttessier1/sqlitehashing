@@ -201,6 +201,32 @@
 #else
 #pragma message( "WHIRLPOOL NOT Set")
 #endif
+#include <secblock.h>
+#include <osrng.h>
+#if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+#include <cmac.h>
+#endif
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+#include <cbcmac.h>
+#endif
+#if (defined(__DMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+#include <dmac.h>
+#endif
+#if (defined(__GMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+#include <gcm.h>
+#endif
+#if (defined(__HMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+#include <hmac.h>
+#endif
+#if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+#include <poly1305.h>
+#endif
+#if (defined(__TWOTRACK__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+#include <ttmac.h>
+#endif
+#if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+#include <vmac.h>
+#endif
 
 #include <hex.h>
 #include "algorithms.h"
@@ -438,6 +464,56 @@ typedef struct whirlpoolMacBlobContext {
 }WhirlpoolMacBlobContext, * WhirlpoolMacBlobContextPtr;
 #endif
 
+#if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+typedef struct cmacMacBlobContext
+{
+    CMAC<AES> * macBlobContext;
+}CmacMacBlobContext, * CmacMacBlobContextPtr;
+#endif
+
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+typedef struct cbccmacMacBlobContext
+{
+    CBC_MAC<AES> * macBlobContext;
+}CbcCmacMacBlobContext, * CbcCmacMacBlobContextPtr;
+#endif
+
+#if (defined(__DMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+typedef struct dmacMacBlobContext {
+    DMAC<AES>* macBlobContext;
+}DmacMacBlobContext, * DmacMacBlobContextPtr;
+#endif
+
+#if (defined(__GMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+typedef struct gmacMacBlobContext {
+    GCM<AES>::Encryption * macBlobContext;
+}GmacMacBlobContext, * GmacMacBlobContextPtr;
+#endif
+
+#if (defined(__HMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+typedef struct hmacMacBlobContext {
+    HMAC<SHA256> * macBlobContext;
+}HmacMacBlobContext, * HmacMacBlobContextPtr;
+#endif
+
+#if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+typedef struct poly1305MacBlobContext {
+    Poly1305<AES>* macBlobContext;
+}Poly1305MacBlobContext, * Poly1305MacBlobContextPtr;
+#endif
+
+#if (defined(__TWOTRACK__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+typedef struct twotrackMacBlobContext
+{
+    TTMAC * macBlobContext;
+}TwoTrackMacBlobContext, * TwoTrackMacBlobContextPtr;
+#endif
+#if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+typedef struct vmacMacBlobContext
+{
+    VMAC<AES> * macBlobContext;
+}VmacMacBlobContext, * VmacMacBlobContextPtr;
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -2581,6 +2657,609 @@ extern "C" {
         return result;
     }
 #endif
+
+#if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+
+    CmacMacBlobContextPtr CmacMacInitialize(const char* key, unsigned int length)
+    {
+        CmacMacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (CmacMacBlobContextPtr)malloc(sizeof(CmacMacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)CmacMacBlobContextPtr();
+                macBlobContext->macBlobContext = (CMAC<AES>*)malloc(sizeof(CMAC<AES>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) CMAC<AES>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
+    }
+    void CmacMacUpdate(CmacMacBlobContextPtr macBlobContext, const char* message, unsigned int length)
+    {
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
+    }
+    const char* CmacMacFinalize(CmacMacBlobContextPtr macBlobContext)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(macBlobContext->macBlobContext->DigestSize());
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, macBlobContext->macBlobContext->DigestSize(), algo_cmac);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (macBlobContext->macBlobContext->DigestSize() * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (macBlobContext->macBlobContext->DigestSize() * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
+    }
+
+#endif
+
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+
+    CbcCmacMacBlobContextPtr CbcCmacMacInitialize(const char* key, unsigned int length)
+    {
+        CbcCmacMacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (CbcCmacMacBlobContextPtr)malloc(sizeof(CbcCmacMacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)CbcCmacMacBlobContextPtr();
+                macBlobContext->macBlobContext = (CBC_MAC<AES>*)malloc(sizeof(CBC_MAC<AES>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) CBC_MAC<AES>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
+    }
+
+    void CbcCmacMacUpdate(CbcCmacMacBlobContextPtr macBlobContext, const char* message, unsigned int length)
+    {
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* CbcCmacMacFinalize(CbcCmacMacBlobContextPtr macBlobContext)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(macBlobContext->macBlobContext->DigestSize());
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, macBlobContext->macBlobContext->DigestSize(), algo_cbc_mac);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (macBlobContext->macBlobContext->DigestSize() * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (macBlobContext->macBlobContext->DigestSize() * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
+    }
+
+#endif
+
+#if (defined(__DMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+
+    DmacMacBlobContextPtr DmacMacInitialize(const char* key, unsigned int length)
+    {
+        DmacMacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (DmacMacBlobContextPtr)malloc(sizeof(DmacMacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)DmacMacBlobContextPtr();
+                macBlobContext->macBlobContext = (DMAC<AES>*)malloc(sizeof(DMAC<AES>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) DMAC<AES>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
+    }
+    void DmacMacUpdate(DmacMacBlobContextPtr macBlobContext, const char* message, unsigned int length)
+    {
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
+    }
+    const char* DmacMacFinalize(DmacMacBlobContextPtr macBlobContext)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(macBlobContext->macBlobContext->DigestSize());
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, macBlobContext->macBlobContext->DigestSize(), algo_dmac);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (macBlobContext->macBlobContext->DigestSize() * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (macBlobContext->macBlobContext->DigestSize() * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
+    }
+
+#endif
+
+#if (defined(__GMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+
+    GmacMacBlobContextPtr GmacMacInitialize(const char* key, unsigned int length)
+    {
+        GmacMacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (GmacMacBlobContextPtr)malloc(sizeof(GmacMacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)GmacMacBlobContextPtr();
+                macBlobContext->macBlobContext = (GCM<AES>::Encryption*)malloc(sizeof(GCM<AES>::Encryption));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) GCM<AES>::Encryption();
+                    SecByteBlock iv(AES::BLOCKSIZE);
+                    memset(iv, 0x00, iv.size());
+                    macBlobContext->macBlobContext->SetKeyWithIV((CryptoPP::byte*)key, length, iv, iv.size());
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
+    }
+    void GmacMacUpdate(GmacMacBlobContextPtr macBlobContext, const char* message, unsigned int length)
+    {
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
+    }
+    const char* GmacMacFinalize(GmacMacBlobContextPtr macBlobContext)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(macBlobContext->macBlobContext->DigestSize());
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, macBlobContext->macBlobContext->DigestSize(), algo_gmac);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (macBlobContext->macBlobContext->DigestSize() * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (macBlobContext->macBlobContext->DigestSize() * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
+    }
+
+#endif
+
+#if (defined(__HMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+
+    HmacMacBlobContextPtr HmacMacInitialize(const char* key, unsigned int length)
+    {
+        HmacMacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (HmacMacBlobContextPtr)malloc(sizeof(HmacMacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)HmacMacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<SHA256>*)malloc(sizeof(HMAC<SHA256>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<SHA256>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
+    }
+
+    void HmacMacUpdate(HmacMacBlobContextPtr macBlobContext, const char* message, unsigned int length)
+    {
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
+    }
+
+    const char* HmacMacFinalize(HmacMacBlobContextPtr macBlobContext)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(macBlobContext->macBlobContext->DigestSize());
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, macBlobContext->macBlobContext->DigestSize(), algo_hmac);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (macBlobContext->macBlobContext->DigestSize() * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (macBlobContext->macBlobContext->DigestSize() * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
+    }
+
+#endif
+
+#if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+
+    Poly1305MacBlobContextPtr Poly1305MacInitialize(const char* key, unsigned int length)
+    {
+        Poly1305MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (Poly1305MacBlobContextPtr)malloc(sizeof(Poly1305MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)Poly1305MacBlobContextPtr();
+                macBlobContext->macBlobContext = (Poly1305<AES>*)malloc(sizeof(Poly1305<AES>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) Poly1305<AES>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
+    }
+    void Poly1305MacUpdate(Poly1305MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
+    {
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
+    }
+    const char* Poly1305MacFinalize(Poly1305MacBlobContextPtr macBlobContext)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(macBlobContext->macBlobContext->DigestSize());
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, macBlobContext->macBlobContext->DigestSize(), algo_poly_1305);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (macBlobContext->macBlobContext->DigestSize() * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (macBlobContext->macBlobContext->DigestSize() * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
+    }
+
+#endif
+
+#if (defined(__TWOTRACK__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+
+    TwoTrackMacBlobContextPtr TwoTrackMacInitialize(const char* key, unsigned int length)
+    {
+        TwoTrackMacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (TwoTrackMacBlobContextPtr)malloc(sizeof(TwoTrackMacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)TwoTrackMacBlobContextPtr();
+                macBlobContext->macBlobContext = (TTMAC*)malloc(sizeof(TTMAC));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) TTMAC((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
+    }
+    void TwoTrackMacUpdate(TwoTrackMacBlobContextPtr macBlobContext, const char* message, unsigned int length)
+    {
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
+    }
+    const char* TwoTrackMacFinalize(TwoTrackMacBlobContextPtr macBlobContext)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(macBlobContext->macBlobContext->DigestSize());
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, macBlobContext->macBlobContext->DigestSize(), algo_two_track);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (macBlobContext->macBlobContext->DigestSize() * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (macBlobContext->macBlobContext->DigestSize() * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
+    }
+
+#endif
+
+#if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+
+    VmacMacBlobContextPtr VmacMacInitialize(const char* key, unsigned int length)
+    {
+        VmacMacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (VmacMacBlobContextPtr)malloc(sizeof(VmacMacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)VmacMacBlobContextPtr();
+                macBlobContext->macBlobContext = (VMAC<AES>*)malloc(sizeof(VMAC<AES>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) VMAC<AES>();
+                    SecByteBlock iv(AES::BLOCKSIZE);
+                    memset(iv, 0x00, iv.size());
+                    macBlobContext->macBlobContext->SetKeyWithIV((CryptoPP::byte*)key, length, iv, iv.size());
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
+    }
+    void VmacMacUpdate(VmacMacBlobContextPtr macBlobContext, const char* message, unsigned int length)
+    {
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL && message != NULL)
+        {
+            macBlobContext->macBlobContext->Update((CryptoPP::byte*)message, length);
+        }
+    }
+    const char* VmacMacFinalize(VmacMacBlobContextPtr macBlobContext)
+    {
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(macBlobContext->macBlobContext->DigestSize());
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, macBlobContext->macBlobContext->DigestSize(), algo_vmac);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (macBlobContext->macBlobContext->DigestSize() * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (macBlobContext->macBlobContext->DigestSize() * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
+    }
+
+#endif
+
 
 #ifdef __cplusplus
 }

@@ -65,14 +65,14 @@
 #define algo_hmac_sm3 57
 #define algo_hmac_whirlpool 58
 
-#define algo_hmac_cmac 59
-#define algo_hmac_cbc_mac 60
-#define algo_hmac_dmac 61
-#define algo_hmac_gmac 62
-#define algo_hmac_hmac 63
-#define algo_hmac_poly_1305 64
-#define algo_hmac_two_track 65
-#define algo_hmac_vmac 66
+#define algo_cmac 59
+#define algo_cbc_mac 60
+#define algo_dmac 61
+#define algo_gmac 62
+#define algo_hmac 63
+#define algo_poly_1305 64
+#define algo_two_track 65
+#define algo_vmac 66
 
 
 

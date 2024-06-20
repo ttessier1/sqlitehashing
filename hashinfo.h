@@ -362,26 +362,50 @@ enum hash_functions
 #if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
     hash_function_cmac,
 #endif
-#if (defined(__CBCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+#if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+    hash_function_cmac_blob,
+#endif
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
     hash_function_cbcmac,
+#endif
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+    hash_function_cbcmac_blob,
 #endif
 #if (defined(__DMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
     hash_function_dmac,
 #endif
+#if (defined(__DMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+    hash_function_dmac_blob,
+#endif
 #if (defined(__GMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
     hash_function_gmac,
+#endif
+#if (defined(__GMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+    hash_function_gmac_blob,
 #endif
 #if (defined(__HMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
     hash_function_hmac,
 #endif
+#if (defined(__HMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+    hash_function_hmac_blob,
+#endif
 #if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__)
     hash_function_poly1305,
+#endif
+#if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+    hash_function_poly1305_blob,
 #endif
 #if (defined(__TWOTRACK__)|| defined(__ALL__)) && defined(__USE_MAC__)
     hash_function_twotrackmac,
 #endif
+#if (defined(__TWOTRACK__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+            hash_function_twotrackmac_blob,
+#endif
 #if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
     hash_function_vmacmac,
+#endif
+#if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+        hash_function_vmacmac_blob,
 #endif
 
         hash_function_hash_max
@@ -1597,14 +1621,32 @@ enum hash_functions
 
 #endif
 
-#if (defined(__CBCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+#if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_CMACMACBLOB "maccmacblob"
+#define HASH_INFO_COLUMN_TYPE_CMACMACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_CMACMACBLOB "select maccmacblob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_CMACMACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_CMACMACBLOB "2024-06-10-01:01:01"
+
+#endif
+
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
 
 #define HASH_INFO_FUNCTION_NAME_CBCMACMAC "maccbcmac"
 #define HASH_INFO_COLUMN_TYPE_CBCMACMAC "hash"
-
 #define HASH_INFO_COLUMN_SIGNATURE_CBCMACMAC "select maccbcmac([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_CBCMACMAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_CBCMACMAC "2024-06-10-01:01:01"
+
+#endif
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__) && defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_CBCMACMACBLOB "maccbcmacblob"
+#define HASH_INFO_COLUMN_TYPE_CBCMACMACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_CBCMACMACBLOB "select maccbcmacblob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_CBCMACMACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_CBCMACMACBLOB "2024-06-10-01:01:01"
 
 #endif
 #if (defined(__DMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
@@ -1616,6 +1658,15 @@ enum hash_functions
 #define HASH_INFO_FUNCTION_DATE_DMACMAC "2024-06-10-01:01:01"
 
 #endif
+#if (defined(__DMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_DMACMACBLOB "macdmac"
+#define HASH_INFO_COLUMN_TYPE_DMACMACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_DMACMACBLOB "select macdmac([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_DMACMACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_DMACMACBLOB "2024-06-10-01:01:01"
+
+#endif
 #if (defined(__GMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
 
 #define HASH_INFO_FUNCTION_NAME_GMACMAC "macgmac"
@@ -1623,6 +1674,15 @@ enum hash_functions
 #define HASH_INFO_COLUMN_SIGNATURE_GMACMAC "select macgmac([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_GMACMAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_GMACMAC "2024-06-10-01:01:01"
+
+#endif
+#if (defined(__GMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_GMACMACBLOB "macgmacblob"
+#define HASH_INFO_COLUMN_TYPE_GMACMACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_GMACMACBLOB "select macgmacblob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_GMACMACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_GMACMACBLOB "2024-06-10-01:01:01"
 
 #endif
 #if (defined(__HMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
@@ -1634,6 +1694,15 @@ enum hash_functions
 #define HASH_INFO_FUNCTION_DATE_HMACMAC "2024-06-10-01:01:01"
 
 #endif
+#if (defined(__HMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_HMACMACBLOB "machmacblob"
+#define HASH_INFO_COLUMN_TYPE_HMACMACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_HMACMACBLOB "select machmacblob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_HMACMACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_HMACMACBLOB "2024-06-10-01:01:01"
+
+#endif
 #if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__)
 
 #define HASH_INFO_FUNCTION_NAME_POLY1305MAC "macpoly1305"
@@ -1641,6 +1710,15 @@ enum hash_functions
 #define HASH_INFO_COLUMN_SIGNATURE_POLY1305MAC "select macpoly1305([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_POLY1305MAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_POLY1305MAC "2024-06-10-01:01:01"
+
+#endif
+#if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_POLY1305MACBLOB "macpoly1305blob"
+#define HASH_INFO_COLUMN_TYPE_POLY1305MACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_POLY1305MACBLOB "select macpoly1305blob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_POLY1305MACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_POLY1305MACBLOB "2024-06-10-01:01:01"
 
 #endif
 #if (defined(__TWOTRACK__)|| defined(__ALL__)) && defined(__USE_MAC__)
@@ -1652,6 +1730,15 @@ enum hash_functions
 #define HASH_INFO_FUNCTION_DATE_TWOTRACKMAC "2024-06-10-01:01:01"
 
 #endif
+#if (defined(__TWOTRACK__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_TWOTRACKMACBLOB "mactwotrackblob"
+#define HASH_INFO_COLUMN_TYPE_TWOTRACKMACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_TWOTRACKMACBLOB "select mactwotrackblob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_TWOTRACKMACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_TWOTRACKMACBLOB "2024-06-10-01:01:01"
+
+#endif
 #if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
 
 #define HASH_INFO_FUNCTION_NAME_VMACMAC "macvmac"
@@ -1659,6 +1746,15 @@ enum hash_functions
 #define HASH_INFO_COLUMN_SIGNATURE_VMACMAC "select macvmac([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_VMACMAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_VMACMAC "2024-06-10-01:01:01"
+
+#endif
+#if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_VMACMACBLOB "macvmacblob"
+#define HASH_INFO_COLUMN_TYPE_VMACMACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_VMACMACBLOB "select macvmacblob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_VMACMACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_VMACMACBLOB "2024-06-10-01:01:01"
 
 #endif
 
@@ -4783,7 +4879,32 @@ static int hash_info_Column(
       }
       }
 #endif
-#if (defined(__CBCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+      #if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&&defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_cmac_blob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_CMACMACBLOB), strlength(HASH_INFO_FUNCTION_NAME_CMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_CMACMACBLOB), strlength(HASH_INFO_COLUMN_TYPE_CMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_CMACMACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_CMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_CMACMACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_CMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_CMACMACBLOB), strlength(HASH_INFO_FUNCTION_DATE_CMACMACBLOB), free);
+          break;
+      }
+      }
+#endif
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
   else if (pCur->iRowid == hash_function_cbcmac)
   {
       switch (i) {
@@ -4804,6 +4925,31 @@ static int hash_info_Column(
           break;
       case HASH_INFO_COLUMN_DATE_CREATED:
           sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_CBCMACMAC), strlength(HASH_INFO_FUNCTION_DATE_CBCMACMAC), free);
+          break;
+      }
+      }
+#endif
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&&defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_cbcmac_blob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_CBCMACMACBLOB), strlength(HASH_INFO_FUNCTION_NAME_CBCMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_CBCMACMACBLOB), strlength(HASH_INFO_COLUMN_TYPE_CBCMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_CBCMACMACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_CBCMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_CBCMACMACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_CBCMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_CBCMACMACBLOB), strlength(HASH_INFO_FUNCTION_DATE_CBCMACMACBLOB), free);
           break;
       }
       }
@@ -4833,6 +4979,31 @@ static int hash_info_Column(
       }
       }
 #endif
+#if (defined(__DMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&&defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_dmac_blob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_DMACMACBLOB), strlength(HASH_INFO_FUNCTION_NAME_DMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_DMACMACBLOB), strlength(HASH_INFO_COLUMN_TYPE_DMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_DMACMACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_DMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_DMACMACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_DMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_DMACMACBLOB), strlength(HASH_INFO_FUNCTION_DATE_DMACMACBLOB), free);
+          break;
+      }
+      }
+#endif
 #if (defined(__GMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
   else if (pCur->iRowid == hash_function_gmac)
   {
@@ -4854,6 +5025,31 @@ static int hash_info_Column(
           break;
       case HASH_INFO_COLUMN_DATE_CREATED:
           sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_GMACMAC), strlength(HASH_INFO_FUNCTION_DATE_GMACMAC), free);
+          break;
+      }
+      }
+#endif
+#if (defined(__GMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&&defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_gmac_blob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_GMACMACBLOB), strlength(HASH_INFO_FUNCTION_NAME_GMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_GMACMACBLOB), strlength(HASH_INFO_COLUMN_TYPE_GMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_GMACMACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_GMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_GMACMACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_GMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_GMACMACBLOB), strlength(HASH_INFO_FUNCTION_DATE_GMACMACBLOB), free);
           break;
       }
       }
@@ -4883,6 +5079,31 @@ static int hash_info_Column(
       }
       }
 #endif
+#if (defined(__HMAC__)||defined(__ALL__)) && defined(__USE_MAC__)&&defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_hmac_blob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_HMACMACBLOB), strlength(HASH_INFO_FUNCTION_NAME_HMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_HMACMACBLOB), strlength(HASH_INFO_COLUMN_TYPE_HMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_HMACMACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_HMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_HMACMACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_HMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_HMACMACBLOB), strlength(HASH_INFO_FUNCTION_DATE_HMACMACBLOB), free);
+          break;
+      }
+      }
+#endif
 #if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__)
   else if (pCur->iRowid == hash_function_poly1305)
   {
@@ -4904,6 +5125,31 @@ static int hash_info_Column(
           break;
       case HASH_INFO_COLUMN_DATE_CREATED:
           sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_POLY1305MAC), strlength(HASH_INFO_FUNCTION_DATE_POLY1305MAC), free);
+          break;
+      }
+      }
+#endif
+#if (defined(__POLY1305__)|| defined(__ALL__)) && defined(__USE_MAC__)&&defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_poly1305_blob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_POLY1305MACBLOB), strlength(HASH_INFO_FUNCTION_NAME_POLY1305MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_POLY1305MACBLOB), strlength(HASH_INFO_COLUMN_TYPE_POLY1305MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_POLY1305MACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_POLY1305MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_POLY1305MACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_POLY1305MACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_POLY1305MACBLOB), strlength(HASH_INFO_FUNCTION_DATE_POLY1305MACBLOB), free);
           break;
       }
       }
@@ -4933,6 +5179,31 @@ static int hash_info_Column(
       }
       }
 #endif
+#if (defined(__TWOTRACK__)|| defined(__ALL__)) && defined(__USE_MAC__)&&defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_twotrackmac_blob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_TWOTRACKMACBLOB), strlength(HASH_INFO_FUNCTION_NAME_TWOTRACKMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_TWOTRACKMACBLOB), strlength(HASH_INFO_COLUMN_TYPE_TWOTRACKMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_TWOTRACKMACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_TWOTRACKMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_TWOTRACKMACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_TWOTRACKMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_TWOTRACKMACBLOB), strlength(HASH_INFO_FUNCTION_DATE_TWOTRACKMACBLOB), free);
+          break;
+      }
+      }
+#endif
 #if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
   else if (pCur->iRowid == hash_function_vmacmac)
   {
@@ -4954,6 +5225,31 @@ static int hash_info_Column(
           break;
       case HASH_INFO_COLUMN_DATE_CREATED:
           sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_VMACMAC), strlength(HASH_INFO_FUNCTION_DATE_VMACMAC), free);
+          break;
+      }
+      }
+#endif
+#if (defined(__VMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)&&defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_vmacmac_blob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_VMACMACBLOB), strlength(HASH_INFO_FUNCTION_NAME_VMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_VMACMACBLOB), strlength(HASH_INFO_COLUMN_TYPE_VMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_VMACMACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_VMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_VMACMACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_VMACMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_VMACMACBLOB), strlength(HASH_INFO_FUNCTION_DATE_VMACMACBLOB), free);
           break;
       }
       }

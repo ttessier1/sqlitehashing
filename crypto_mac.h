@@ -94,7 +94,7 @@ extern "C" const char * DoMacWhirlpool(const char * key, unsigned int length, co
 #if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
 extern "C" const char * DoMacCMac(const char * key, unsigned int length, const char * message);
 #endif
-#if (defined(__CBCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
 extern "C" const char * DoMacCbcCMac(const char * key, unsigned int length, const char * message);
 #endif
 #if (defined(__DMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
@@ -207,7 +207,7 @@ const char * DoMacWhirlpool(const char * key, unsigned int length, const char * 
 #if defined(__CMAC__)|| defined(__ALL__)
 const char * DoMacCMac(const char * key, unsigned int length, const char * message);
 #endif
-#if (defined(__CBCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
+#if (defined(__CBCCMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
 const char * DoMacCbcCMac(const char * key, unsigned int length, const char * message);
 #endif
 #if (defined(__DMAC__)||defined(__ALL__)) && defined(__USE_MAC__)
