@@ -231,10 +231,13 @@ enum hash_functions
         hash_function_tiger,
 #endif
 #if (defined(__TIGER__) || defined (__ALL__)) && defined(__USE_BLOB__)
-        hash_function_tigerblob,
+    hash_function_tigerblob,
 #endif
 #if (defined(__TIGER__) || defined (__ALL__)) && defined(__USE_MAC__)
-        hash_function_tigermac,
+    hash_function_tigermac,
+#endif
+#if (defined(__TIGER__) || defined (__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+    hash_function_tigermacblob,
 #endif
 #if defined(__SHAKE128__) || defined (__ALL__)
         hash_function_shake128,
@@ -1134,6 +1137,16 @@ enum hash_functions
 #define HASH_INFO_COLUMN_SIGNATURE_TIGERMAC "select mactiger([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_TIGERMAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_TIGERMAC "2024-06-10-01:01:01"
+
+#endif
+
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_TIGERMACBLOB "mactigerblob"
+#define HASH_INFO_COLUMN_TYPE_TIGERMACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_TIGERMACBLOB "select mactigerblob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_TIGERMACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_TIGERMACBLOB "2024-06-10-01:01:01"
 
 #endif
 
@@ -3620,6 +3633,31 @@ static int hash_info_Column(
           break;
       case HASH_INFO_COLUMN_DATE_CREATED:
           sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_TIGERMAC), strlength(HASH_INFO_FUNCTION_DATE_TIGERMAC), free);
+          break;
+      }
+      }
+#endif
+#if  defined(__USE_MAC__) && defined(__USE_BLOB__)
+  else if (pCur->iRowid == hash_function_tigermacblob)
+  {
+      switch (i) {
+      case HASH_INFO_COLUMN_MODULE_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_MODULE_NAME), strlength(HASH_INFO_MODULE_NAME), free);
+          break;
+      case HASH_INFO_COLUMN_FUNCTION_NAME:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_NAME_TIGERMACBLOB), strlength(HASH_INFO_FUNCTION_NAME_TIGERMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_TYPE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_TYPE_TIGERMACBLOB), strlength(HASH_INFO_COLUMN_TYPE_TIGERMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_SIGNATURE:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_COLUMN_SIGNATURE_TIGERMACBLOB), strlength(HASH_INFO_COLUMN_SIGNATURE_TIGERMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_VERSION:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_VERSION_TIGERMACBLOB), strlength(HASH_INFO_FUNCTION_VERSION_TIGERMACBLOB), free);
+          break;
+      case HASH_INFO_COLUMN_DATE_CREATED:
+          sqlite3_result_text(ctx, strduplicate(HASH_INFO_FUNCTION_DATE_TIGERMACBLOB), strlength(HASH_INFO_FUNCTION_DATE_TIGERMACBLOB), free);
           break;
       }
       }

@@ -1781,7 +1781,26 @@ extern "C" {
 #if (defined(__TIGER__) || defined (__ALL__)) && defined(__USE_BLOB__)
     TigerMacBlobContextPtr TigerMacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        TigerMacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (TigerMacBlobContextPtr)malloc(sizeof(TigerMacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)TigerMacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<Tiger>*)malloc(sizeof(HMAC<Tiger>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<Tiger>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void TigerMacUpdate(TigerMacBlobContextPtr macBlobContext, const char* message, unsigned int length)
@@ -1794,7 +1813,42 @@ extern "C" {
 
     const char* TigerMacFinalize(TigerMacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(Tiger::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, Tiger::DIGESTSIZE, algo_tiger);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (Tiger::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (Tiger::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 #if (defined(__SHAKE128__) || defined (__ALL__)) && defined(__USE_BLOB__)
