@@ -371,6 +371,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #if defined(__USE_MAC__)
     hash_size_sm3mac,
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+        hash_size_sm3macblob,
+#endif
 #endif
 
 #if defined(__WHIRLPOOL__) || defined (__ALL__)
@@ -380,6 +383,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #endif
 #if defined(__USE_MAC__)
     hash_size_whirlpoolmac,
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    hash_size_whirlpoolmacblob,
 #endif
 #endif
 #if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
@@ -797,6 +803,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #if defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_SM3MAC "macsm3"
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_SM3MACBLOB "macsm3blob"
+#endif
 #endif
 
 #if defined(__WHIRLPOOL__) || defined (__ALL__)
@@ -806,6 +815,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #endif
 #if defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_WHIRLPOOLMAC "macwhirlpool"
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_WHIRLPOOLMACBLOB "macwhirlpoolblob"
 #endif
 #endif
 
@@ -2481,7 +2493,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_LSH224BLOB), strlength(HASH_SIZE_FUNCTION_NAME_LSH224BLOB), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            sqlite3_result_int(ctx, GetDigestSize(algo_lsh_224));
             break;
         }
         }
@@ -2497,7 +2509,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_LSH224MAC), strlength(HASH_SIZE_FUNCTION_NAME_LSH224MAC), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            sqlite3_result_int(ctx, GetDigestSize(algo_lsh_224));
             break;
         }
         }
@@ -2513,7 +2525,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_LSH224MACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_LSH224MACBLOB), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            sqlite3_result_int(ctx, GetDigestSize(algo_lsh_224));
             break;
         }
         }
@@ -2548,7 +2560,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_LSH256BLOB), strlength(HASH_SIZE_FUNCTION_NAME_LSH256BLOB), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            sqlite3_result_int(ctx, GetDigestSize(algo_lsh_256));
             break;
         }
         }
@@ -2564,7 +2576,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_LSH256MAC), strlength(HASH_SIZE_FUNCTION_NAME_LSH256MAC), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            sqlite3_result_int(ctx, GetDigestSize(algo_lsh_256));
             break;
         }
         }
@@ -2580,7 +2592,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_LSH256MACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_LSH256MACBLOB), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            sqlite3_result_int(ctx, GetDigestSize(algo_lsh_256));
             break;
         }
         }
@@ -2615,7 +2627,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_LSH384BLOB), strlength(HASH_SIZE_FUNCTION_NAME_LSH384BLOB), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            sqlite3_result_int(ctx, GetDigestSize(algo_lsh_384));
             break;
         }
         }
@@ -2631,7 +2643,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_LSH384MAC), strlength(HASH_SIZE_FUNCTION_NAME_LSH384MAC), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            sqlite3_result_int(ctx, GetDigestSize(algo_lsh_384));
             break;
         }
         }
@@ -2647,7 +2659,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_LSH384MACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_LSH384MACBLOB), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            sqlite3_result_int(ctx, GetDigestSize(algo_lsh_384));
             break;
         }
         }
@@ -2680,7 +2692,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_LSH512BLOB), strlength(HASH_SIZE_FUNCTION_NAME_LSH512BLOB), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            sqlite3_result_int(ctx, GetDigestSize(algo_lsh_512));
             break;
         }
         }
@@ -2696,7 +2708,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_LSH512MAC), strlength(HASH_SIZE_FUNCTION_NAME_LSH512MAC), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            sqlite3_result_int(ctx, GetDigestSize(algo_lsh_512));
             break;
         }
         }
@@ -2712,7 +2724,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_LSH512MACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_LSH512MACBLOB), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            sqlite3_result_int(ctx, GetDigestSize(algo_lsh_512));
             break;
         }
         }
@@ -2745,7 +2757,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SM3BLOB), strlength(HASH_SIZE_FUNCTION_NAME_SM3BLOB), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            sqlite3_result_int(ctx, GetDigestSize(algo_sm3));
             break;
         }
         }
@@ -2761,12 +2773,27 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SM3MAC), strlength(HASH_SIZE_FUNCTION_NAME_SM3MAC), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            sqlite3_result_int(ctx, GetDigestSize(algo_sm3));
             break;
         }
         }
 #endif
-
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_sm3macblob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SM3MACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_SM3MACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_sm3));
+            break;
+        }
+        }
+#endif
 #endif
 
 
@@ -2797,7 +2824,7 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_WHIRLPOOLBLOB), strlength(HASH_SIZE_FUNCTION_NAME_WHIRLPOOLBLOB), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            sqlite3_result_int(ctx, GetDigestSize(algo_whirlpool));
             break;
         }
         }
@@ -2813,7 +2840,23 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_WHIRLPOOLMAC), strlength(HASH_SIZE_FUNCTION_NAME_WHIRLPOOLMAC), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
-            sqlite3_result_int(ctx, GetDigestSize(algo_sip_hash64));
+            sqlite3_result_int(ctx, GetDigestSize(algo_whirlpool));
+            break;
+        }
+        }
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_whirlpoolmacblob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_WHIRLPOOLMACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_WHIRLPOOLMACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_whirlpool));
             break;
         }
         }

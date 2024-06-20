@@ -2438,7 +2438,26 @@ extern "C" {
 #if (defined(__SM3__) || defined (__ALL__)) && defined(__USE_BLOB__)
     Sm3MacBlobContextPtr Sm3MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        Sm3MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (Sm3MacBlobContextPtr)malloc(sizeof(Sm3MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)Sm3MacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<SM3>*)malloc(sizeof(HMAC<SM3>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<SM3>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void Sm3MacUpdate(Sm3MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
@@ -2451,13 +2470,67 @@ extern "C" {
 
     const char* Sm3MacFinalize(Sm3MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(SM3::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SM3::DIGESTSIZE, algo_sm3);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SM3::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SM3::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 #if (defined(__WHIRLPOOL__) || defined (__ALL__)) && defined(__USE_BLOB__)
     WhirlpoolMacBlobContextPtr WhirlpoolMacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        WhirlpoolMacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (WhirlpoolMacBlobContextPtr)malloc(sizeof(WhirlpoolMacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)WhirlpoolMacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<Whirlpool>*)malloc(sizeof(HMAC<Whirlpool>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<Whirlpool>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void WhirlpoolMacUpdate(WhirlpoolMacBlobContextPtr macBlobContext, const char* message, unsigned int length)
@@ -2470,7 +2543,42 @@ extern "C" {
 
     const char* WhirlpoolMacFinalize(WhirlpoolMacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(Whirlpool::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, Whirlpool::DIGESTSIZE, algo_whirlpool);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (Whirlpool::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (Whirlpool::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 

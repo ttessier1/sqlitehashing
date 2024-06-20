@@ -14480,6 +14480,7 @@ static int macsm3(
         if (result != NULL)
         {
             DebugMessage("Result Not NULL\r\n");
+            nIn = strlength(result);
             DebugMessage(result);
             zOut = zToFree = (unsigned char*)sqlite3_malloc64(nIn + 1);
             if (zOut != 0)
@@ -14519,13 +14520,218 @@ static int macsm3blob(
 )
 {
     sqlite3* db = NULL;
+    Sm3MacBlobContextPtr sm3MacBlobContext;
+
+    const unsigned char* zIn;
+    unsigned char* zOut;
+    unsigned char* zToFree;
+    int nIn = 0;
+    int nBlobTextSize = 0;
+    unsigned int remainingSize = 0;
+    int position = 0;
+    int rc = 0;
+    int offset = 0;
+    int length = 0;
+    unsigned int index = 0;
+    unsigned int outputCount = 0;
+    unsigned int buffer_size = 0;
+    const char* result = NULL;
+    const char* database;
+    const char* table;
+    const char* column;
+    int64_t rowId = 0;
+    sqlite3_int64 rowid;
+    char* buffer = NULL;
+    sqlite3_blob* blob;
+    const unsigned char* zKey;
+    const char* fromHex;
+    int nLength = 0;
+    int resultLength = 0;
+    int keyIn = 0;
 
     db = sqlite3_context_db_handle(context);
 
-    DebugMessage("MacSM3Blob Called\r\n");
+    DebugMessage("Sm3MacBlob Called\r\n");
+    if (argc != 6)
+    {
+        DebugMessage("Test\r\n");
+        sqlite3_result_error(context, "Invalid arguments", strlength("Invalid arguments"));
+        return SQLITE_ERROR;
+    }
+    if (
+        sqlite3_value_type(argv[0]) == SQLITE_TEXT && // database
+        sqlite3_value_type(argv[1]) == SQLITE_TEXT && // table 
+        sqlite3_value_type(argv[2]) == SQLITE_TEXT && // column
+        sqlite3_value_type(argv[3]) == SQLITE_INTEGER &&// rowid
+        sqlite3_value_type(argv[4]) == SQLITE_TEXT &&// key
+        sqlite3_value_type(argv[5]) == SQLITE_INTEGER // hex or not
+        )
+    {
+        database = sqlite3_value_text(argv[0]);
+        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        table = sqlite3_value_text(argv[1]);
+        column = sqlite3_value_text(argv[2]);
+        rowid = sqlite3_value_int64(argv[3]);
+        keyIn = sqlite3_value_bytes(argv[4]);
+        zKey = (const unsigned char*)sqlite3_value_text(argv[4]);
 
-    sqlite3_result_error(context, "Not Implemented", strlen("Not Implemented"));
-    return SQLITE_ERROR;
+
+        rc = sqlite3_blob_open(db, database, table, column, rowid, 0, &blob);
+        if (rc == SQLITE_OK)
+        {
+            nBlobTextSize = sqlite3_blob_bytes(blob);
+            remainingSize = nBlobTextSize;
+            buffer = (char*)malloc(buffer_size);
+            if (buffer != NULL)
+            {
+                if (sqlite3_value_int(argv[5]) == 1)
+                {
+                    // do hconversion from hex
+                    fromHex = FromHexSZ(zKey, &resultLength);
+                    if (fromHex)
+                    {
+                        sm3MacBlobContext = Sm3MacInitialize(fromHex, resultLength);
+                        if (sm3MacBlobContext != NULL)
+                        {
+                            while (rc == SQLITE_OK && remainingSize > 0)
+                            {
+                                length = MIN(buffer_size, remainingSize);
+                                rc = sqlite3_blob_read(blob, buffer, length, offset);
+                                if (rc == SQLITE_OK)
+                                {
+                                    Sm3MacUpdate(sm3MacBlobContext, buffer, length);
+                                    offset += length;
+                                    remainingSize -= length;
+                                }
+                            }
+                            if (rc == SQLITE_OK)
+                            {
+                                result = Sm3MacFinalize(sm3MacBlobContext);
+                                if (result != NULL)
+                                {
+                                    nIn = strlength(result);
+                                    zOut = zToFree = (unsigned char*)sqlite3_malloc64(nIn + 1);
+                                    if (zOut != 0)
+                                    {
+                                        DebugMessage("ZOut Not NULL\r\n");
+                                        strncpy_s(zOut, nIn + 1, result, strlength(result));
+                                        DebugMessage("After StrCpy\r\n");
+                                        sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                        sqlite3_free(zToFree);
+                                        rc = SQLITE_OK;
+                                    }
+                                    else
+                                    {
+                                        DebugMessage("ZOut  NULL\r\n");
+                                        rc = SQLITE_ERROR;
+                                    }
+                                }
+                                else
+                                {
+                                    sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                                    rc = SQLITE_ERROR;
+                                }
+                            }
+                            else
+                            {
+                                sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                                rc = SQLITE_ERROR;
+                            }
+                        }
+                        else
+                        {
+                            sqlite3_result_error(context, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
+                            rc = SQLITE_ERROR;
+                        }
+                        FreeCryptoResult((void*)fromHex);
+                    }
+                    else
+                    {
+                        DebugMessage("FromHex Failed\r\n");
+                        return SQLITE_ERROR;
+                    }
+                }
+                else if (sqlite3_value_int(argv[5]) == 0)
+                {
+                    // dont do conversion from hex
+                    sm3MacBlobContext = Sm3MacInitialize(zKey, keyIn);
+                    if (sm3MacBlobContext != NULL)
+                    {
+                        while (rc == SQLITE_OK && remainingSize > 0)
+                        {
+                            length = MIN(buffer_size, remainingSize);
+                            rc = sqlite3_blob_read(blob, buffer, length, offset);
+                            if (rc == SQLITE_OK)
+                            {
+                                Sm3MacUpdate(sm3MacBlobContext, buffer, length);
+                                offset += length;
+                                remainingSize -= length;
+                            }
+                        }
+                        if (rc == SQLITE_OK)
+                        {
+                            result = Sm3MacFinalize(sm3MacBlobContext);
+                            if (result != NULL)
+                            {
+                                nIn = strlength(result);
+                                zOut = zToFree = (unsigned char*)sqlite3_malloc64(nIn + 1);
+                                if (zOut != 0)
+                                {
+                                    DebugMessage("ZOut Not NULL\r\n");
+                                    strncpy_s(zOut, nIn + 1, result, strlength(result));
+                                    DebugMessage("After StrCpy\r\n");
+                                    sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                    sqlite3_free(zToFree);
+                                    rc = SQLITE_OK;
+                                }
+                                else
+                                {
+                                    DebugMessage("ZOut  NULL\r\n");
+                                    rc = SQLITE_ERROR;
+                                }
+                            }
+                            else
+                            {
+                                sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                                rc = SQLITE_ERROR;
+                            }
+                        }
+                        else
+                        {
+                            sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                            rc = SQLITE_ERROR;
+                        }
+                    }
+                    else
+                    {
+                        sqlite3_result_error(context, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
+                        rc = SQLITE_ERROR;
+                    }
+                }
+                else
+                {
+                    // invalid
+                    DebugMessage("Invalid Parameter\r\n");
+                    return SQLITE_ERROR;
+                }
+
+                free(buffer);
+            }
+            sqlite3_blob_close(blob);
+
+        }
+        else
+        {
+            sqlite3_result_error(context, "Failed to open the blob object\r\n", strlength("Failed to open the blob object\r\n"));
+        }
+        return rc;
+    }
+    else
+    {
+        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        return SQLITE_ERROR;
+    }
+    return SQLITE_OK;
 }
 #endif
 #endif
@@ -14795,6 +15001,7 @@ static int macwhirlpool(
         {
             DebugMessage("Result Not NULL\r\n");
             DebugMessage(result);
+            nIn = strlength(result);
             zOut = zToFree = (unsigned char*)sqlite3_malloc64(nIn + 1);
             if (zOut != 0)
             {
@@ -14833,13 +15040,218 @@ static int macwhirlpoolblob(
 )
 {
     sqlite3* db = NULL;
+    WhirlpoolMacBlobContextPtr whirlpoolMacBlobContext;
+
+    const unsigned char* zIn;
+    unsigned char* zOut;
+    unsigned char* zToFree;
+    int nIn = 0;
+    int nBlobTextSize = 0;
+    unsigned int remainingSize = 0;
+    int position = 0;
+    int rc = 0;
+    int offset = 0;
+    int length = 0;
+    unsigned int index = 0;
+    unsigned int outputCount = 0;
+    unsigned int buffer_size = 0;
+    const char* result = NULL;
+    const char* database;
+    const char* table;
+    const char* column;
+    int64_t rowId = 0;
+    sqlite3_int64 rowid;
+    char* buffer = NULL;
+    sqlite3_blob* blob;
+    const unsigned char* zKey;
+    const char* fromHex;
+    int nLength = 0;
+    int resultLength = 0;
+    int keyIn = 0;
 
     db = sqlite3_context_db_handle(context);
 
-    DebugMessage("MacWhirlpoolBlob Called\r\n");
+    DebugMessage("WhirlpoolMacBlob Called\r\n");
+    if (argc != 6)
+    {
+        DebugMessage("Test\r\n");
+        sqlite3_result_error(context, "Invalid arguments", strlength("Invalid arguments"));
+        return SQLITE_ERROR;
+    }
+    if (
+        sqlite3_value_type(argv[0]) == SQLITE_TEXT && // database
+        sqlite3_value_type(argv[1]) == SQLITE_TEXT && // table 
+        sqlite3_value_type(argv[2]) == SQLITE_TEXT && // column
+        sqlite3_value_type(argv[3]) == SQLITE_INTEGER &&// rowid
+        sqlite3_value_type(argv[4]) == SQLITE_TEXT &&// key
+        sqlite3_value_type(argv[5]) == SQLITE_INTEGER // hex or not
+        )
+    {
+        database = sqlite3_value_text(argv[0]);
+        buffer_size = get_schema_page_size(context, db, database, sqlite3_value_bytes(argv[0]));
+        table = sqlite3_value_text(argv[1]);
+        column = sqlite3_value_text(argv[2]);
+        rowid = sqlite3_value_int64(argv[3]);
+        keyIn = sqlite3_value_bytes(argv[4]);
+        zKey = (const unsigned char*)sqlite3_value_text(argv[4]);
 
-    sqlite3_result_error(context, "Not Implemented", strlen("Not Implemented"));
-    return SQLITE_ERROR;
+
+        rc = sqlite3_blob_open(db, database, table, column, rowid, 0, &blob);
+        if (rc == SQLITE_OK)
+        {
+            nBlobTextSize = sqlite3_blob_bytes(blob);
+            remainingSize = nBlobTextSize;
+            buffer = (char*)malloc(buffer_size);
+            if (buffer != NULL)
+            {
+                if (sqlite3_value_int(argv[5]) == 1)
+                {
+                    // do hconversion from hex
+                    fromHex = FromHexSZ(zKey, &resultLength);
+                    if (fromHex)
+                    {
+                        whirlpoolMacBlobContext = WhirlpoolMacInitialize(fromHex, resultLength);
+                        if (whirlpoolMacBlobContext != NULL)
+                        {
+                            while (rc == SQLITE_OK && remainingSize > 0)
+                            {
+                                length = MIN(buffer_size, remainingSize);
+                                rc = sqlite3_blob_read(blob, buffer, length, offset);
+                                if (rc == SQLITE_OK)
+                                {
+                                    WhirlpoolMacUpdate(whirlpoolMacBlobContext, buffer, length);
+                                    offset += length;
+                                    remainingSize -= length;
+                                }
+                            }
+                            if (rc == SQLITE_OK)
+                            {
+                                result = WhirlpoolMacFinalize(whirlpoolMacBlobContext);
+                                if (result != NULL)
+                                {
+                                    nIn = strlength(result);
+                                    zOut = zToFree = (unsigned char*)sqlite3_malloc64(nIn + 1);
+                                    if (zOut != 0)
+                                    {
+                                        DebugMessage("ZOut Not NULL\r\n");
+                                        strncpy_s(zOut, nIn + 1, result, strlength(result));
+                                        DebugMessage("After StrCpy\r\n");
+                                        sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                        sqlite3_free(zToFree);
+                                        rc = SQLITE_OK;
+                                    }
+                                    else
+                                    {
+                                        DebugMessage("ZOut  NULL\r\n");
+                                        rc = SQLITE_ERROR;
+                                    }
+                                }
+                                else
+                                {
+                                    sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                                    rc = SQLITE_ERROR;
+                                }
+                            }
+                            else
+                            {
+                                sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                                rc = SQLITE_ERROR;
+                            }
+                        }
+                        else
+                        {
+                            sqlite3_result_error(context, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
+                            rc = SQLITE_ERROR;
+                        }
+                        FreeCryptoResult((void*)fromHex);
+                    }
+                    else
+                    {
+                        DebugMessage("FromHex Failed\r\n");
+                        return SQLITE_ERROR;
+                    }
+                }
+                else if (sqlite3_value_int(argv[5]) == 0)
+                {
+                    // dont do conversion from hex
+                    whirlpoolMacBlobContext = WhirlpoolMacInitialize(zKey, keyIn);
+                    if (whirlpoolMacBlobContext != NULL)
+                    {
+                        while (rc == SQLITE_OK && remainingSize > 0)
+                        {
+                            length = MIN(buffer_size, remainingSize);
+                            rc = sqlite3_blob_read(blob, buffer, length, offset);
+                            if (rc == SQLITE_OK)
+                            {
+                                WhirlpoolMacUpdate(whirlpoolMacBlobContext, buffer, length);
+                                offset += length;
+                                remainingSize -= length;
+                            }
+                        }
+                        if (rc == SQLITE_OK)
+                        {
+                            result = WhirlpoolMacFinalize(whirlpoolMacBlobContext);
+                            if (result != NULL)
+                            {
+                                nIn = strlength(result);
+                                zOut = zToFree = (unsigned char*)sqlite3_malloc64(nIn + 1);
+                                if (zOut != 0)
+                                {
+                                    DebugMessage("ZOut Not NULL\r\n");
+                                    strncpy_s(zOut, nIn + 1, result, strlength(result));
+                                    DebugMessage("After StrCpy\r\n");
+                                    sqlite3_result_text(context, (char*)zOut, nIn, SQLITE_TRANSIENT);
+                                    sqlite3_free(zToFree);
+                                    rc = SQLITE_OK;
+                                }
+                                else
+                                {
+                                    DebugMessage("ZOut  NULL\r\n");
+                                    rc = SQLITE_ERROR;
+                                }
+                            }
+                            else
+                            {
+                                sqlite3_result_error(context, "Failed to run Finalize\r\n", strlength("Failed to run Finalize\r\n"));
+                                rc = SQLITE_ERROR;
+                            }
+                        }
+                        else
+                        {
+                            sqlite3_result_error(context, "Failed to run hash\r\n", strlength("Failed to run hash\r\n"));
+                            rc = SQLITE_ERROR;
+                        }
+                    }
+                    else
+                    {
+                        sqlite3_result_error(context, "Failed to allocate blobContext\r\n", strlength("Failed to allocate blobContext\r\n"));
+                        rc = SQLITE_ERROR;
+                    }
+                }
+                else
+                {
+                    // invalid
+                    DebugMessage("Invalid Parameter\r\n");
+                    return SQLITE_ERROR;
+                }
+
+                free(buffer);
+            }
+            sqlite3_blob_close(blob);
+
+        }
+        else
+        {
+            sqlite3_result_error(context, "Failed to open the blob object\r\n", strlength("Failed to open the blob object\r\n"));
+        }
+        return rc;
+    }
+    else
+    {
+        sqlite3_result_error(context, "Type Not Supported for Hashing\r\n", strlength("Type Not Supported for Hashing\r\n"));
+        return SQLITE_ERROR;
+    }
+    return SQLITE_OK;
 }
 #endif
 #endif

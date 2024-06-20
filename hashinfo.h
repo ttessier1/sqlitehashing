@@ -336,22 +336,28 @@ enum hash_functions
     hash_function_lsh512macblob,
 #endif
 #if defined(__SM3__) || defined (__ALL__)
-        hash_function_sm3,
+    hash_function_sm3,
 #endif
 #if (defined(__SM3__) || defined (__ALL__)) && defined(__USE_BLOB__)
-        hash_function_sm3blob,
+    hash_function_sm3blob,
 #endif
 #if (defined(__SM3__) || defined (__ALL__)) && defined(__USE_MAC__)
-            hash_function_sm3mac,
+    hash_function_sm3mac,
+#endif
+#if (defined(__SM3__) || defined (__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+    hash_function_sm3macblob,
 #endif
 #if defined(__WHIRLPOOL__) || defined (__ALL__)
-        hash_function_whirlpool,
+    hash_function_whirlpool,
 #endif
 #if (defined(__WHIRLPOOL__) || defined (__ALL__)) && defined(__USE_BLOB__)
-        hash_function_whirlpoolblob,
+    hash_function_whirlpoolblob,
 #endif
 #if (defined(__WHIRLPOOL__) || defined (__ALL__)) && defined(__USE_MAC__)
     hash_function_whirlpoolmac,
+#endif
+#if (defined(__WHIRLPOOL__) || defined (__ALL__)) && defined(__USE_MAC__)&& defined(__USE_BLOB__)
+    hash_function_whirlpoolmacblob,
 #endif
 #if (defined(__CMAC__)|| defined(__ALL__)) && defined(__USE_MAC__)
     hash_function_cmac,
@@ -1529,6 +1535,15 @@ enum hash_functions
 
 #endif
 
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_SM3MACBLOB "macsm3blob"
+#define HASH_INFO_COLUMN_TYPE_SM3MACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_SM3MACBLOB "select macsm3blob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_SM3MACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_SM3MACBLOB "2024-06-10-01:01:01"
+
+#endif
 
 #endif
 
@@ -1557,6 +1572,16 @@ enum hash_functions
 #define HASH_INFO_COLUMN_SIGNATURE_WHIRLPOOLMAC "select macwhirlpool([stringtohash],[key],[use_hex_key=1,use_as_is=0]);"
 #define HASH_INFO_FUNCTION_VERSION_WHIRLPOOLMAC "0.0.0.1"
 #define HASH_INFO_FUNCTION_DATE_WHIRLPOOLMAC "2024-06-10-01:01:01"
+
+#endif
+
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+
+#define HASH_INFO_FUNCTION_NAME_WHIRLPOOLMACBLOB "macwhirlpoolblob"
+#define HASH_INFO_COLUMN_TYPE_WHIRLPOOLMACBLOB "hash"
+#define HASH_INFO_COLUMN_SIGNATURE_WHIRLPOOLMACBLOB "select macwhirlpoolblob([database],[table],[column],[rowid],[key],[use_hex_key=1,use_as_is=0]);"
+#define HASH_INFO_FUNCTION_VERSION_WHIRLPOOLMACBLOB "0.0.0.1"
+#define HASH_INFO_FUNCTION_DATE_WHIRLPOOLMACBLOB "2024-06-10-01:01:01"
 
 #endif
 
