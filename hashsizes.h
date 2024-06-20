@@ -267,6 +267,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #if defined(__USE_MAC__)
         hash_size_shake128mac,
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+        hash_size_shake128macblob,
+#endif
 #endif
 
 #if defined(__SHAKE256__) || defined (__ALL__)
@@ -276,6 +279,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #endif
 #if defined(__USE_MAC__)
         hash_size_shake256mac,
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+        hash_size_shake256macblob,
 #endif
 #endif
 
@@ -664,6 +670,9 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #if defined(__USE_MAC__)
 #define HASH_SIZE_FUNCTION_NAME_SHAKE128MAC "macshake128"
 #endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_SHAKE128MACBLOB "macshake128blob"
+#endif
 #endif
 
 #if defined(__SHAKE256__) || defined (__ALL__)
@@ -671,8 +680,11 @@ hash_size_sha3224macblob, // mdsha3224mac enabled
 #if defined(__USE_BLOB__)
 #define HASH_SIZE_FUNCTION_NAME_SHAKE256BLOB "shake256blob"
 #endif
-#if defined(__USE_BLOB__)
-#define HASH_SIZE_FUNCTION_NAME_SHAKE256MAC "shake256blob"
+#if defined(__USE_MAC__)
+#define HASH_SIZE_FUNCTION_NAME_SHAKE256MAC "macshake256"
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+#define HASH_SIZE_FUNCTION_NAME_SHAKE256MACBLOB "macshake256blob"
 #endif
 #endif
 
@@ -2188,7 +2200,22 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
         }
         }
 #endif
-
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_shake128macblob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SHAKE128MACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_SHAKE128MACBLOB), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_shake_128));
+            break;
+        }
+        }
+#endif
 #endif
 
 
@@ -2233,6 +2260,22 @@ static int hash_sizes_Column ( sqlite3_vtab_cursor *cur, sqlite3_context *ctx, i
             break;
         case HASH_SIZE_COLUMN_FUNCTION_NAME:
             sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SHAKE256MAC), strlength(HASH_SIZE_FUNCTION_NAME_SHAKE256MAC), free);
+            break;
+        case HASH_SIZE_COLUMN_HASH_SIZE:
+            sqlite3_result_int(ctx, GetDigestSize(algo_shake_256));
+            break;
+        }
+        }
+#endif
+#if defined(__USE_MAC__) && defined(__USE_BLOB__)
+    else if (pCur->iRowid == hash_size_shake256macblob)
+    {
+        switch (i) {
+        case HASH_SIZE_COLUMN_MODULE_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_MODULE_NAME), strlength(HASH_SIZE_MODULE_NAME), free);
+            break;
+        case HASH_SIZE_COLUMN_FUNCTION_NAME:
+            sqlite3_result_text(ctx, strduplicate(HASH_SIZE_FUNCTION_NAME_SHAKE256MACBLOB), strlength(HASH_SIZE_FUNCTION_NAME_SHAKE256MACBLOB), free);
             break;
         case HASH_SIZE_COLUMN_HASH_SIZE:
             sqlite3_result_int(ctx, GetDigestSize(algo_shake_256));

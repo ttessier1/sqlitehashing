@@ -1854,7 +1854,26 @@ extern "C" {
 #if (defined(__SHAKE128__) || defined (__ALL__)) && defined(__USE_BLOB__)
     Shake128MacBlobContextPtr Shake128MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        Shake128MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (Shake128MacBlobContextPtr)malloc(sizeof(Shake128MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)Shake128MacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<SHAKE128>*)malloc(sizeof(HMAC<SHAKE128>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<SHAKE128>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void Shake128MacUpdate(Shake128MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
@@ -1867,13 +1886,67 @@ extern "C" {
 
     const char* Shake128MacFinalize(Shake128MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(SHAKE128::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SHAKE128::DIGESTSIZE, algo_shake_128);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SHAKE128::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SHAKE128::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 #if (defined(__SHAKE256__) || defined (__ALL__)) && defined(__USE_BLOB__)
     Shake256MacBlobContextPtr Shake256MacInitialize(const char* key, unsigned int length)
     {
-        return NULL;
+        Shake256MacBlobContextPtr macBlobContext = NULL;
+        if (key != NULL && length > 0)
+        {
+            macBlobContext = (Shake256MacBlobContextPtr)malloc(sizeof(Shake256MacBlobContext));
+            if (macBlobContext != NULL)
+            {
+                new(macBlobContext)Shake256MacBlobContextPtr();
+                macBlobContext->macBlobContext = (HMAC<SHAKE256>*)malloc(sizeof(HMAC<SHAKE256>));
+                if (macBlobContext->macBlobContext)
+                {
+                    new(macBlobContext->macBlobContext) HMAC<SHAKE256>((CryptoPP::byte*)key, length);
+                }
+                else
+                {
+                    free(macBlobContext);
+                    macBlobContext = NULL;
+                }
+            }
+        }
+        return macBlobContext;
     }
 
     void Shake256MacUpdate(Shake256MacBlobContextPtr macBlobContext, const char* message, unsigned int length)
@@ -1886,7 +1959,42 @@ extern "C" {
 
     const char* Shake256MacFinalize(Shake256MacBlobContextPtr macBlobContext)
     {
-        return NULL;
+        char* lpBuffer = NULL;
+        const char* result = NULL;;
+        if (macBlobContext != NULL && macBlobContext->macBlobContext != NULL)
+        {
+            lpBuffer = (char*)malloc(SHAKE256::DIGESTSIZE);
+            if (lpBuffer)
+            {
+                macBlobContext->macBlobContext->Final((CryptoPP::byte*)lpBuffer);
+                result = ToHex(lpBuffer, SHAKE256::DIGESTSIZE, algo_shake_256);
+                if (result != NULL)
+                {
+                    DebugMessage("Processed ToHex\r\n");
+                    if (strlen(result) != (SHAKE256::DIGESTSIZE * 2))
+                    {
+                        DebugFormat("Digest result to hex is not correct size: %i - %i %s\r\n", strlength(result), (SHAKE256::DIGESTSIZE * 2), result);
+                        return NULL;
+                    }
+                }
+                else
+                {
+                    DebugMessage("Failed to convert to hex\r\n");
+                }
+                free(lpBuffer);
+                lpBuffer = NULL;
+                return result;
+            }
+            else
+            {
+                DebugMessage("Failed to allocate memory to hex\r\n");
+            }
+        }
+        else
+        {
+            DebugMessage("Invalid BlobContext\r\n");
+        }
+        return result;
     }
 #endif
 #if (defined(__SIPHASH64__) || defined (__ALL__)) && defined(__USE_BLOB__)
