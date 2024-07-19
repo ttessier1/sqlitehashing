@@ -1,3 +1,5 @@
+https://www.paypal.com/donate/?business=N3WT6JVR28U8Q&no_recurring=0&currency_code=CAD
+
 Sqlite Hashing version 2024.06.20.1
 
 #TODO: Bug Fix preprocessor macro inclusion -- priliminary completion
